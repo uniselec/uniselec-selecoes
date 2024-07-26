@@ -1,27 +1,75 @@
-# vite-template-redux
+Executar as migrations:
 
-Uses [Vite](https://vitejs.dev/), [Vitest](https://vitest.dev/), and [React Testing Library](https://github.com/testing-library/react-testing-library) to create a modern [React](https://react.dev/) app compatible with [Create React App](https://create-react-app.dev/)
+    docker exec -it uniselec-api bash -c "php artisan migrate"
 
-```sh
-npx degit reduxjs/redux-templates/packages/vite-template-redux my-app
-```
 
-## Goals
+Links:
 
-- Easy migration from Create React App or Vite
-- As beginner friendly as Create React App
-- Optimized performance compared to Create React App
-- Customizable without ejecting
+    Ideal:
 
-## Scripts
+        Página do candidato:
 
-- `dev`/`start` - start dev server and open browser
-- `build` - build for production
-- `preview` - locally preview production build
-- `test` - launch test runner
+            Produção:
 
-## Inspiration
+                https://uniselec.unilab.edu.br
 
-- [Create React App](https://github.com/facebook/create-react-app/tree/main/packages/cra-template)
-- [Vite](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react)
-- [Vitest](https://github.com/vitest-dev/vitest/tree/main/examples/react-testing-lib)
+            Homologação:
+
+                https://uniselec-staging.unilab.edu.br
+
+        Página do Administrador:
+
+            Produção:
+
+                https://uniselec-bo.unilab.edu.br
+
+            Homologação:
+
+                https://uniselec-bo-staging.unilab.edu.br
+
+        API:
+
+            Produção:
+
+                https://uniselec-api.unilab.edu.br
+
+            Homologação:
+
+                https://uniselec-api-staging.unilab.edu.br
+
+
+(Demandas do tipo demoram 3 meses na disir)
+
+
+O que eu consigo fazer em pouco tempo:
+
+
+
+
+Página do Candidato:
+
+        https://uniselec.jefponte.com
+        https://uniselec-staging.jefponte.com
+
+Página do candidato, Link alternativo(Serviço em Nuvem Gratuito do Firebase):
+
+        https://uniselec.web.app
+        https://uniselec-staging.web.app
+
+
+uniselec-bo.jefponte.com
+uniselec-bo-staging.jefponte.com
+
+uniselec-unilab.web.app
+uniselec-unilab-staging.web.app
+
+uniselec-unilab-bo.web.app
+uniselec-unilab-bo-staging.web.app
+
+uniselec-api.jefponte.com
+uniselec-api-staging.jefponte.com
+
+
+uniselec-api.jefponte.com
+uniselec-api-staging.jefponte.com
+
