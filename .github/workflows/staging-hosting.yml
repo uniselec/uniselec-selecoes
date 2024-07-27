@@ -45,4 +45,4 @@ jobs:
           server: jefponte.com
           username: uniselec-staging@jefponte.com
           password: ${{ secrets.FTP_STAGING_PASSWORD }}
-          local-dir: dist
+          local-dir: dist/
