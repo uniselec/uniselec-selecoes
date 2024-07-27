@@ -4,7 +4,7 @@ import { Typography, Box } from "@mui/material";
 export function Footer() {
     return (<Box component="footer">
         <Typography variant="h6" align="center" gutterBottom>
-            Esteticplex
+            Uniselec
         </Typography>
         <Typography
             variant="subtitle1"
@@ -12,7 +12,7 @@ export function Footer() {
             color="text.secondary"
             component="p"
         >
-            Sistema para Clínicas de Estética
+            Sistema de Seleção de Alunos da UNILAB
         </Typography>
     </Box>);
 }
