@@ -45,4 +45,4 @@ jobs:
           server: jefponte.com
           username: uniselec@jefponte.com
           password: ${{ secrets.FTP_PRODUCTION_PASSWORD }}
-          local-dir: dist
+          local-dir: dist/
