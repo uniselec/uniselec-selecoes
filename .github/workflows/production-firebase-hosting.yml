@@ -1,4 +1,4 @@
-name: FTP CI
+name: Firebase CI
 on:
   release:
     types: [published]
@@ -26,7 +26,6 @@ jobs:
         with:
           name: build
           path: dist
-
   deploy:
     name: Deploy
     needs: build
@@ -38,11 +37,9 @@ jobs:
         with:
           name: build
           path: dist
-
-      - name: Deploy to FTP
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
+      - name: Deploy to Firebase
+        uses: vsuhanov/firebase-action@v3.0.0
         with:
-          server: jefponte.com
-          username: uniselec@jefponte.com
-          password: ${{ secrets.FTP_PRODUCTION_PASSWORD }}
-          local-dir: dist
+          args: deploy --only hosting
+        env:
+          FIREBASE_TOKEN: ${{secrets.FIREBASE_TOKEN}}
