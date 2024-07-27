@@ -1,41 +1,50 @@
-Executar as migrations:
+Repositórios no gitlab:
 
-    docker exec -it uniselec-api bash -c "php artisan migrate"
+    API:
+
+        git clone http://dti-gitlab.unilab.edu.br/dti/uniselecapi.git
+
+    Página do Candidato:
+
+        git clone http://dti-gitlab.unilab.edu.br/dti/uniselecwebsite.git
+
+    Página do administrador:
+
+        http://dti-gitlab.unilab.edu.br/dti/uniselecadminpage.git
 
 
-Links:
 
-    Ideal:
+Links - Ideal:
 
-        Página do candidato:
+    Página do candidato:
 
-            Produção:
+        Produção:
 
-                https://uniselec.unilab.edu.br
+            https://uniselec.unilab.edu.br
 
-            Homologação:
+        Homologação:
 
-                https://uniselec-staging.unilab.edu.br
+            https://uniselec-staging.unilab.edu.br
 
-        Página do Administrador:
+    Página do Administrador:
 
-            Produção:
+        Produção:
 
-                https://uniselec-bo.unilab.edu.br
+            https://uniselec-admin.unilab.edu.br
 
-            Homologação:
+        Homologação:
 
-                https://uniselec-bo-staging.unilab.edu.br
+            https://uniselec-admin-staging.unilab.edu.br
 
-        API:
+    API:
 
-            Produção:
+        Produção:
 
-                https://uniselec-api.unilab.edu.br
+            https://uniselec-api.unilab.edu.br
 
-            Homologação:
+        Homologação:
 
-                https://uniselec-api-staging.unilab.edu.br
+            https://uniselec-api-staging.unilab.edu.br
 
 
 
@@ -45,13 +54,14 @@ O que eu consigo fazer em pouco tempo:
 
 
     Página do Candidato:
-        Produção:
-
-            https://uniselec.jefponte.com
 
         Homologação:
 
             https://uniselec-staging.jefponte.com
+
+        Produção:
+
+            https://uniselec.jefponte.com
 
         Produção (Link alternativo, serviço gratuito do Firebase):
 
@@ -60,17 +70,18 @@ O que eu consigo fazer em pouco tempo:
 
     Página do administrador:
 
-        Produção:
-            https://uniselec-bo.jefponte.com
-
         Homologação:
 
-            https://uniselec-bo-staging.jefponte.com
+            https://uniselec-admin-staging.jefponte.com
+
+        Produção:
+
+            https://uniselec-admin.jefponte.com
 
         Produção (Link alternativo, serviço gratuito do Firebase):
 
 
-            https://uniselec-unilab-bo.web.app
+            https://uniselec-unilab-admin.web.app
 
     API:
 
