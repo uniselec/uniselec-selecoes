@@ -13,6 +13,7 @@ import { PatientEdit } from "./features/patients/PatientEdit";
 import { PatientCreate } from "./features/patients/PatientCreate";
 import { UserList } from "./features/users/UserList";
 import { UserEdit } from "./features/users/UserEdit";
+import { Register } from "./features/auth/Register";
 
 
 
@@ -45,6 +46,7 @@ function App() {
 
 
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
           <Route path="*" element={<NotFoundCard/>} />
         </Routes>

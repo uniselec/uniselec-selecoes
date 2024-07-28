@@ -4,7 +4,6 @@ import { SnackbarProvider } from "notistack";
 import React, { useState } from "react";
 import { useAppTheme } from "../hooks/useAppTheme";
 import { Header } from "./Header";
-import ResponsiveDrawer from "./ResponsiveDrawer";
 import { Footer } from "./Footer";
 import { useSelector } from "react-redux";
 import { selectIsAuthenticated } from "../features/auth/authSlice";
@@ -27,10 +26,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <Box sx={{ display: "flex" }}>
         <AppBar
           position="fixed"
-          sx={{
-            zIndex: 2,
-            ml: { sm: `${drawerWidth}px` },
-          }}
         >
           <Header
             handleDrawerToggle={handleDrawerToggle}
@@ -39,14 +34,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
             isAuth={isAuthenticated}
           />
         </AppBar>
-
-        {isAuthenticated ? <ResponsiveDrawer isDark={currentTheme.palette.mode === "dark"} open={mobileOpen} onClose={handleDrawerToggle} /> : <></>}
         <SnackbarProvider
           autoHideDuration={2000}
           maxSnack={3}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <Container maxWidth={false} sx={{ color: "white", mt: 25, mb: 2 }}>
+          <Container maxWidth={false} sx={{ color: "white", mt: 15, mb: 5 }}>
             {children}
           </Container>
 
