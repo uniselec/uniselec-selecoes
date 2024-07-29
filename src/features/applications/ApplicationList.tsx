@@ -27,8 +27,8 @@ export const ApplicationList = () => {
   }
 
   return (
-    <Box >
-      <Paper sx={{ mt: 4, p: 5, mb: 4 }}>
+    <Box>
+      <Paper sx={{ p: 5 }}>
         <Box p={2}>
           <Box mb={2}>
             <Typography variant="h4">Minha Inscrição</Typography>
@@ -37,11 +37,6 @@ export const ApplicationList = () => {
           <ApplicationTable
             applications={data}
             isFetching={isFetching}
-            paginationModel={{
-              pageSize: 25,
-              page: 0,
-            }}
-
           />
         </Box>
 

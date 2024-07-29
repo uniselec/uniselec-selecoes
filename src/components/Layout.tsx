@@ -6,10 +6,21 @@ import { useAppTheme } from "../hooks/useAppTheme";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
 import { useSelector } from "react-redux";
+import Paper from '@mui/material/Paper';
 import { selectIsAuthenticated } from "../features/auth/authSlice";
-
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
 
 const drawerWidth = 240;
+
+const Item = styled(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -39,9 +50,24 @@ export function Layout({ children }: { children: React.ReactNode }) {
           maxSnack={3}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <Container maxWidth={false} sx={{ color: "white", mt: 15, mb: 5 }}>
-            {children}
-          </Container>
+          <Box sx={{ color: "white", mt: 15, mb: 5, flexGrow: 1 }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={12} md={4}>
+                <Item>
+                  Documentos
+                </Item>
+              </Grid>
+              <Grid item xs={12} sm={12} md={8}>
+
+                <Container sx={{ color: "white" }}>
+                  {children}
+                </Container>
+
+              </Grid>
+
+            </Grid>
+          </Box>
+
 
         </SnackbarProvider>
 

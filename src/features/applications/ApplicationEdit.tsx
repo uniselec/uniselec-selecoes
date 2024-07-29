@@ -46,8 +46,8 @@ export const ApplicationEdit = () => {
   }, [enqueueSnackbar, status.error, status.isSuccess]);
 
   return (
-    <Box sx={{ mt: 4, mb: 4 }}>
-      <Paper>
+    <Box>
+      <Paper sx={{ p: 5 }}>
         <Box p={2}>
           <Box mb={2}>
             <Typography variant="h4">Editar Usuário</Typography>

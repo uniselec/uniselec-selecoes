@@ -48,7 +48,7 @@ import {
             <Grid item xs={12}>
               <Box display="flex" gap={2}>
                 <Button variant="contained" component={Link} to="/applications">
-                  Back
+                  Voltar
                 </Button>
 
                 <Button
@@ -57,7 +57,7 @@ import {
                   color="secondary"
                   disabled={isdisabled || isLoading}
                 >
-                  {isLoading ? "Loading..." : "Save"}
+                  {isLoading ? "Loading..." : "Realizar Inscrição"}
                 </Button>
               </Box>
             </Grid>
