@@ -1,38 +1,38 @@
 import { Box, Paper, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
-import { Organization } from "../../types/Organization";
-import { useCreateOrganizationMutation } from "./organizationSlice";
-import { OrganizationForm } from "./components/OrganizationForm";
+import { Application } from "../../types/Application";
+import { useCreateApplicationMutation } from "./applicationSlice";
+import { ApplicationForm } from "./components/ApplicationForm";
 
-export const OrganizationCreate = () => {
+export const ApplicationCreate = () => {
   const { enqueueSnackbar } = useSnackbar();
-  const [createOrganization, status] = useCreateOrganizationMutation();
+  const [createApplication, status] = useCreateApplicationMutation();
   const [isdisabled, setIsdisabled] = useState(false);
-  const [organizationState, setOrganizationState] = useState<Organization>({} as Organization);
+  const [applicationState, setApplicationState] = useState<Application>({} as Application);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await createOrganization(organizationState);
+    await createApplication(applicationState);
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setOrganizationState({ ...organizationState, [name]: value });
+    setApplicationState({ ...applicationState, [name]: value });
   };
 
   const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, checked } = e.target;
-    setOrganizationState({ ...organizationState, [name]: checked });
+    setApplicationState({ ...applicationState, [name]: checked });
   };
 
   useEffect(() => {
     if (status.isSuccess) {
-      enqueueSnackbar("Organization created successfully", { variant: "success" });
+      enqueueSnackbar("Application created successfully", { variant: "success" });
       setIsdisabled(true);
     }
     if (status.error) {
-      enqueueSnackbar("Organization not created", { variant: "error" });
+      enqueueSnackbar("Application not created", { variant: "error" });
     }
   }, [enqueueSnackbar, status.error, status.isSuccess]);
 
@@ -41,13 +41,13 @@ export const OrganizationCreate = () => {
       <Paper>
         <Box p={2}>
           <Box mb={2}>
-            <Typography variant="h4">Create Organization</Typography>
+            <Typography variant="h4">Create Application</Typography>
           </Box>
         </Box>
-        <OrganizationForm
+        <ApplicationForm
           isLoading={false}
           isdisabled={isdisabled}
-          organization={organizationState}
+          application={applicationState}
           handleSubmit={handleSubmit}
           handleChange={handleChange}
         />

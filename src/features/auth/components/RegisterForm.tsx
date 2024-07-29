@@ -11,8 +11,6 @@ import {
 import { useTheme } from "@mui/material";
 import { useState, useEffect } from 'react';
 import { Credentials } from '../authApiSlice';
-import Logo3s from "../../../assets/img/logo-3s.png";
-import Logo3sBlack from "../../../assets/img/logo-3s-black.png";
 import styled from '@emotion/styled';
 import Avatar from '@mui/material/Avatar';
 import FormControlLabel from '@mui/material/FormControlLabel';

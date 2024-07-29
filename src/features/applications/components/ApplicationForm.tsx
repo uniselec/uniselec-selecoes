@@ -7,18 +7,18 @@ import {
   } from "@mui/material";
 
   import { Link } from "react-router-dom";
-  import { Patient } from "../../../types/Patient";
+  import { Application } from "../../../types/Application";
 
   type Props = {
-    patient: Patient;
+    application: Application;
     isdisabled?: boolean;
     isLoading?: boolean;
     handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   };
 
-  export function PatientForm({
-    patient,
+  export function ApplicationForm({
+    application,
     isdisabled = false,
     isLoading = false,
     handleSubmit,
@@ -34,7 +34,7 @@ import {
                   required
                   name="name"
                   label="Name"
-                  value={patient.name || ""}
+                  value={application.data || ""}
                   disabled={isdisabled}
                   onChange={handleChange}
                   inputProps={{ "data-testid": "name" }}
@@ -47,7 +47,7 @@ import {
 
             <Grid item xs={12}>
               <Box display="flex" gap={2}>
-                <Button variant="contained" component={Link} to="/patients">
+                <Button variant="contained" component={Link} to="/applications">
                   Back
                 </Button>
 

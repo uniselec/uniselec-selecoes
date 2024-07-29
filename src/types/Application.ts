@@ -1,24 +1,17 @@
 
 
 export interface Results {
-    data:  Patient[];
+    data:  Application[];
     links: Links;
     meta:  Meta;
 }
 export interface Result {
-    data:  Patient;
+    data:  Application;
 }
 
-export interface Patient {
+export interface Application {
     id:              number;
-    name:            string;
-    email:           string;
-    login:           string;
-    role:            string;
-    division_id:      number | null;
-    division_sig:     null | string;
-    division_sig_id:   number | null;
-    email_verified_at: null | string;
+    data:            string;
     created_at: null | string;
     updated_at: null | string;
 }
@@ -39,7 +32,7 @@ export interface Meta {
   current_page: number;
 }
 
-export interface PatientParams {
+export interface ApplicationParams {
   page?: number;
   perPage?: number;
   search?: string;
