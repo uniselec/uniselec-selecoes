@@ -36,7 +36,7 @@ export const Register = () => {
         if (statusLogin.isSuccess) {
             enqueueSnackbar("Login Realizado com Sucesso!", { variant: "success" });
             setIsLoading(false);
-            navigate('/');
+            navigate('/login');
         }
         if (statusLogin.error) {
             enqueueSnackbar("Falha no Login", { variant: "error" });
