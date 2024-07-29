@@ -252,8 +252,6 @@ export function ApplicationForm({
               />
             </FormControl>
           </Grid>
-
-
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
@@ -270,12 +268,11 @@ export function ApplicationForm({
             <FormControl fullWidth>
               <TextField
                 required
-                name="enem"
-                label="Número de Inscrição do ENEM"
-                value={formState.enem || ""}
-                disabled={isdisabled}
-                onChange={handleCheckboxChange}
-                data-testid="enem"
+                name="campus"
+                label="Local de Oferta"
+                value="Baturité"
+                disabled
+                data-testid="campus"
               />
             </FormControl>
           </Grid>
@@ -283,11 +280,12 @@ export function ApplicationForm({
             <FormControl fullWidth>
               <TextField
                 required
-                name="campus"
-                label="Local de Oferta"
-                value="Baturité"
-                disabled
-                data-testid="campus"
+                name="enem"
+                label="Número de Inscrição do ENEM"
+                value={formState.enem || ""}
+                disabled={isdisabled}
+                onChange={handleCheckboxChange}
+                data-testid="enem"
               />
             </FormControl>
           </Grid>
@@ -305,7 +303,7 @@ export function ApplicationForm({
                       name="vaga"
                       value={option.value}
                       checked={option.alwaysChecked || formState.vaga?.includes(option.value) || false}
-                      onChange={(e, checked) => handleCheckboxChange(e, checked)}
+                      onChange={(e) => handleCheckboxChange(e as React.ChangeEvent<HTMLInputElement>)}
                       data-testid={`vaga-${option.value}`}
                       disabled={option.alwaysChecked}
                     />
@@ -351,7 +349,7 @@ export function ApplicationForm({
             <FormControlLabel
               control={<Checkbox required name="termsAgreement" />}
               label="Declaro que li e concordo com o termo de responsabilidade."
-              onChange={(e, checked) => handleCheckboxChange(e, checked)}
+              onChange={(e) => handleCheckboxChange(e as React.ChangeEvent<HTMLInputElement>)}
             />
           </Grid>
           <Grid item xs={12}>
