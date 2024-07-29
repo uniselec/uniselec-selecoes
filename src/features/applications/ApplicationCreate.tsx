@@ -9,7 +9,7 @@ export const ApplicationCreate = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [createApplication, status] = useCreateApplicationMutation();
   const [isdisabled, setIsdisabled] = useState(false);
-  const [applicationState, setApplicationState] = useState<Application>({} as Application);
+  const [applicationState, setApplicationState] = useState<Application>({ data: {} } as Application);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -18,12 +18,11 @@ export const ApplicationCreate = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setApplicationState({ ...applicationState, [name]: value });
+    setApplicationState({ ...applicationState, data: { ...applicationState.data, [name]: value } });
   };
 
-  const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, checked } = e.target;
-    setApplicationState({ ...applicationState, [name]: checked });
+  const handleAutocompleteChange = (event: any, value: any, field: string) => {
+    setApplicationState({ ...applicationState, data: { ...applicationState.data, [field]: value } });
   };
 
   useEffect(() => {
@@ -37,11 +36,11 @@ export const ApplicationCreate = () => {
   }, [enqueueSnackbar, status.error, status.isSuccess]);
 
   return (
-    <Box sx={{ mt: 4, mb: 4 }}>
-      <Paper>
+    <Box>
+      <Paper sx={{ p: 5 }}>
         <Box p={2}>
           <Box mb={2}>
-            <Typography variant="h4">Create Application</Typography>
+            <Typography variant="h4">Realizar Inscrição</Typography>
           </Box>
         </Box>
         <ApplicationForm
@@ -50,6 +49,7 @@ export const ApplicationCreate = () => {
           application={applicationState}
           handleSubmit={handleSubmit}
           handleChange={handleChange}
+          handleAutocompleteChange={handleAutocompleteChange}
         />
       </Paper>
     </Box>

@@ -1,8 +1,9 @@
 import React from 'react';
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, Button, Paper, Typography } from "@mui/material";
 import { selectAuthUser } from './authSlice';
 import { useAppSelector } from '../../app/hooks';
 import { useGetUserQuery } from '../users/userSlice';
+import { Link } from 'react-router-dom';
 
 export const AuthProfile = () => {
 
@@ -11,7 +12,7 @@ export const AuthProfile = () => {
     const { data: user, isFetching } = useGetUserQuery({ id });
 
     return (
-        <Box sx={{ mt: 4, mb: 4 }}>
+        <Box>
             <Paper>
 
                 <Box
@@ -30,8 +31,10 @@ export const AuthProfile = () => {
                 <Box p={3} mb={3}>
                     <Typography variant="h5">Nome: {userAuth?.name}</Typography>
                     <Typography variant="h5">E-mail: {userAuth?.email}</Typography>
-                    <Typography variant="h5">Login: {userAuth?.login}</Typography>
-                    <Typography variant="h5">Nível: {userAuth?.role}</Typography>
+                    <br/>
+                    <Button variant="contained" component={Link} to="/applications">
+                        Voltar
+                    </Button>
                 </Box>
 
             </Paper>
