@@ -11,7 +11,7 @@ import { ApplicationForm } from "./components/ApplicationForm";
 
 export const ApplicationEdit = () => {
   const { id } = useParams<{ id: string }>();
-  const { data: application, isFetching } = useGetApplicationQuery({ id });
+  const { data: application, isFetching } = useGetApplicationQuery({ id: id! });
   const [isdisabled, setIsdisabled] = useState(false);
   const [updateApplication, status] = useUpdateApplicationMutation();
   const [applicationState, setApplicationState] = useState<Application>({} as Application);
@@ -23,14 +23,14 @@ export const ApplicationEdit = () => {
     await updateApplication(applicationState);
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.SyntheticEvent, checked?: boolean) => {
+    const { name, value } = (e.target as HTMLInputElement);
     setApplicationState({ ...applicationState, data: { ...applicationState.data, [name]: value } });
   };
 
   useEffect(() => {
     if (application) {
-      setApplicationState(application); // Corrigir aqui para mapear os dados corretamente
+      setApplicationState(application.data);
     }
   }, [application]);
 
@@ -58,6 +58,7 @@ export const ApplicationEdit = () => {
           isdisabled={isFetching || isdisabled}
           handleSubmit={handleSubmit}
           handleChange={handleChange}
+          handleAutocompleteChange={() => {}}
         />
       </Paper>
     </Box>

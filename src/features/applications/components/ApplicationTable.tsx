@@ -25,14 +25,14 @@ export function ApplicationTable({ applications, isFetching }: Props) {
         <Card sx={{ minWidth: "100%" }}>
           <CardContent>
             <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
-              Nenhuma inscrição encontrada, clique aqui para realizar sua inscrição
+              Nenhuma inscrição encontrada
             </Typography>
           </CardContent>
-          <CardActions>
+          {/* <CardActions>
             <Button size="small" variant="contained" component={Link} to="/applications/create">
               Realizar Inscrição
             </Button>
-          </CardActions>
+          </CardActions> */}
         </Card>
       ) : (
         <Grid container spacing={3}>
@@ -41,7 +41,7 @@ export function ApplicationTable({ applications, isFetching }: Props) {
               <Card>
                 <CardContent>
                   <Typography variant="h6" component="div">
-                    {value.name}
+                    {value?.data?.course}
                   </Typography>
                   <Typography color="text.secondary">
                     CPF: {value.data.cpf}

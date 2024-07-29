@@ -1,4 +1,4 @@
-import { AppBar, Box, CssBaseline, ThemeProvider } from "@mui/material";
+import { AppBar, Box, Button, CssBaseline, ThemeProvider } from "@mui/material";
 import { Container } from "@mui/system";
 import { SnackbarProvider } from "notistack";
 import React, { useState } from "react";
@@ -10,6 +10,7 @@ import Paper from '@mui/material/Paper';
 import { selectIsAuthenticated } from "../features/auth/authSlice";
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
+import { Link } from "react-router-dom";
 
 const drawerWidth = 240;
 
@@ -50,25 +51,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           maxSnack={3}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-          <Box sx={{ color: "white", mt: 15, mb: 5, flexGrow: 1 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={12} md={4}>
-                <Item>
-                  Documentos
-                </Item>
-              </Grid>
-              <Grid item xs={12} sm={12} md={8}>
-
-                <Container sx={{ color: "white" }}>
+                <Container sx={{ color: "white", mt: 20, mb: 5, flexGrow: 1 }}>
                   {children}
                 </Container>
-
-              </Grid>
-
-            </Grid>
-          </Box>
-
-
         </SnackbarProvider>
 
       </Box>

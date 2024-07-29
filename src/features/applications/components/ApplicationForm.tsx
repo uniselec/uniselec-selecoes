@@ -16,7 +16,7 @@ type Props = {
   isdisabled?: boolean;
   isLoading?: boolean;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement> | React.SyntheticEvent, checked?: boolean) => void;
   handleAutocompleteChange: (event: any, value: any, field: string) => void;
 };
 
@@ -253,6 +253,13 @@ export function ApplicationForm({
             </FormControl>
           </Grid>
           <Grid item xs={12}>
+            <FormControlLabel
+              control={<Checkbox name="publicSchool" />}
+              label="Declaro que cursei integralmente o ensino médio em escola pública."
+              onChange={(e, checked) => handleChange(e, checked)}
+            />
+          </Grid>
+          <Grid item xs={12}>
             <FormControl fullWidth>
               <TextField
                 label="Termos de Responsabilidade"
@@ -264,18 +271,12 @@ export function ApplicationForm({
               />
             </FormControl>
           </Grid>
+
           <Grid item xs={12}>
             <FormControlLabel
-              control={<Checkbox name="publicSchool" />}
-              label="Declaro que cursei integralmente o ensino médio em escola pública."
-              onChange={handleChange}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={<Checkbox name="termsAgreement" />}
+              control={<Checkbox required name="termsAgreement" />}
               label="Declaro que li e concordo com o termo de responsabilidade."
-              onChange={handleChange}
+              onChange={(e, checked) => handleChange(e, checked)}
             />
           </Grid>
           <Grid item xs={12}>
