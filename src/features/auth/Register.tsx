@@ -7,10 +7,10 @@ import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Credentials, useLoginMutation, useSendLogOutMutation } from './authApiSlice';
-import { LoginForm } from './components/LoginForm';
+import { RegisterForm } from './components/RegisterForm';
 
 
-export const Login = () => {
+export const Register = () => {
     const [doLogin, statusLogin] = useLoginMutation();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -46,7 +46,7 @@ export const Login = () => {
     return (
         <Box>
             <Paper>
-                <LoginForm
+                <RegisterForm
                     credentials={credentials}
                     handleChange={handleChange}
                     handleSubmit={handleSubmit}

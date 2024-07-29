@@ -3,45 +3,45 @@ import { useSnackbar } from "notistack";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  useGetPatientQuery,
-  useUpdatePatientMutation,
-} from "./patientSlice";
-import { Patient } from "../../types/Patient";
-import { PatientForm } from "./components/PatientForm";
+  useGetApplicationQuery,
+  useUpdateApplicationMutation,
+} from "./applicationSlice";
+import { Application } from "../../types/Application";
+import { ApplicationForm } from "./components/ApplicationForm";
 
-export const PatientEdit = () => {
+export const ApplicationEdit = () => {
   const id = useParams().id as string;
-  const { data: patient, isFetching } = useGetPatientQuery({ id });
+  const { data: application, isFetching } = useGetApplicationQuery({ id });
   const [isdisabled, setIsdisabled] = useState(false);
-  const [updatePatient, status] = useUpdatePatientMutation();
-  const [patientState, setPatientState] = useState<Patient>({} as Patient);
+  const [updateApplication, status] = useUpdateApplicationMutation();
+  const [applicationState, setApplicationState] = useState<Application>({} as Application);
 
   const { enqueueSnackbar } = useSnackbar();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await updatePatient(patientState);
+    await updateApplication(applicationState);
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setPatientState({ ...patientState, [name]: value });
+    setApplicationState({ ...applicationState, [name]: value });
   };
 
 
   useEffect(() => {
-    if (patient) {
-      setPatientState(patient.data);
+    if (application) {
+      setApplicationState(application.data);
     }
-  }, [patient]);
+  }, [application]);
 
   useEffect(() => {
     if (status.isSuccess) {
-      enqueueSnackbar("Patient updated successfully", { variant: "success" });
+      enqueueSnackbar("Application updated successfully", { variant: "success" });
       setIsdisabled(false);
     }
     if (status.error) {
-      enqueueSnackbar("Patient not updated", { variant: "error" });
+      enqueueSnackbar("Application not updated", { variant: "error" });
     }
   }, [enqueueSnackbar, status.error, status.isSuccess]);
 
@@ -53,9 +53,9 @@ export const PatientEdit = () => {
             <Typography variant="h4">Editar Usuário</Typography>
           </Box>
         </Box>
-        <PatientForm
+        <ApplicationForm
           isLoading={false}
-          patient={patientState}
+          application={applicationState}
           isdisabled={isFetching || isdisabled}
           handleSubmit={handleSubmit}
           handleChange={handleChange}

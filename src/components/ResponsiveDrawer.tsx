@@ -30,7 +30,7 @@ export default function ResponsiveDrawer({ open, onClose, isDark }: Props) {
 
   const routes = [
     { path: "/", name: "Início" },
-    { path: "/patients", name: "Pacientes" },
+    { path: "/applications", name: "Candidaturas" },
 
   ];
 
