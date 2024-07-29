@@ -25,6 +25,7 @@ export interface Application {
     campus: string;
     course: string;
     vaga: string[];
+    bonus?: string[]; // Adicionando o campo bonus
     publicSchool: boolean;
     termsAgreement: boolean;
   };

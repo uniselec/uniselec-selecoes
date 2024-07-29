@@ -4,12 +4,19 @@ import {
   FormControl,
   Grid,
   TextField,
-  Autocomplete,
   Checkbox,
   FormControlLabel,
+  FormGroup,
+  Autocomplete,
+  Typography,
+  RadioGroup,
+  Radio,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { Application } from "../../../types/Application";
+import { useState, useEffect } from "react";
+import { useAppSelector } from "../../../app/hooks";
+import { selectAuthUser } from "../../auth/authSlice";
 
 type Props = {
   application: Application;
@@ -25,33 +32,97 @@ const ufOptions = [
   "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
   "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"
 ];
-const campuses = ["Campus dos Palmares", "Campus dos Males"];
-const vagaOptions = ["Ampla Concorrência", "Cotas"];
+const vagaOptions = [
+  { label: "AC: Ampla Concorrência", value: "AC", alwaysChecked: true },
+  { label: "AC/B: Candidato(s) de ampla concorrência que tenham cursado integralmente o Ensino Médio em instituições públicas de ensino.", value: "AC/B" },
+  { label: "LB - PPI: Candidatos autodeclarados pretos, pardos ou indígenas, com renda familiar bruta per capita igual ou inferior a 1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - PPI" },
+  { label: "LB - Q: Candidatos autodeclarados quilombolas, com renda familiar bruta per capita igual ou inferior a  1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - Q" },
+  { label: "LB - PCD: Candidatos com deficiência, que tenham renda familiar bruta per capita igual ou inferior a 1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - PCD" },
+  { label: "LB - EP: Candidatos com renda familiar bruta per capita igual ou inferior a 1 salário mínimo que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - EP" },
+  { label: "LI - PPI: Candidatos autodeclarados pretos, pardos ou indígenas, independentemente da renda, que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LI - PPI" },
+  { label: "LI - Q: Candidatos autodeclarados quilombolas, independentemente da renda, tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LI - Q" },
+  { label: "LI - PCD: Candidatos com deficiência, independentemente da renda, que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LI - PCD" },
+  { label: "LI - EP: Candidatos que, independentemente da renda, tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LI - EP" },
+];
+
+const bonusOptions = [
+  { label: "10%: Estudantes que tenham cursado integralmente o ensino médio em escolas públicas.", value: "10%" },
+  { label: "20%: Estudantes que tenham cursado e concluído integralmente o ensino médio em instituições de ensino, públicas ou privadas, localizadas na região do Maciço do Baturité.", value: "20%" },
+  { label: "Nenhuma das anteriores", value: "none" },
+];
 
 export function ApplicationForm({
   application,
   isdisabled = false,
   isLoading = false,
   handleSubmit,
-  handleChange,
   handleAutocompleteChange,
 }: Props) {
-  const data = application.data || {};
+  const [formState, setFormState] = useState(application.data || {});
+  const userAuth = useAppSelector(selectAuthUser);
+
+  useEffect(() => {
+    if (userAuth) {
+      setFormState((prevState) => ({
+        ...prevState,
+        name: userAuth.name,
+        email: userAuth.email,
+      }));
+    }
+  }, [userAuth]);
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, checked?: boolean) => {
+    const { name, value } = e.target;
+    if (name === "vaga") {
+      setFormState((prevState) => {
+        const vaga = prevState.vaga || [];
+        if (checked) {
+          return { ...prevState, vaga: [...vaga, value] };
+        } else {
+          return { ...prevState, vaga: vaga.filter((item: string) => item !== value) };
+        }
+      });
+    } else {
+      setFormState({ ...formState, [name]: value });
+    }
+  };
+
+  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>, value: string) => {
+    setFormState({ ...formState, bonus: value === "none" ? [] : [value] });
+  };
 
   return (
     <Box p={2}>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={3}>
+          {/* Dados Pessoais */}
           <Grid item xs={12}>
+            <Box borderBottom={1} mb={2}>
+              <Typography variant="h6">Dados Pessoais</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
                 required
                 name="name"
                 label="Nome Completo"
-                value={data.name || ""}
-                disabled={isdisabled}
-                onChange={handleChange}
-                inputProps={{ "data-testid": "name" }}
+                value={formState.name || ""}
+                disabled
+                data-testid="name"
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <TextField
+                required
+                name="email"
+                label="Email"
+                type="email"
+                value={formState.email || ""}
+                disabled
+                data-testid="email"
               />
             </FormControl>
           </Grid>
@@ -61,23 +132,10 @@ export function ApplicationForm({
                 required
                 name="cpf"
                 label="CPF do Candidato"
-                value={data.cpf || ""}
+                value={formState.cpf || ""}
                 disabled={isdisabled}
-                onChange={handleChange}
-                inputProps={{ "data-testid": "cpf" }}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <TextField
-                required
-                name="enem"
-                label="Inscrição do ENEM"
-                value={data.enem || ""}
-                disabled={isdisabled}
-                onChange={handleChange}
-                inputProps={{ "data-testid": "enem" }}
+                onChange={handleCheckboxChange}
+                data-testid="cpf"
               />
             </FormControl>
           </Grid>
@@ -91,10 +149,10 @@ export function ApplicationForm({
                 InputLabelProps={{
                   shrink: true,
                 }}
-                value={data.dob || ""}
+                value={formState.dob || ""}
                 disabled={isdisabled}
-                onChange={handleChange}
-                inputProps={{ "data-testid": "dob" }}
+                onChange={handleCheckboxChange}
+                data-testid="dob"
               />
             </FormControl>
           </Grid>
@@ -109,25 +167,11 @@ export function ApplicationForm({
                     {...params}
                     label="Sexo"
                     name="sex"
-                    value={data.sex || ""}
+                    value={formState.sex || ""}
                     disabled={isdisabled}
-                    inputProps={{ ...params.inputProps, "data-testid": "sex" }}
+                    data-testid="sex"
                   />
                 )}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth>
-              <TextField
-                required
-                name="email"
-                label="Email"
-                type="email"
-                value={data.email || ""}
-                disabled={isdisabled}
-                onChange={handleChange}
-                inputProps={{ "data-testid": "email" }}
               />
             </FormControl>
           </Grid>
@@ -137,22 +181,10 @@ export function ApplicationForm({
                 required
                 name="phone1"
                 label="Telefone 1"
-                value={data.phone1 || ""}
+                value={formState.phone1 || ""}
                 disabled={isdisabled}
-                onChange={handleChange}
-                inputProps={{ "data-testid": "phone1" }}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <TextField
-                name="phone2"
-                label="Telefone 2"
-                value={data.phone2 || ""}
-                disabled={isdisabled}
-                onChange={handleChange}
-                inputProps={{ "data-testid": "phone2" }}
+                onChange={handleCheckboxChange}
+                data-testid="phone1"
               />
             </FormControl>
           </Grid>
@@ -162,10 +194,10 @@ export function ApplicationForm({
                 required
                 name="address"
                 label="Endereço"
-                value={data.address || ""}
+                value={formState.address || ""}
                 disabled={isdisabled}
-                onChange={handleChange}
-                inputProps={{ "data-testid": "address" }}
+                onChange={handleCheckboxChange}
+                data-testid="address"
               />
             </FormControl>
           </Grid>
@@ -180,9 +212,9 @@ export function ApplicationForm({
                     {...params}
                     label="UF"
                     name="uf"
-                    value={data.uf || ""}
+                    value={formState.uf || ""}
                     disabled={isdisabled}
-                    inputProps={{ ...params.inputProps, "data-testid": "uf" }}
+                    data-testid="uf"
                   />
                 )}
               />
@@ -194,29 +226,29 @@ export function ApplicationForm({
                 required
                 name="city"
                 label="Cidade"
-                value={data.city || ""}
+                value={formState.city || ""}
                 disabled={isdisabled}
-                onChange={handleChange}
-                inputProps={{ "data-testid": "city" }}
+                onChange={handleCheckboxChange}
+                data-testid="city"
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={6}>
+
+          {/* Dados da Candidatura */}
+          <Grid item xs={12}>
+            <Box borderBottom={1} mb={2}>
+              <Typography variant="h6">Dados da Candidatura</Typography>
+            </Box>
+          </Grid>
+          <Grid item xs={12}>
             <FormControl fullWidth>
-              <Autocomplete
-                options={campuses}
-                getOptionLabel={(option) => option}
-                onChange={(event, value) => handleAutocompleteChange(event, value, "campus")}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Local de Oferta"
-                    name="campus"
-                    value={data.campus || ""}
-                    disabled={isdisabled}
-                    inputProps={{ ...params.inputProps, "data-testid": "campus" }}
-                  />
-                )}
+              <TextField
+                required
+                name="edital"
+                label="Edital"
+                value="Edital nº 04/2024 - PROCESSO SELETIVO SISURE/UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina"
+                disabled
+                data-testid="edital"
               />
             </FormControl>
           </Grid>
@@ -228,55 +260,96 @@ export function ApplicationForm({
                 label="Curso Pretendido"
                 value="Medicina"
                 disabled
-                inputProps={{ "data-testid": "course" }}
+                data-testid="course"
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth>
-              <Autocomplete
-                multiple
-                options={vagaOptions}
-                getOptionLabel={(option) => option}
-                onChange={(event, value) => handleAutocompleteChange(event, value, "vaga")}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Modalidade de Vaga"
-                    name="vaga"
-                    value={data.vaga || ""}
-                    disabled={isdisabled}
-                    inputProps={{ ...params.inputProps, "data-testid": "vaga" }}
-                  />
-                )}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={<Checkbox name="publicSchool" />}
-              label="Declaro que cursei integralmente o ensino médio em escola pública."
-              onChange={(e, checked) => handleChange(e, checked)}
-            />
-          </Grid>
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
-                label="Termos de Responsabilidade"
-                value="Termos de responsabilidade vão aqui..."
+                required
+                name="campus"
+                label="Local de Oferta"
+                value="Baturité"
                 disabled
-                multiline
-                rows={4}
-                inputProps={{ "data-testid": "terms" }}
+                data-testid="campus"
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <TextField
+                required
+                name="enem"
+                label="Número de Inscrição do ENEM"
+                value={formState.enem || ""}
+                disabled={isdisabled}
+                onChange={handleCheckboxChange}
+                data-testid="enem"
               />
             </FormControl>
           </Grid>
 
           <Grid item xs={12}>
+            <Box borderBottom={1} mb={2}>
+              <Typography variant="h6">Modalidade</Typography>
+            </Box>
+            <FormGroup>
+              {vagaOptions.map((option) => (
+                <FormControlLabel
+                  key={option.value}
+                  control={
+                    <Checkbox
+                      name="vaga"
+                      value={option.value}
+                      checked={option.alwaysChecked || formState.vaga?.includes(option.value) || false}
+                      onChange={(e) => handleCheckboxChange(e as React.ChangeEvent<HTMLInputElement>)}
+                      data-testid={`vaga-${option.value}`}
+                      disabled={option.alwaysChecked}
+                    />
+                  }
+                  label={option.label}
+                />
+              ))}
+            </FormGroup>
+          </Grid>
+          <Grid item xs={12}>
+            <Box borderBottom={1} mb={2}>
+              <Typography variant="h6">Critérios de Bonificação</Typography>
+            </Box>
+            <RadioGroup
+              name="bonus"
+              value={formState.bonus && formState.bonus.length > 0 ? formState.bonus[0] : "none"}
+              onChange={handleRadioChange}
+            >
+              {bonusOptions.map((option) => (
+                <FormControlLabel
+                  key={option.value}
+                  value={option.value}
+                  control={<Radio disabled={isdisabled} />}
+                  label={option.label}
+                  data-testid={`bonus-${option.value}`}
+                />
+              ))}
+            </RadioGroup>
+          </Grid>
+          <Grid item xs={12}>
+            <Box borderBottom={1} mb={2}>
+              <Typography variant="h6">Termos de Responsabilidade</Typography>
+            </Box>
+            <Typography variant="body2" mb={2}>
+              1. O candidato deverá ler o Edital da respectiva seleção, seus anexos e os atos normativos neles mencionados, para certificar-se de que preenche todos os requisitos exigidos para a participação e aceita todas as condições nele estabelecidas.
+            </Typography>
+            <Typography variant="body2" mb={2}>
+              2. Antes de efetuar sua inscrição, verifique se os dados digitados estão corretos e somente depois, confirme o envio de suas informações.
+            </Typography>
+            <Typography variant="body2" mb={2}>
+              3. A Unilab não se responsabiliza por solicitação de inscrição não recebida devido a quaisquer motivos de ordem técnica dos computadores, falhas de comunicação, congestionamento das linhas de comunicação, procedimento indevido do candidato, bem como por outros fatores que impossibilitem a transferência de dados, sendo de responsabilidade exclusiva do candidato acompanhar a situação de sua inscrição.
+            </Typography>
             <FormControlLabel
               control={<Checkbox required name="termsAgreement" />}
               label="Declaro que li e concordo com o termo de responsabilidade."
-              onChange={(e, checked) => handleChange(e, checked)}
+              onChange={(e) => handleCheckboxChange(e as React.ChangeEvent<HTMLInputElement>)}
             />
           </Grid>
           <Grid item xs={12}>
@@ -290,7 +363,7 @@ export function ApplicationForm({
                 color="secondary"
                 disabled={isdisabled || isLoading}
               >
-                {isLoading ? "Loading..." : "Realizar Inscrição"}
+                {isLoading ? "Loading..." : "Realizar Inscrições"}
               </Button>
             </Box>
           </Grid>
