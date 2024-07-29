@@ -12,6 +12,7 @@ export interface Application {
   id: number;
   data: {
     name: string;
+    social_name: string;
     cpf: string;
     enem: string;
     dob: string;
@@ -25,7 +26,8 @@ export interface Application {
     campus: string;
     course: string;
     vaga: string[];
-    bonus?: string[]; // Adicionando o campo bonus
+    bonus?: string[];
+    edital?: string;
     publicSchool: boolean;
     termsAgreement: boolean;
   };

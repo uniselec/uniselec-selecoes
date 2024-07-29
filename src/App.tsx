@@ -25,7 +25,7 @@ function App() {
     >
       <Layout>
         <Routes>
-          <Route path="/" element={<SelectionProcess />} />
+          <Route path="/" element={<SelectionProcessSelected />} />
           <Route path="/selection-process/1" element={<SelectionProcessSelected />} />
           <Route path="/applications" element={<ProtectedRoute><ApplicationList /></ProtectedRoute>} />
           <Route path="/applications/edit/:id" element={<ProtectedRoute><ApplicationEdit /></ProtectedRoute>} />

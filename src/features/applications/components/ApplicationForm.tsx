@@ -17,7 +17,7 @@ import { Application } from "../../../types/Application";
 import { useAppSelector } from "../../../app/hooks";
 import { selectAuthUser } from "../../auth/authSlice";
 import { Link } from "react-router-dom";
-import InputMask from "react-input-mask";
+
 
 type Props = {
   application: Application;
@@ -145,7 +145,7 @@ export function ApplicationForm({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={6}>
+          {/* <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
                 name="socialName"
@@ -155,7 +155,7 @@ export function ApplicationForm({
                 data-testid="socialName"
               />
             </FormControl>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
@@ -169,27 +169,7 @@ export function ApplicationForm({
               />
             </FormControl>
           </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <InputMask
-                mask="999.999.999-99"
-                value={formState.cpf || ""}
-                onChange={handleCpfChange}
-                disabled={isdisabled}
-              >
-                {() => (
-                  <TextField
-                    required
-                    name="cpf"
-                    label="CPF do Candidato"
-                    error={!!cpfError}
-                    helperText={cpfError || ""}
-                    data-testid="cpf"
-                  />
-                )}
-              </InputMask>
-            </FormControl>
-          </Grid>
+
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
