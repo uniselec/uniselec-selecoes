@@ -36,7 +36,7 @@ const vagaOptions = [
   { label: "AC: Ampla Concorrência", value: "AC", alwaysChecked: true },
   { label: "AC/B: Candidato(s) de ampla concorrência que tenham cursado integralmente o Ensino Médio em instituições públicas de ensino.", value: "AC/B" },
   { label: "LB - PPI: Candidatos autodeclarados pretos, pardos ou indígenas, com renda familiar bruta per capita igual ou inferior a 1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - PPI" },
-  { label: "LB - Q: Candidatos autodeclarados quilombolas, com renda familiar bruta per capita igual ou inferior a 1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - Q" },
+  { label: "LB - Q: Candidatos autodeclarados quilombolas, com renda familiar bruta per capita igual ou inferior a  1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - Q" },
   { label: "LB - PCD: Candidatos com deficiência, que tenham renda familiar bruta per capita igual ou inferior a 1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - PCD" },
   { label: "LB - EP: Candidatos com renda familiar bruta per capita igual ou inferior a 1 salário mínimo que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - EP" },
   { label: "LI - PPI: Candidatos autodeclarados pretos, pardos ou indígenas, independentemente da renda, que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LI - PPI" },
@@ -252,15 +252,17 @@ export function ApplicationForm({
               />
             </FormControl>
           </Grid>
+
+
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
                 required
-                name="campus"
-                label="Local de Oferta"
-                value="Baturité"
+                name="course"
+                label="Curso Pretendido"
+                value="Medicina"
                 disabled
-                data-testid="campus"
+                data-testid="course"
               />
             </FormControl>
           </Grid>
@@ -281,11 +283,11 @@ export function ApplicationForm({
             <FormControl fullWidth>
               <TextField
                 required
-                name="course"
-                label="Curso Pretendido"
-                value="Medicina"
+                name="campus"
+                label="Local de Oferta"
+                value="Baturité"
                 disabled
-                data-testid="course"
+                data-testid="campus"
               />
             </FormControl>
           </Grid>
