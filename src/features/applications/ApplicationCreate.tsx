@@ -16,8 +16,8 @@ export const ApplicationCreate = () => {
     await createApplication(applicationState);
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.SyntheticEvent, checked?: boolean) => {
+    const { name, value } = (e.target as HTMLInputElement);
     setApplicationState({ ...applicationState, data: { ...applicationState.data, [name]: value } });
   };
 
