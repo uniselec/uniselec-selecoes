@@ -10,7 +10,7 @@ import { Application } from "../../types/Application";
 import { ApplicationForm } from "./components/ApplicationForm";
 
 export const ApplicationEdit = () => {
-  const id = useParams().id as string;
+  const { id } = useParams<{ id: string }>();
   const { data: application, isFetching } = useGetApplicationQuery({ id });
   const [isdisabled, setIsdisabled] = useState(false);
   const [updateApplication, status] = useUpdateApplicationMutation();
@@ -25,13 +25,12 @@ export const ApplicationEdit = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setApplicationState({ ...applicationState, [name]: value });
+    setApplicationState({ ...applicationState, data: { ...applicationState.data, [name]: value } });
   };
-
 
   useEffect(() => {
     if (application) {
-      setApplicationState(application.data);
+      setApplicationState(application); // Corrigir aqui para mapear os dados corretamente
     }
   }, [application]);
 
@@ -50,11 +49,11 @@ export const ApplicationEdit = () => {
       <Paper sx={{ p: 5 }}>
         <Box p={2}>
           <Box mb={2}>
-            <Typography variant="h4">Editar Usuário</Typography>
+            <Typography variant="h4">Editar Inscrição</Typography>
           </Box>
         </Box>
         <ApplicationForm
-          isLoading={false}
+          isLoading={isFetching}
           application={applicationState}
           isdisabled={isFetching || isdisabled}
           handleSubmit={handleSubmit}

@@ -64,7 +64,6 @@ export const applicationsApiSlice = apiSlice.injectEndpoints({
   }),
 });
 
-
 export const {
   useGetApplicationsQuery,
   useCreateApplicationMutation,
