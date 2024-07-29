@@ -24,16 +24,7 @@ export function Header({ toggle, isAuth = false, isDark = false, handleDrawerTog
   return (
     <Box>
       <Toolbar>
-        <IconButton
-          size="large"
-          edge="start"
-          color="inherit"
-          aria-label="menu"
-          onClick={handleDrawerToggle}
-          sx={{ mr: 2, display: { sm: "none" } }}
-        >
-          <MenuIcon />
-        </IconButton>
+
         <Box sx={{ flexGrow: 1 }} />
 
         {isAuth && (
@@ -42,7 +33,7 @@ export function Header({ toggle, isAuth = false, isDark = false, handleDrawerTog
             <AccountMenu isDark={isDark} toggleTheme={toggle} />
           </>
         )}
-        LOGO AQUI
+        {/* LOGO AQUI */}
         {/* <ImageLogo /> */}
       </Toolbar>
     </Box>
