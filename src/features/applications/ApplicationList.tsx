@@ -1,8 +1,9 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import { useGetApplicationsQuery } from "./applicationSlice";
 import { Paper } from "@mui/material";
 import { useState } from "react";
 import { ApplicationTable } from "./components/ApplicationTable";
+import { Link } from "react-router-dom";
 
 interface PaginationModel {
   pageSize: number;
@@ -30,6 +31,16 @@ export const ApplicationList = () => {
             <Typography variant="h4">Minhas Inscrições</Typography>
           </Box>
           <ApplicationTable applications={data} isFetching={isFetching} />
+          <br></br><br></br>
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
+            to="/"
+            sx={{ mb: 2 }}
+          >
+            Voltar
+          </Button>
         </Box>
       </Paper>
     </Box>
