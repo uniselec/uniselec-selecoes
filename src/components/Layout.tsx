@@ -51,7 +51,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           maxSnack={3}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-                <Container sx={{ color: "white", mt: 20, mb: 5, flexGrow: 1 }}>
+                <Container sx={{ color: "white", mt: 25, mb: 5, flexGrow: 1 }}>
                   {children}
                 </Container>
         </SnackbarProvider>

@@ -88,3 +88,6 @@ O que eu consigo fazer em pouco tempo:
             https://uniselec-api.jefponte.com
 
             https://uniselec-api-staging.jefponte.com
+
+
+Em produção o .env, na variável VITE_API_URL deve conter o link de produção da API.

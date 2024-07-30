@@ -169,12 +169,6 @@ export const RegisterForm = ({
                 helperText={errorConfirmPassword.text}
               />
             </Grid>
-            <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="Eu quero receber atualizações e novidades via e-mail."
-              />
-            </Grid>
           </Grid>
           <Box sx={{ mt: 3 }}>
             <Button
