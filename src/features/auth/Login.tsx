@@ -6,7 +6,7 @@ import {
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Credentials, useLoginMutation, useSendLogOutMutation } from './authApiSlice';
+import { Credentials, useLoginMutation } from './authApiSlice';
 import { LoginForm } from './components/LoginForm';
 
 

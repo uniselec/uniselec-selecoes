@@ -1,159 +1,203 @@
-import {
-    Alert,
-    Box,
-    Button,
-    FormControl,
-    Grid,
-    Typography,
-    Checkbox,
-    TextField
-} from "@mui/material";
-import { useTheme } from "@mui/material";
-import { useState, useEffect } from 'react';
-import { Credentials } from '../authApiSlice';
-import styled from '@emotion/styled';
-import Avatar from '@mui/material/Avatar';
-import FormControlLabel from '@mui/material/FormControlLabel';
-
-
+import { Box, Button, FormControl, Grid, Typography, TextField, Avatar, FormControlLabel, Checkbox, Divider } from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import { Link } from "react-router-dom";
+import { useState, ChangeEvent } from 'react';
+import { Credentials } from '../authApiSlice';
+import { User } from "../../../types/User";
 
 type Props = {
-    credentials: Credentials;
-    isdisabled?: boolean;
-    isLoading?: boolean;
-    handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-    handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  credentials: User;
+  isdisabled?: boolean;
+  isLoading?: boolean;
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 };
 
-
 export const RegisterForm = ({
-    credentials,
-    isdisabled = false,
-    isLoading = false,
-    handleSubmit,
-    handleChange
+  credentials,
+  isdisabled = false,
+  isLoading = false,
+  handleSubmit,
+  handleChange
 }: Props) => {
+  const [errorEmail, setErrorEmail] = useState({ valid: true, text: "" });
+  const [errorConfirmEmail, setErrorConfirmEmail] = useState({ valid: true, text: "" });
+  const [errorPassword, setErrorPassword] = useState({ valid: true, text: "" });
+  const [errorConfirmPassword, setErrorConfirmPassword] = useState({ valid: true, text: "" });
+  const [email, setEmail] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
-
-    const theme = useTheme();
-
-    const [errorLogin, setErrorLogin] = useState({ valid: true, text: "" });
-    const [errorPassword, setErrorPassowrd] = useState({ valid: true, text: "" });
-    const isDarkMode = theme.palette.mode === 'dark';
-    function validateLogin() {
-        if (credentials.email.length > 1) {
-            setErrorLogin({ valid: true, text: "" });
-        } else {
-            setErrorLogin({ valid: false, text: "Digite no mínimo 1 caractere" });
-        }
+  const validateEmail = () => {
+    if (email !== confirmEmail) {
+      setErrorConfirmEmail({ valid: false, text: "Os e-mails não coincidem" });
+    } else {
+      setErrorConfirmEmail({ valid: true, text: "" });
     }
+  };
 
-    function validatePassword() {
-        if (credentials.password.length > 3) {
-            setErrorPassowrd({ valid: true, text: "" });
-        } else {
-            setErrorPassowrd({ valid: false, text: "Digite no mínimo 3 caracteres" });
-        }
+  const validatePassword = () => {
+    if (password !== confirmPassword) {
+      setErrorConfirmPassword({ valid: false, text: "As senhas não coincidem" });
+    } else {
+      setErrorConfirmPassword({ valid: true, text: "" });
     }
+  };
 
-    return (
-        <>
-            <Box
-                sx={{
-                    marginTop: 1,
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    handleChange(e);
+  };
+
+  return (
+    <Box
+      sx={{
+        marginTop: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        padding: 2,
+        maxWidth: 600,
+        mx: 'auto'
+      }}
+    >
+      <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+        <LockOutlinedIcon />
+      </Avatar>
+      <Typography component="h1" variant="h5">Registro</Typography>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          validateEmail();
+          validatePassword();
+          if (errorConfirmEmail.valid && errorConfirmPassword.valid) {
+            handleSubmit(event);
+          }
+        }}
+      >
+        <Box sx={{ mt: 3 }}>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="name"
+                label="Nome Completo"
+                name="name"
+                autoComplete="name"
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="cpf"
+                label="CPF"
+                name="cpf"
+                autoComplete="cpf"
+                onChange={handleInputChange}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="email"
+                label="Email"
+                name="email"
+                autoComplete="email"
+                onChange={(e) => {
+                  handleInputChange(e);
+                  setEmail(e.target.value);
                 }}
+                onBlur={validateEmail}
+                error={!errorEmail.valid}
+                helperText={errorEmail.text}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                id="confirmEmail"
+                label="Confirmar Email"
+                name="confirmEmail"
+                autoComplete="confirm-email"
+                onChange={(e) => {
+                  handleInputChange(e);
+                  setConfirmEmail(e.target.value);
+                }}
+                onBlur={validateEmail}
+                error={!errorConfirmEmail.valid}
+                helperText={errorConfirmEmail.text}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="password"
+                label="Senha"
+                type="password"
+                id="password"
+                autoComplete="new-password"
+                onChange={(e) => {
+                  handleInputChange(e);
+                  setPassword(e.target.value);
+                }}
+                onBlur={validatePassword}
+                error={!errorPassword.valid}
+                helperText={errorPassword.text}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                required
+                fullWidth
+                name="confirmPassword"
+                label="Confirmar Senha"
+                type="password"
+                id="confirmPassword"
+                autoComplete="confirm-password"
+                onChange={(e) => {
+                  handleInputChange(e);
+                  setConfirmPassword(e.target.value);
+                }}
+                onBlur={validatePassword}
+                error={!errorConfirmPassword.valid}
+                helperText={errorConfirmPassword.text}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={<Checkbox value="allowExtraEmails" color="primary" />}
+                label="Eu quero receber atualizações e novidades via e-mail."
+              />
+            </Grid>
+          </Grid>
+          <Box sx={{ mt: 3 }}>
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              sx={{ mt: 3, mb: 2 }}
             >
-                <Box p={2} mb={2}>
-                    <Typography component="h1" variant="h5">Formulário de Login</Typography>
-                </Box>
-                <form
-                    onSubmit={(event) => {
-                        event.preventDefault();
-                        handleSubmit(event);
-                    }}
-                >
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                        }}
-                        p={5}>
-
-                        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                            <LockOutlinedIcon />
-                        </Avatar>
-                        <Typography component="h1" variant="h5">
-                            Registro
-                        </Typography>
-                        <Box sx={{ mt: 3 }}>
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        autoComplete="given-name"
-                                        name="firstName"
-                                        required
-                                        fullWidth
-                                        id="firstName"
-                                        label="First Name"
-                                        autoFocus
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="lastName"
-                                        label="Last Name"
-                                        name="lastName"
-                                        autoComplete="family-name"
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        id="email"
-                                        label="Email Address"
-                                        name="email"
-                                        autoComplete="email"
-                                    />
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        required
-                                        fullWidth
-                                        name="password"
-                                        label="Password"
-                                        type="password"
-                                        id="password"
-                                        autoComplete="new-password"
-                                    />
-                                </Grid>
-                            </Grid>
-                            <Button
-                                type="submit"
-                                fullWidth
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2 }}
-                            >
-                                Sign Up
-                            </Button>
-                            <Grid container justifyContent="flex-end">
-                                <Grid item>
-
-                                    Already have an account? Sign in
-
-                                </Grid>
-                            </Grid>
-                        </Box>
-                    </Box>
-                </form>
-            </Box>
-        </>
-    )
-}
+              Registrar
+            </Button>
+            <Divider sx={{ my: 2 }} />
+            <Button
+              fullWidth
+              variant="contained"
+              component={Link}
+              to="/login"
+              sx={{ mb: 2 }}
+            >
+              Fazer Login
+            </Button>
+          </Box>
+        </Box>
+      </form>
+    </Box>
+  );
+};

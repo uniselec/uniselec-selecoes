@@ -1,3 +1,4 @@
+import { User } from '../../types/User';
 import { apiSlice } from '../api/apiSlice';
 import { logOut, setCredentials } from './authSlice';
 
@@ -6,7 +7,7 @@ import { logOut, setCredentials } from './authSlice';
 export type Credentials = {
 	email: string;
 	password: string;
-    device_name: string;
+	device_name: string;
 };
 
 export const authApiSlice = apiSlice.injectEndpoints({
@@ -26,7 +27,21 @@ export const authApiSlice = apiSlice.injectEndpoints({
 				}
 			},
 		}),
-
+		register: builder.mutation({
+			query: (user: User) => ({
+				url: '/register',
+				method: 'POST',
+				body: { ...user },
+			}),
+			async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
+				try {
+					const response = await queryFulfilled;
+					dispatch(setCredentials(response.data));
+				} catch (error) {
+					console.log(error);
+				}
+			},
+		}),
 		sendLogOut: builder.mutation({
 			query: () => ({
 				url: '/logout',
@@ -45,5 +60,5 @@ export const authApiSlice = apiSlice.injectEndpoints({
 	}),
 });
 
-export const { useLoginMutation, useSendLogOutMutation } =
+export const { useLoginMutation, useRegisterMutation, useSendLogOutMutation } =
 	authApiSlice;
