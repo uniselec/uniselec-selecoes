@@ -12,6 +12,12 @@ type Props = {
   isFetching: boolean;
 };
 
+function formatDate(dateString: string | undefined) {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('pt-BR');
+}
+
 export function ApplicationTable({ applications, isFetching }: Props) {
   const rowCount = applications?.meta.total || 0;
 
@@ -28,11 +34,6 @@ export function ApplicationTable({ applications, isFetching }: Props) {
               Nenhuma inscrição encontrada
             </Typography>
           </CardContent>
-          {/* <CardActions>
-            <Button size="small" variant="contained" component={Link} to="/applications/create">
-              Realizar Inscrição
-            </Button>
-          </CardActions> */}
         </Card>
       ) : (
         <Grid container spacing={3}>
@@ -44,20 +45,48 @@ export function ApplicationTable({ applications, isFetching }: Props) {
                     {value?.data?.course}
                   </Typography>
                   <Typography color="text.secondary">
+                    Nome Completo: {value.data.name}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    Nome Social: {value.data.social_name || "Não informado"}
+                  </Typography>
+                  <Typography color="text.secondary">
                     CPF: {value.data.cpf}
                   </Typography>
                   <Typography color="text.secondary">
-                    Curso: {value.data.course}
+                    Data de Nascimento: {formatDate(value.data.birtdate)}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    Sexo: {value.data.sex}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    Telefone 1: {value.data.phone1}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    Endereço: {value.data.address}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    UF: {value.data.uf}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    Cidade: {value.data.city}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    Curso Pretendido: {value.data.course}
                   </Typography>
                   <Typography color="text.secondary">
                     Local de Oferta: {value.data.campus}
                   </Typography>
+                  <Typography color="text.secondary">
+                    Número de Inscrição do ENEM: {value.data.enem}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    Modalidades: {value.data.vaga?.join(", ") || "Não informado"}
+                  </Typography>
+                  <Typography color="text.secondary">
+                    Critérios de Bonificação: {value.data.bonus?.join(", ") || "Não informado"}
+                  </Typography>
                 </CardContent>
-                <CardActions>
-                  <Button size="small" variant="contained" component={Link} to={`/applications/edit/${value.id}`}>
-                    Alterar Inscrição
-                  </Button>
-                </CardActions>
               </Card>
             </Grid>
           ))}

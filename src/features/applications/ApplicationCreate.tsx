@@ -1,6 +1,6 @@
 import { Box, Paper, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { Application } from "../../types/Application";
 import { useCreateApplicationMutation } from "./applicationSlice";
 import { ApplicationForm } from "./components/ApplicationForm";
@@ -11,23 +11,11 @@ export const ApplicationCreate = () => {
   const [createApplication, status] = useCreateApplicationMutation();
   const [isdisabled, setIsdisabled] = useState(false);
   const [applicationState, setApplicationState] = useState<Application>({ data: {} } as Application);
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
   const navigate = useNavigate();
 
-  async function handleSubmit() {
-    setIsConfirmDialogOpen(false); // Fecha o modal de confirmação
-    await createApplication(applicationState);
+  async function handleSubmit(applicationData:Application) {
+    await createApplication(applicationData);
   }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.SyntheticEvent) => {
-    const { name, value } = e.target as HTMLInputElement;
-    setApplicationState({ ...applicationState, data: { ...applicationState.data, [name]: value } });
-  };
-
-  const handleAutocompleteChange = (event: any, value: any, field: string) => {
-    setApplicationState({ ...applicationState, data: { ...applicationState.data, [field]: value } });
-  };
-
   useEffect(() => {
     if (status.isSuccess) {
       enqueueSnackbar("Application created successfully", { variant: "success" });
@@ -51,9 +39,11 @@ export const ApplicationCreate = () => {
           isLoading={false}
           isdisabled={isdisabled}
           application={applicationState}
-          handleSubmit={() => {alert("Tentei")}}
-          handleChange={handleChange}
-          handleAutocompleteChange={handleAutocompleteChange}
+          handleSubmit={
+            (e: React.FormEvent<HTMLFormElement>, applicationData2: Application) => {
+              handleSubmit(applicationData2);
+            }
+          }
         />
       </Paper>
     </Box>
