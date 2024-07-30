@@ -107,9 +107,9 @@ export function ApplicationForm({
     setOpenConfirmDialog(false);
   };
 
-  const handleConfirmSubmit = () => {
+  const handleConfirmSubmit = (e) => {
     setOpenConfirmDialog(false);
-    // handleSubmit();
+    handleSubmit(e);
   };
 
   return (

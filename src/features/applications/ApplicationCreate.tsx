@@ -51,7 +51,7 @@ export const ApplicationCreate = () => {
           isLoading={false}
           isdisabled={isdisabled}
           application={applicationState}
-          handleSubmit={handleSubmit}
+          handleSubmit={() => {alert("Tentei")}}
           handleChange={handleChange}
           handleAutocompleteChange={handleAutocompleteChange}
         />
