@@ -4,20 +4,23 @@ import { useEffect, useState } from "react";
 import { Application } from "../../types/Application";
 import { useCreateApplicationMutation } from "./applicationSlice";
 import { ApplicationForm } from "./components/ApplicationForm";
+import { useNavigate } from 'react-router-dom';
 
 export const ApplicationCreate = () => {
   const { enqueueSnackbar } = useSnackbar();
   const [createApplication, status] = useCreateApplicationMutation();
   const [isdisabled, setIsdisabled] = useState(false);
   const [applicationState, setApplicationState] = useState<Application>({ data: {} } as Application);
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const navigate = useNavigate();
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function handleSubmit() {
+    setIsConfirmDialogOpen(false); // Fecha o modal de confirmação
     await createApplication(applicationState);
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.SyntheticEvent, checked?: boolean) => {
-    const { name, value } = (e.target as HTMLInputElement);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.SyntheticEvent) => {
+    const { name, value } = e.target as HTMLInputElement;
     setApplicationState({ ...applicationState, data: { ...applicationState.data, [name]: value } });
   };
 
@@ -29,6 +32,7 @@ export const ApplicationCreate = () => {
     if (status.isSuccess) {
       enqueueSnackbar("Application created successfully", { variant: "success" });
       setIsdisabled(true);
+      navigate('/applications');
     }
     if (status.error) {
       enqueueSnackbar("Application not created", { variant: "error" });
@@ -47,7 +51,7 @@ export const ApplicationCreate = () => {
           isLoading={false}
           isdisabled={isdisabled}
           application={applicationState}
-          handleSubmit={handleSubmit}
+          handleSubmit={() => {alert("Tentei")}}
           handleChange={handleChange}
           handleAutocompleteChange={handleAutocompleteChange}
         />

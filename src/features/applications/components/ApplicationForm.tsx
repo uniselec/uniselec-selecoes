@@ -11,9 +11,14 @@ import {
   RadioGroup,
   Radio,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import { Check } from "@mui/icons-material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent, SyntheticEvent } from "react";
 import { Application } from "../../../types/Application";
 import { useAppSelector } from "../../../app/hooks";
 import { selectAuthUser } from "../../auth/authSlice";
@@ -50,26 +55,6 @@ const bonusOptions = [
   { label: "Nenhuma das anteriores", value: "none" },
 ];
 
-const isValidCPF = (cpf: string) => {
-  cpf = cpf.replace(/[^\d]+/g, ""); // Remove caracteres não numéricos
-  if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
-
-  let sum = 0;
-  let remainder;
-  for (let i = 1; i <= 9; i++) sum += parseInt(cpf.substring(i - 1, i)) * (11 - i);
-  remainder = (sum * 10) % 11;
-
-  if (remainder === 10 || remainder === 11) remainder = 0;
-  if (remainder !== parseInt(cpf.substring(9, 10))) return false;
-
-  sum = 0;
-  for (let i = 1; i <= 10; i++) sum += parseInt(cpf.substring(i - 1, i)) * (12 - i);
-  remainder = (sum * 10) % 11;
-
-  if (remainder === 10 || remainder === 11) remainder = 0;
-  return remainder === parseInt(cpf.substring(10, 11));
-};
-
 export function ApplicationForm({
   application,
   isdisabled = false,
@@ -79,14 +64,16 @@ export function ApplicationForm({
 }: Props) {
   const [formState, setFormState] = useState(application.data || {});
   const [cpfError, setCpfError] = useState<string | null>(null);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const userAuth = useAppSelector(selectAuthUser);
-
+  console.log(formState);
   useEffect(() => {
     if (userAuth) {
       setFormState((prevState) => ({
         ...prevState,
         name: userAuth.name,
         email: userAuth.email,
+        cpf: userAuth.cpf,
       }));
     }
   }, [userAuth]);
@@ -107,19 +94,23 @@ export function ApplicationForm({
     setFormState({ ...formState, bonus: e.target.value === "none" ? [] : [e.target.value] });
   };
 
-  const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setFormState({ ...formState, cpf: value });
-    if (value && !isValidCPF(value)) {
-      setCpfError("CPF inválido");
-    } else {
-      setCpfError(null);
-    }
+  const handleConfirmDialogOpen = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setOpenConfirmDialog(true);
   };
 
+  const handleConfirmDialogClose = () => {
+    setOpenConfirmDialog(false);
+  };
+
+  const handleConfirmSubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    const formEvent = new Event('submit', { bubbles: true, cancelable: true }) as unknown as FormEvent<HTMLFormElement>;
+    handleSubmit(formEvent);
+  };
   return (
     <Box p={2}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleConfirmDialogOpen}>
         <Grid container spacing={3}>
           {/* Dados Pessoais */}
           <Grid item xs={12}>
@@ -170,7 +161,6 @@ export function ApplicationForm({
                 name="cpf"
                 label="CPF do Candidato"
                 value={formState.cpf || ""}
-                onChange={handleCpfChange}
                 error={!!cpfError}
                 helperText={cpfError || ""}
                 disabled={isdisabled}
@@ -206,6 +196,7 @@ export function ApplicationForm({
                     {...params}
                     label="Sexo"
                     name="sex"
+                    required
                     value={formState.sex || ""}
                     disabled={isdisabled}
                     data-testid="sex"
@@ -221,8 +212,8 @@ export function ApplicationForm({
                 name="phone1"
                 label="Telefone 1"
                 value={formState.phone1 || ""}
-                disabled={isdisabled}
                 onChange={(e) => setFormState({ ...formState, phone1: e.target.value })}
+                disabled={isdisabled}
                 data-testid="phone1"
               />
             </FormControl>
@@ -251,6 +242,7 @@ export function ApplicationForm({
                     {...params}
                     label="UF"
                     name="uf"
+                    required
                     value={formState.uf || ""}
                     disabled={isdisabled}
                     data-testid="uf"
@@ -266,8 +258,8 @@ export function ApplicationForm({
                 name="city"
                 label="Cidade"
                 value={formState.city || ""}
-                disabled={isdisabled}
                 onChange={(e) => setFormState({ ...formState, city: e.target.value })}
+                disabled={isdisabled}
                 data-testid="city"
               />
             </FormControl>
@@ -285,7 +277,7 @@ export function ApplicationForm({
                 required
                 name="edital"
                 label="Edital"
-                value="Edital nº 04/2024 - PROCESSO SELETIVO SISURE/UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina"
+                value="Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina"
                 disabled
                 data-testid="edital"
               />
@@ -419,6 +411,47 @@ export function ApplicationForm({
           </Grid>
         </Grid>
       </form>
+
+      {/* Modal de Confirmação */}
+      <Dialog
+        open={openConfirmDialog}
+        onClose={handleConfirmDialogClose}
+        aria-labelledby="confirm-dialog-title"
+        aria-describedby="confirm-dialog-description"
+      >
+        <DialogTitle id="confirm-dialog-title">Confirmar Inscrição</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="confirm-dialog-description">
+            Por favor, revise os detalhes da inscrição antes de confirmar:
+          </DialogContentText>
+          <Box mt={2}>
+            <Typography variant="body1"><strong>Nome Completo:</strong> {formState.name}</Typography>
+            <Typography variant="body1"><strong>Nome Social:</strong> {formState.social_name || "Não informado"}</Typography>
+            <Typography variant="body1"><strong>Email:</strong> {formState.email}</Typography>
+            <Typography variant="body1"><strong>CPF:</strong> {formState.cpf}</Typography>
+            <Typography variant="body1"><strong>Data de Nascimento:</strong> {formState.dob}</Typography>
+            <Typography variant="body1"><strong>Sexo:</strong> {formState.sex}</Typography>
+            <Typography variant="body1"><strong>Telefone 1:</strong> {formState.phone1}</Typography>
+            <Typography variant="body1"><strong>Endereço:</strong> {formState.address}</Typography>
+            <Typography variant="body1"><strong>UF:</strong> {formState.uf}</Typography>
+            <Typography variant="body1"><strong>Cidade:</strong> {formState.city}</Typography>
+            <Typography variant="body1"><strong>Edital:</strong> Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina</Typography>
+            <Typography variant="body1"><strong>Curso Pretendido:</strong> Medicina</Typography>
+            <Typography variant="body1"><strong>Local de Oferta:</strong> Baturité</Typography>
+            <Typography variant="body1"><strong>Número de Inscrição do ENEM:</strong> {formState.enem}</Typography>
+            <Typography variant="body1"><strong>Modalidades:</strong> {formState.vaga?.join(", ")}</Typography>
+            <Typography variant="body1"><strong>Critérios de Bonificação:</strong> {formState.bonus?.join(", ")}</Typography>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmDialogClose} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleConfirmSubmit} color="secondary" autoFocus>
+            Confirmar
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
