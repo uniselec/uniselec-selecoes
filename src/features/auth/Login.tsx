@@ -6,7 +6,7 @@ import {
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Credentials, useLoginMutation, useSendLogOutMutation } from './authApiSlice';
+import { Credentials, useLoginMutation } from './authApiSlice';
 import { LoginForm } from './components/LoginForm';
 
 
@@ -36,7 +36,7 @@ export const Login = () => {
         if (statusLogin.isSuccess) {
             enqueueSnackbar("Login Realizado com Sucesso!", { variant: "success" });
             setIsLoading(false);
-            navigate('/');
+            navigate('/applications/create');
         }
         if (statusLogin.error) {
             enqueueSnackbar("Falha no Login", { variant: "error" });

@@ -6,7 +6,7 @@ import { selectIsAuthenticated } from "../features/auth/authSlice";
 export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   if (!isAuthenticated) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/register" />;
   }
 
   return <>{children}</>;
