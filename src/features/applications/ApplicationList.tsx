@@ -28,7 +28,7 @@ export const ApplicationList = () => {
       <Paper sx={{ p: 5 }}>
         <Box p={2}>
           <Box mb={2}>
-            <Typography variant="h4">Minhas Inscrições</Typography>
+            <Typography variant="h4">Comprovante de Inscrição</Typography>
           </Box>
           <ApplicationTable applications={data} isFetching={isFetching} />
           <br></br><br></br>
