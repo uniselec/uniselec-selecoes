@@ -19,7 +19,7 @@ function formatDate(dateString: string | undefined) {
 }
 
 export function ApplicationTable({ applications, isFetching }: Props) {
-  const rowCount = applications?.meta.total || 0;
+
 
   if (isFetching) {
     return <Typography>Carregando inscrições...</Typography>;
@@ -87,6 +87,11 @@ export function ApplicationTable({ applications, isFetching }: Props) {
                     Critérios de Bonificação: {value.data.bonus?.join(", ") || "Não informado"}
                   </Typography>
                 </CardContent>
+                {/* <CardActions>
+                  <Button size="small" variant="contained" component={Link} to={`/applications/edit/${value.id}`}>
+                    Alterar Inscrição
+                  </Button>
+                </CardActions> */}
               </Card>
             </Grid>
           ))}

@@ -9,7 +9,7 @@ export interface Result {
 }
 
 export interface Application {
-  id: number;
+  id: string;
   data: {
     name: string;
     social_name: string;

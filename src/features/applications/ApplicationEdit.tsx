@@ -18,11 +18,13 @@ export const ApplicationEdit = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    await updateApplication(applicationState);
-  }
 
+  async function handleSubmit(applicationData: Application) {
+    if (id) {
+      const applicationSub: Application = { ...applicationData, id };
+      await updateApplication(applicationSub);
+    }
+  }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.SyntheticEvent, checked?: boolean) => {
     const { name, value } = (e.target as HTMLInputElement);
     setApplicationState({ ...applicationState, data: { ...applicationState.data, [name]: value } });
@@ -56,7 +58,11 @@ export const ApplicationEdit = () => {
           isLoading={isFetching}
           application={applicationState}
           isdisabled={isFetching || isdisabled}
-          handleSubmit={handleSubmit}
+          handleSubmit={
+            (e: React.FormEvent<HTMLFormElement>, applicationData2: Application) => {
+              handleSubmit(applicationData2);
+            }
+          }
         />
       </Paper>
     </Box>

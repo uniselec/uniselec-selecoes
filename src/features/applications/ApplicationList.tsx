@@ -32,7 +32,7 @@ export const ApplicationList = () => {
           </Box>
           <ApplicationTable applications={data} isFetching={isFetching} />
           <br></br><br></br>
-          <Button
+          {/* <Button
             variant="contained"
             color="primary"
             component={Link}
@@ -40,7 +40,7 @@ export const ApplicationList = () => {
             sx={{ mb: 2 }}
           >
             Voltar
-          </Button>
+          </Button> */}
         </Box>
       </Paper>
     </Box>
