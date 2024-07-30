@@ -19,26 +19,15 @@ export const SelectionProcessSelected = () => {
             {/* Left Column */}
             <Grid item xs={12} md={6}>
               <Typography variant="h6" sx={{ color: "#0d47a1" }}>
-                Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1
+                PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1
               </Typography>
-              <Typography variant="subtitle1">Curso Medicina</Typography>
-              <MuiLink href="/path-to-pdf" target="_blank" sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 2 }}>
-                <PictureAsPdfIcon sx={{ mr: 1 }} />
-                Clique aqui para baixar
-              </MuiLink>
-              <Typography variant="body2">Início: 08/03/2024 17:00</Typography>
-              <Typography variant="body2">Término: 17/03/2024 23:59</Typography>
+              <Typography variant="body2">Início: 02/08/2024 a partir das 08:00</Typography>
+              <Typography variant="body2">Término: 04/08/2024 às 23:59</Typography>
               <Box mt={2}>
                 <Typography variant="h6" sx={{ color: "#0d47a1" }}>Vagas ofertadas</Typography>
-                <Typography variant="body2" sx={{ mt: 1 }}>Campus dos Malês - BA</Typography>
+                <Typography variant="body2" sx={{ mt: 1 }}>Campus de Baturité - CE</Typography>
                 <List dense>
-                  <ListItem><ListItemText primary="História (BA)" /></ListItem>
-                  <ListItem><ListItemText primary="CIG - Cigano(a) (1 vaga)" /></ListItem>
-                  <ListItem><ListItemText primary="CRQ - Candidatos moradores de Comunidades Remanescentes de Quilombos / escola pública / renda ≤ 1,5 salário mínimo (1 vaga)" /></ListItem>
-                  <ListItem><ListItemText primary="CT - Povos e comunidades tradicionais (1 vaga)" /></ListItem>
-                  <ListItem><ListItemText primary="IA - Indígena aldeado / escola pública / renda ≤ 1,5 salário mínimo (1 vaga)" /></ListItem>
-                  <ListItem><ListItemText primary="REF - Refugiado(a) (1 vaga)" /></ListItem>
-                  <ListItem><ListItemText primary="TRANS - Pessoa com identidade trans (1 vaga)" /></ListItem>
+                  <ListItem><ListItemText primary="Medicina (CE)" /></ListItem>
                   {/* Adicione mais itens conforme necessário */}
                 </List>
               </Box>
@@ -52,11 +41,17 @@ export const SelectionProcessSelected = () => {
                 to="/applications/create"
                 sx={{ mb: 2 }}
               >
-                Realizar Inscrições
+                Inscrições
               </Button>
               <Typography variant="h6" sx={{ color: "#0d47a1" }}>Documentos Publicados</Typography>
               <List dense>
                 <ListItem>
+                  <ListItemButton component="a" href="/" target="_blank">
+                    <PictureAsPdfIcon sx={{ mr: 2 }} />
+                    <ListItemText primary="Edital" />
+                  </ListItemButton>
+                </ListItem>
+                {/* <ListItem>
                   <ListItemButton component="a" href="/path-to-pdf" target="_blank">
                     <PictureAsPdfIcon sx={{ mr: 2 }} />
                     <ListItemText primary="Comunicado PÓS-GREVE - DATAS DE MATRÍCULA NAS COORDENAÇÕES" />
@@ -79,7 +74,7 @@ export const SelectionProcessSelected = () => {
                     <PictureAsPdfIcon sx={{ mr: 2 }} />
                     <ListItemText primary="Resultado final de analise de pré-matrícula LE - Bahia" />
                   </ListItemButton>
-                </ListItem>
+                </ListItem> */}
                 {/* Adicione mais documentos conforme necessário */}
               </List>
             </Grid>
