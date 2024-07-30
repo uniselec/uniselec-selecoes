@@ -15,7 +15,7 @@ export interface Application {
     social_name: string;
     cpf: string;
     enem: string;
-    dob: string;
+    birtdate: string;
     sex: string;
     email: string;
     phone1: string;

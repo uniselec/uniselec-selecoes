@@ -28,7 +28,7 @@ type Props = {
   application: Application;
   isdisabled?: boolean;
   isLoading?: boolean;
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>, applicationData2: Application) => void;
 };
 
 const sexOptions = ["Masculino", "Feminino", "Outro"];
@@ -63,7 +63,7 @@ export function ApplicationForm({
   const [cpfError, setCpfError] = useState<string | null>(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const userAuth = useAppSelector(selectAuthUser);
-  console.log(formState);
+
   useEffect(() => {
     if (userAuth) {
       setFormState((prevState) => ({
@@ -105,11 +105,12 @@ export function ApplicationForm({
   const handleConfirmDialogClose = () => {
     setOpenConfirmDialog(false);
   };
-
+  console.log(formState);
   const handleConfirmSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     const formEvent = new Event('submit', { bubbles: true, cancelable: true }) as unknown as FormEvent<HTMLFormElement>;
-    handleSubmit(formEvent);
+
+    handleSubmit(formEvent, {data: {...formState}} as Application);
   };
 
   return (
@@ -176,16 +177,16 @@ export function ApplicationForm({
             <FormControl fullWidth>
               <TextField
                 required
-                name="dob"
+                name="birtdate"
                 label="Data de Nascimento"
                 type="date"
                 InputLabelProps={{
                   shrink: true,
                 }}
-                value={formState.dob || ""}
+                value={formState.birtdate || ""}
                 disabled={isdisabled}
-                onChange={(e) => setFormState({ ...formState, dob: e.target.value })}
-                data-testid="dob"
+                onChange={(e) => setFormState({ ...formState, birtdate: e.target.value })}
+                data-testid="birtdate"
               />
             </FormControl>
           </Grid>
@@ -433,7 +434,7 @@ export function ApplicationForm({
             <Typography variant="body1"><strong>Nome Social:</strong> {formState.social_name || "Não informado"}</Typography>
             <Typography variant="body1"><strong>Email:</strong> {formState.email}</Typography>
             <Typography variant="body1"><strong>CPF:</strong> {formState.cpf}</Typography>
-            <Typography variant="body1"><strong>Data de Nascimento:</strong> {formState.dob}</Typography>
+            <Typography variant="body1"><strong>Data de Nascimento:</strong> {formState.birtdate}</Typography>
             <Typography variant="body1"><strong>Sexo:</strong> {formState.sex}</Typography>
             <Typography variant="body1"><strong>Telefone 1:</strong> {formState.phone1}</Typography>
             <Typography variant="body1"><strong>Endereço:</strong> {formState.address}</Typography>
