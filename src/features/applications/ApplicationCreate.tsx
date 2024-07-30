@@ -18,16 +18,6 @@ export const ApplicationCreate = () => {
     setIsConfirmDialogOpen(false); // Fecha o modal de confirmação
     await createApplication(applicationState);
   }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement> | React.SyntheticEvent) => {
-    const { name, value } = e.target as HTMLInputElement;
-    setApplicationState({ ...applicationState, data: { ...applicationState.data, [name]: value } });
-  };
-
-  const handleAutocompleteChange = (event: any, value: any, field: string) => {
-    setApplicationState({ ...applicationState, data: { ...applicationState.data, [field]: value } });
-  };
-
   useEffect(() => {
     if (status.isSuccess) {
       enqueueSnackbar("Application created successfully", { variant: "success" });
@@ -52,8 +42,6 @@ export const ApplicationCreate = () => {
           isdisabled={isdisabled}
           application={applicationState}
           handleSubmit={() => {alert("Tentei")}}
-          handleChange={handleChange}
-          handleAutocompleteChange={handleAutocompleteChange}
         />
       </Paper>
     </Box>

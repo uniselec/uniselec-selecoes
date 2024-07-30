@@ -29,8 +29,6 @@ type Props = {
   isdisabled?: boolean;
   isLoading?: boolean;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleAutocompleteChange: (event: any, value: any, field: string) => void;
 };
 
 const sexOptions = ["Masculino", "Feminino", "Outro"];
@@ -59,8 +57,7 @@ export function ApplicationForm({
   application,
   isdisabled = false,
   isLoading = false,
-  handleSubmit,
-  handleAutocompleteChange,
+  handleSubmit
 }: Props) {
   const [formState, setFormState] = useState(application.data || {});
   const [cpfError, setCpfError] = useState<string | null>(null);
@@ -78,6 +75,12 @@ export function ApplicationForm({
     }
   }, [userAuth]);
 
+  const handleAutocompleteChange = (event: SyntheticEvent<Element, Event>, value: string | null, name: string) => {
+    setFormState((prevState) => ({
+      ...prevState,
+      [name]: value || "",
+    }));
+  };
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = e.target;
     setFormState((prevState) => {
@@ -108,6 +111,7 @@ export function ApplicationForm({
     const formEvent = new Event('submit', { bubbles: true, cancelable: true }) as unknown as FormEvent<HTMLFormElement>;
     handleSubmit(formEvent);
   };
+
   return (
     <Box p={2}>
       <form onSubmit={handleConfirmDialogOpen}>
@@ -447,7 +451,12 @@ export function ApplicationForm({
           <Button onClick={handleConfirmDialogClose} color="primary">
             Cancelar
           </Button>
-          <Button onClick={handleConfirmSubmit} color="secondary" autoFocus>
+          <Button
+            type="button"
+            onClick={handleConfirmSubmit}
+            color="secondary"
+            autoFocus
+          >
             Confirmar
           </Button>
         </DialogActions>

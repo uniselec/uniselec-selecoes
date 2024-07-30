@@ -53,11 +53,11 @@ export function ApplicationTable({ applications, isFetching }: Props) {
                     Local de Oferta: {value.data.campus}
                   </Typography>
                 </CardContent>
-                <CardActions>
+                {/* <CardActions>
                   <Button size="small" variant="contained" component={Link} to={`/applications/edit/${value.id}`}>
                     Alterar Inscrição
                   </Button>
-                </CardActions>
+                </CardActions> */}
               </Card>
             </Grid>
           ))}
