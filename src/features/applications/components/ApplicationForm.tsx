@@ -18,7 +18,7 @@ import {
   DialogTitle,
 } from "@mui/material";
 import { Check } from "@mui/icons-material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent, SyntheticEvent } from "react";
 import { Application } from "../../../types/Application";
 import { useAppSelector } from "../../../app/hooks";
 import { selectAuthUser } from "../../auth/authSlice";
@@ -54,8 +54,6 @@ const bonusOptions = [
   { label: "20%: Estudantes que tenham cursado e concluído integralmente o ensino médio em instituições de ensino, públicas ou privadas, localizadas na região do Maciço do Baturité.", value: "20%" },
   { label: "Nenhuma das anteriores", value: "none" },
 ];
-
-
 
 export function ApplicationForm({
   application,
@@ -96,8 +94,6 @@ export function ApplicationForm({
     setFormState({ ...formState, bonus: e.target.value === "none" ? [] : [e.target.value] });
   };
 
-
-
   const handleConfirmDialogOpen = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setOpenConfirmDialog(true);
@@ -107,11 +103,11 @@ export function ApplicationForm({
     setOpenConfirmDialog(false);
   };
 
-  const handleConfirmSubmit = (e) => {
-    setOpenConfirmDialog(false);
-    handleSubmit(e);
+  const handleConfirmSubmit = (e: SyntheticEvent) => {
+    e.preventDefault();
+    const formEvent = new Event('submit', { bubbles: true, cancelable: true }) as unknown as FormEvent<HTMLFormElement>;
+    handleSubmit(formEvent);
   };
-
   return (
     <Box p={2}>
       <form onSubmit={handleConfirmDialogOpen}>
