@@ -12,12 +12,12 @@ import {
   Radio,
   Button,
 } from "@mui/material";
+import { Check } from "@mui/icons-material";
 import { useState, useEffect } from "react";
 import { Application } from "../../../types/Application";
 import { useAppSelector } from "../../../app/hooks";
 import { selectAuthUser } from "../../auth/authSlice";
 import { Link } from "react-router-dom";
-
 
 type Props = {
   application: Application;
@@ -34,8 +34,6 @@ const ufOptions = [
   "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"
 ];
 const vagaOptions = [
-  { label: "AC: Ampla Concorrência", value: "AC", alwaysChecked: true },
-  // Modalidade "AC/B" removida
   { label: "LB - PPI: Candidatos autodeclarados pretos, pardos ou indígenas, com renda familiar bruta per capita igual ou inferior a 1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - PPI" },
   { label: "LB - Q: Candidatos autodeclarados quilombolas, com renda familiar bruta per capita igual ou inferior a  1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - Q" },
   { label: "LB - PCD: Candidatos com deficiência, que tenham renda familiar bruta per capita igual ou inferior a 1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - PCD" },
@@ -93,24 +91,20 @@ export function ApplicationForm({
     }
   }, [userAuth]);
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>, checked?: boolean) => {
-    const { name, value } = e.target;
-    if (name === "vaga") {
-      setFormState((prevState) => {
-        const vaga = prevState.vaga || [];
-        if (checked) {
-          return { ...prevState, vaga: [...vaga, value] };
-        } else {
-          return { ...prevState, vaga: vaga.filter((item: string) => item !== value) };
-        }
-      });
-    } else {
-      setFormState({ ...formState, [name]: value });
-    }
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, checked } = e.target;
+    setFormState((prevState) => {
+      const vaga = prevState.vaga || [];
+      if (checked) {
+        return { ...prevState, vaga: [...vaga, value] };
+      } else {
+        return { ...prevState, vaga: vaga.filter((item: string) => item !== value) };
+      }
+    });
   };
 
-  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>, value: string) => {
-    setFormState({ ...formState, bonus: value === "none" ? [] : [value] });
+  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormState({ ...formState, bonus: e.target.value === "none" ? [] : [e.target.value] });
   };
 
   const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -145,17 +139,17 @@ export function ApplicationForm({
               />
             </FormControl>
           </Grid>
-          {/* <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
-                name="socialName"
+                name="social_name"
                 label="Nome Social"
-                value={formState.socialName || ""}
-                onChange={(e) => setFormState({ ...formState, socialName: e.target.value })}
-                data-testid="socialName"
+                value={formState.social_name || ""}
+                onChange={(e) => setFormState({ ...formState, social_name: e.target.value })}
+                data-testid="social_name"
               />
             </FormControl>
-          </Grid> */}
+          </Grid>
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
@@ -169,7 +163,21 @@ export function ApplicationForm({
               />
             </FormControl>
           </Grid>
-
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <TextField
+                required
+                name="cpf"
+                label="CPF do Candidato"
+                value={formState.cpf || ""}
+                onChange={handleCpfChange}
+                error={!!cpfError}
+                helperText={cpfError || ""}
+                disabled={isdisabled}
+                data-testid="cpf"
+              />
+            </FormControl>
+          </Grid>
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
@@ -182,7 +190,7 @@ export function ApplicationForm({
                 }}
                 value={formState.dob || ""}
                 disabled={isdisabled}
-                onChange={handleCheckboxChange}
+                onChange={(e) => setFormState({ ...formState, dob: e.target.value })}
                 data-testid="dob"
               />
             </FormControl>
@@ -214,7 +222,7 @@ export function ApplicationForm({
                 label="Telefone 1"
                 value={formState.phone1 || ""}
                 disabled={isdisabled}
-                onChange={handleCheckboxChange}
+                onChange={(e) => setFormState({ ...formState, phone1: e.target.value })}
                 data-testid="phone1"
               />
             </FormControl>
@@ -227,7 +235,7 @@ export function ApplicationForm({
                 label="Endereço"
                 value={formState.address || ""}
                 disabled={isdisabled}
-                onChange={handleCheckboxChange}
+                onChange={(e) => setFormState({ ...formState, address: e.target.value })}
                 data-testid="address"
               />
             </FormControl>
@@ -259,7 +267,7 @@ export function ApplicationForm({
                 label="Cidade"
                 value={formState.city || ""}
                 disabled={isdisabled}
-                onChange={handleCheckboxChange}
+                onChange={(e) => setFormState({ ...formState, city: e.target.value })}
                 data-testid="city"
               />
             </FormControl>
@@ -315,7 +323,7 @@ export function ApplicationForm({
                 label="Número de Inscrição do ENEM"
                 value={formState.enem || ""}
                 disabled={isdisabled}
-                onChange={handleCheckboxChange}
+                onChange={(e) => setFormState({ ...formState, enem: e.target.value })}
                 data-testid="enem"
               />
             </FormControl>
@@ -325,6 +333,15 @@ export function ApplicationForm({
             <Box borderBottom={1} mb={2}>
               <Typography variant="h6">Modalidade</Typography>
             </Box>
+            <Typography variant="body2" color="textSecondary" mb={2}>
+              O candidato pode se inscrever em mais de uma modalidade, desde que faça jus a elas.
+            </Typography>
+            <Box display="flex" alignItems="center" mb={2}>
+              <Check style={{ color: "green" }} />
+              <Typography variant="body1" ml={1}>
+                AC: Ampla Concorrência
+              </Typography>
+            </Box>
             <FormGroup>
               {vagaOptions.map((option) => (
                 <FormControlLabel
@@ -333,10 +350,9 @@ export function ApplicationForm({
                     <Checkbox
                       name="vaga"
                       value={option.value}
-                      checked={option.alwaysChecked || formState.vaga?.includes(option.value) || false}
+                      checked={formState.vaga?.includes(option.value) || false}
                       onChange={(e) => handleCheckboxChange(e as React.ChangeEvent<HTMLInputElement>)}
                       data-testid={`vaga-${option.value}`}
-                      disabled={option.alwaysChecked}
                     />
                   }
                   label={option.label}
@@ -348,6 +364,9 @@ export function ApplicationForm({
             <Box borderBottom={1} mb={2}>
               <Typography variant="h6">Critérios de Bonificação</Typography>
             </Box>
+            <Typography variant="body2" color="textSecondary" mb={2}>
+              O candidato pode marcar apenas uma opção de bonificação, se fizer jus a ela.
+            </Typography>
             <RadioGroup
               name="bonus"
               value={formState.bonus && formState.bonus.length > 0 ? formState.bonus[0] : "none"}
