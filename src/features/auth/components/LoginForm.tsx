@@ -8,14 +8,9 @@ import {
     TextField
 } from "@mui/material";
 import { useTheme } from "@mui/material";
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Credentials } from '../authApiSlice';
-import Logo3s from "../../../assets/img/logo-3s.png";
-import Logo3sBlack from "../../../assets/img/logo-3s-black.png";
-import styled from '@emotion/styled';
-
-
-
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
     credentials: Credentials;
@@ -25,7 +20,6 @@ type Props = {
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-
 export const LoginForm = ({
     credentials,
     isdisabled = false,
@@ -33,13 +27,13 @@ export const LoginForm = ({
     handleSubmit,
     handleChange
 }: Props) => {
-
-
     const theme = useTheme();
+    const navigate = useNavigate();
 
     const [errorLogin, setErrorLogin] = useState({ valid: true, text: "" });
     const [errorPassword, setErrorPassowrd] = useState({ valid: true, text: "" });
     const isDarkMode = theme.palette.mode === 'dark';
+
     function validateLogin() {
         if (credentials.email.length > 1) {
             setErrorLogin({ valid: true, text: "" });
@@ -62,6 +56,7 @@ export const LoginForm = ({
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
+                padding: 5, // Ajuste o padding para 5 para se alinhar com o estilo do Register
             }}
             p={5}>
             <Box p={2} mb={2}>
@@ -73,7 +68,6 @@ export const LoginForm = ({
                     handleSubmit(event);
                 }}
             >
-
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <FormControl fullWidth>
@@ -133,11 +127,16 @@ export const LoginForm = ({
                             >
                                 {isLoading ? "Aguarde..." : "Logar"}
                             </Button>
+                            <Button
+                                variant="outlined"
+                                onClick={() => navigate('/register')}
+                            >
+                                Cadastrar-se
+                            </Button>
                         </Box>
                     </Grid>
                 </Grid>
-
             </form>
         </Box>
-    )
+    );
 }
