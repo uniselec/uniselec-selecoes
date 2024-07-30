@@ -57,8 +57,6 @@ export const ApplicationEdit = () => {
           application={applicationState}
           isdisabled={isFetching || isdisabled}
           handleSubmit={handleSubmit}
-          handleChange={handleChange}
-          handleAutocompleteChange={() => {}}
         />
       </Paper>
     </Box>
