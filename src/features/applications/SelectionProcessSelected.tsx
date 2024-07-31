@@ -1,13 +1,20 @@
 import { useState } from "react";
 import { Box, Paper, Typography, List, ListItem, ListItemText, ListItemButton, Grid, Button, Modal } from "@mui/material";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
-import { Link } from "react-router-dom";
+import { useGetDocumentsQuery } from "../documents/documentSlice";
 
 const REGISTRATION_START_DATE = new Date("2024-08-02T08:00:00");
 const REGISTRATION_END_DATE = new Date("2024-08-04T23:59:00");
 
 export const SelectionProcessSelected = () => {
   const [isModalOpen, setModalOpen] = useState(false);
+  const [options, setOptions] = useState({
+    page: 1,
+    search: "",
+    perPage: 10,
+    rowsPerPage: [10, 20, 30],
+  });
+  const { data, isFetching, error } = useGetDocumentsQuery(options);
 
   const handleButtonClick = () => {
     const now = new Date();
@@ -19,6 +26,10 @@ export const SelectionProcessSelected = () => {
   };
 
   const handleClose = () => setModalOpen(false);
+
+  if (error) {
+    return <Typography>Error fetching applications</Typography>;
+  }
 
   return (
     <Box sx={{ backgroundColor: "#f5f5f5", padding: 3 }}>
@@ -61,13 +72,14 @@ export const SelectionProcessSelected = () => {
               </Button>
               <Typography variant="h6" sx={{ color: "#0d47a1" }}>Documentos Publicados</Typography>
               <List dense>
-                <ListItem>
-                  <ListItemButton component="a" href="/" target="_blank">
-                    <PictureAsPdfIcon sx={{ mr: 2 }} />
-                    <ListItemText primary="Edital" />
-                  </ListItemButton>
-                </ListItem>
-                {/* Adicione mais documentos conforme necessário */}
+                {data?.data.map((document) => (
+                  <ListItem key={document.id}>
+                    <ListItemButton component="a" href={`http://localhost:8080/storage/${document.path}`} target="_blank">
+                      <PictureAsPdfIcon sx={{ mr: 2 }} />
+                      <ListItemText primary={document.title} secondary={document.description} />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
               </List>
             </Grid>
           </Grid>
