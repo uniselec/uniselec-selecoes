@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Box, Paper, Typography, List, ListItem, ListItemText, ListItemButton, Grid, Button, Modal } from "@mui/material";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { useGetDocumentsQuery } from "../documents/documentSlice";
+const baseUrl = import.meta.env.VITE_API_URL;
 
 const REGISTRATION_START_DATE = new Date("2024-08-02T08:00:00");
 const REGISTRATION_END_DATE = new Date("2024-08-04T23:59:00");
@@ -74,7 +75,7 @@ export const SelectionProcessSelected = () => {
               <List dense>
                 {data?.data.map((document) => (
                   <ListItem key={document.id}>
-                    <ListItemButton component="a" href={`http://localhost:8080/storage/${document.path}`} target="_blank">
+                    <ListItemButton component="a" href={`${baseUrl}/storage/${document.path}`} target="_blank">
                       <PictureAsPdfIcon sx={{ mr: 2 }} />
                       <ListItemText primary={document.title} secondary={document.description} />
                     </ListItemButton>
