@@ -7,9 +7,10 @@ import { selectIsAuthenticated } from "../auth/authSlice";
 import { useSelector } from "react-redux";
 import { useGetApplicationsQuery } from "./applicationSlice";
 
+
 const baseUrl = import.meta.env.VITE_API_URL;
 
-const REGISTRATION_START_DATE = new Date("2024-08-01T23:59:00");
+const REGISTRATION_START_DATE = new Date("2024-08-02T23:08:00");
 const REGISTRATION_END_DATE = new Date("2024-08-03T23:59:00");
 
 export const SelectionProcessSelected = () => {
@@ -60,7 +61,7 @@ export const SelectionProcessSelected = () => {
               <Typography variant="h6" sx={{ color: "#0d47a1" }}>
                 PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1
               </Typography>
-              <Typography variant="body2">Início: 01/08/2024 a partir das 23:59</Typography>
+              <Typography variant="body2">Início: 02/08/2024 a partir das 08:00</Typography>
               <Typography variant="body2">Término: 03/08/2024 às 23:59</Typography>
               <Box mt={2}>
                 <Typography variant="h6" sx={{ color: "#0d47a1" }}>Vagas ofertadas</Typography>
@@ -147,7 +148,7 @@ export const SelectionProcessSelected = () => {
             Período de Inscrições
           </Typography>
           <Typography id="modal-description" sx={{ mt: 2 }}>
-            As inscrições estarão abertas de 01/08/2024 a partir das 23:59 até 03/08/2024 às 23:59.
+            As inscrições estarão abertas de 02/08/2024 a partir das 08:00 até 03/08/2024 às 23:59.
           </Typography>
         </Box>
       </Modal>
