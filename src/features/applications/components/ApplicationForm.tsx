@@ -16,6 +16,8 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  List,
+  ListItem,
 } from "@mui/material";
 import { Check } from "@mui/icons-material";
 import { useState, useEffect, FormEvent, SyntheticEvent } from "react";
@@ -23,6 +25,9 @@ import { Application } from "../../../types/Application";
 import { useAppSelector } from "../../../app/hooks";
 import { selectAuthUser } from "../../auth/authSlice";
 import { Link } from "react-router-dom";
+import { format, parseISO, isValid } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
 
 type Props = {
   application: Application;
@@ -111,7 +116,7 @@ export function ApplicationForm({
   const handleConfirmSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     const formEvent = new Event('submit', { bubbles: true, cancelable: true }) as unknown as FormEvent<HTMLFormElement>;
-    handleSubmit(formEvent, {data: {...formState}} as Application);
+    handleSubmit(formEvent, { data: { ...formState } } as Application);
   };
 
   return (
@@ -434,7 +439,12 @@ export function ApplicationForm({
             <Typography variant="body1"><strong>Nome Social:</strong> {formState.social_name || "Não informado"}</Typography>
             <Typography variant="body1"><strong>Email:</strong> {formState.email}</Typography>
             <Typography variant="body1"><strong>CPF:</strong> {formState.cpf}</Typography>
-            <Typography variant="body1"><strong>Data de Nascimento:</strong> {formState.birtdate}</Typography>
+            <Typography variant="body1">
+              <strong>Data de Nascimento: </strong>
+              {formState.birtdate && isValid(parseISO(formState.birtdate)) ?
+                format(parseISO(formState.birtdate), 'dd/MM/yyyy', { locale: ptBR }) :
+                'Data inválida'}
+            </Typography>
             <Typography variant="body1"><strong>Sexo:</strong> {formState.sex}</Typography>
             <Typography variant="body1"><strong>Telefone 1:</strong> {formState.phone1}</Typography>
             <Typography variant="body1"><strong>Endereço:</strong> {formState.address}</Typography>
@@ -444,10 +454,26 @@ export function ApplicationForm({
             <Typography variant="body1"><strong>Curso Pretendido:</strong> Medicina</Typography>
             <Typography variant="body1"><strong>Local de Oferta:</strong> Baturité</Typography>
             <Typography variant="body1"><strong>Número de Inscrição do ENEM:</strong> {formState.enem}</Typography>
-            <Typography variant="body1"><strong>Modalidades:</strong> {formState.vaga?.join(", ")}</Typography>
-            <Typography variant="body1"><strong>Critérios de Bonificação:</strong> {formState.bonus?.join(", ")}</Typography>
+            <Typography variant="body1"><strong>Modalidades:</strong></Typography>
+            <List>
+              {formState.vaga?.map((vaga, index) => (
+                <ListItem key={index}>
+                  <Typography variant="body2">• {vaga}</Typography>
+                </ListItem>
+              ))}
+            </List>
+            <Typography variant="body1"><strong>Critérios de Bonificação:</strong></Typography>
+            <List>
+              {formState.bonus?.map((bonus, index) => (
+                <ListItem key={index}>
+                  <Typography variant="body2">• {bonus}</Typography>
+                </ListItem>
+              ))}
+            </List>
           </Box>
         </DialogContent>
+
+
         <DialogActions>
           <Button onClick={handleConfirmDialogClose} color="primary">
             Cancelar

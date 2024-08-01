@@ -2,9 +2,9 @@ import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Box, Button, IconButton, Toolbar } from "@mui/material";
-import { styled } from '@mui/material/styles';
 import { AccountMenu } from "./AccountMenu";
-import { Link } from 'react-router-dom'; // Importando Link
+import { Link } from 'react-router-dom';
+import { styled } from '@mui/material/styles';
 import LogoUNILAB from "../assets/img/logo-unilab.png";
 
 const ImageLogo = styled('img')`

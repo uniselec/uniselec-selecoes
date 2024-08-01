@@ -1,11 +1,18 @@
-import { Typography, Box, Button } from "@mui/material";
+import { Typography, Box, List, ListItem } from "@mui/material";
 import React from "react";
-import { Link } from "react-router-dom";
 import { Results } from "../../../types/Application";
 import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
+import LogoUNILAB from "../../../assets/img/logo-unilab-preto.png";
+
+const ImageLogo = styled('img')`
+  width: 300px;
+  padding: 30px;
+  display: block;
+  margin: 0 auto; // Centraliza a imagem
+`;
 
 type Props = {
   applications: Results | undefined;
@@ -19,14 +26,14 @@ function formatDate(dateString: string | undefined) {
 }
 
 export function ApplicationTable({ applications, isFetching }: Props) {
-
-
   if (isFetching) {
     return <Typography>Carregando inscrições...</Typography>;
   }
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+
+
       {applications?.data.length === 0 ? (
         <Card sx={{ minWidth: "100%" }}>
           <CardContent>
@@ -41,57 +48,47 @@ export function ApplicationTable({ applications, isFetching }: Props) {
             <Grid item xs={12} md={12} lg={12} key={key}>
               <Card>
                 <CardContent>
-                  <Typography variant="h6" component="div">
-                    {value?.data?.course}
+                  <ImageLogo alt="Logo UNILAB" src={LogoUNILAB} />
+                  <Typography variant="h5" align="center">
+                    COMPROVANTE DE INSCRIÇÃO
                   </Typography>
-                  <Typography color="text.secondary">
-                    Nome Completo: {value.data.name}
+                  <Typography variant="subtitle1" align="center">
+                    EDITAL PROGRAD Nº 12/2024, DE 31 DE JULHO DE 2024
                   </Typography>
-                  <Typography color="text.secondary">
-                    Nome Social: {value.data.social_name || "Não informado"}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    CPF: {value.data.cpf}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Data de Nascimento: {formatDate(value.data.birtdate)}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Sexo: {value.data.sex}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Telefone 1: {value.data.phone1}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Endereço: {value.data.address}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    UF: {value.data.uf}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Cidade: {value.data.city}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Curso Pretendido: {value.data.course}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Local de Oferta: {value.data.campus}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Número de Inscrição do ENEM: {value.data.enem}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Modalidades: {value.data.vaga?.join(", ") || "Não informado"}
-                  </Typography>
-                  <Typography color="text.secondary">
-                    Critérios de Bonificação: {value.data.bonus?.join(", ") || "Não informado"}
-                  </Typography>
+                  <Typography variant="subtitle1" align="center">
+                    PROCESSO SELETIVO UNILAB – (MODELO SISU) - INGRESSO NO PERÍODO LETIVO 2024.1
+                  </Typography><br/>
+                  <Typography variant="body1"><strong>Nome Completo:</strong> {value.data.name}</Typography>
+                  <Typography variant="body1"><strong>Nome Social:</strong> {value.data.social_name || "Não informado"}</Typography>
+                  <Typography variant="body1"><strong>Email:</strong> {value.data.email}</Typography>
+                  <Typography variant="body1"><strong>CPF:</strong> {value.data.cpf}</Typography>
+                  <Typography variant="body1"><strong>Data de Nascimento:</strong> {value.data?.birtdate}</Typography>
+                  <Typography variant="body1"><strong>Sexo:</strong> {value.data.sex}</Typography>
+                  <Typography variant="body1"><strong>Telefone 1:</strong> {value.data.phone1}</Typography>
+                  <Typography variant="body1"><strong>Endereço:</strong> {value.data.address}</Typography>
+                  <Typography variant="body1"><strong>UF:</strong> {value.data.uf}</Typography>
+                  <Typography variant="body1"><strong>Cidade:</strong> {value.data.city}</Typography>
+                  <Typography variant="body1"><strong>Edital:</strong> Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina</Typography>
+                  <Typography variant="body1"><strong>Curso Pretendido:</strong> Medicina</Typography>
+                  <Typography variant="body1"><strong>Local de Oferta:</strong> Baturité</Typography>
+                  <Typography variant="body1"><strong>Número de Inscrição do ENEM:</strong> {value.data.enem}</Typography>
+                  <Typography variant="body1"><strong>Modalidades:</strong></Typography>
+                  <List>
+                    {value.data.vaga?.map((vaga, index) => (
+                      <ListItem key={index}>
+                        <Typography variant="body2">• {vaga}</Typography>
+                      </ListItem>
+                    ))}
+                  </List>
+                  <Typography variant="body1"><strong>Critérios de Bonificação:</strong></Typography>
+                  <List>
+                    {value.data.bonus?.map((bonus, index) => (
+                      <ListItem key={index}>
+                        <Typography variant="body2">• {bonus}</Typography>
+                      </ListItem>
+                    ))}
+                  </List>
                 </CardContent>
-                {/* <CardActions>
-                  <Button size="small" variant="contained" component={Link} to={`/applications/edit/${value.id}`}>
-                    Alterar Inscrição
-                  </Button>
-                </CardActions> */}
               </Card>
             </Grid>
           ))}
