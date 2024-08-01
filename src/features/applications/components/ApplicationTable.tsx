@@ -6,9 +6,8 @@ import CardContent from '@mui/material/CardContent';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
 import LogoUNILAB from "../../../assets/img/logo-unilab-preto.png";
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, isValid} from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-
 
 const ImageLogo = styled('img')`
   width: 300px;
@@ -35,8 +34,6 @@ export function ApplicationTable({ applications, isFetching }: Props) {
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-
-
       {applications?.data.length === 0 ? (
         <Card sx={{ minWidth: "100%" }}>
           <CardContent>
@@ -54,21 +51,23 @@ export function ApplicationTable({ applications, isFetching }: Props) {
                   <ImageLogo alt="Logo UNILAB" src={LogoUNILAB} />
                   <Typography variant="h5" align="center">
                     COMPROVANTE DE INSCRIÇÃO
-                  </Typography>
+                  </Typography><br/>
                   <Typography variant="subtitle1" align="center">
                     EDITAL PROGRAD Nº 12/2024, DE 31 DE JULHO DE 2024
                   </Typography>
                   <Typography variant="subtitle1" align="center">
                     PROCESSO SELETIVO UNILAB – (MODELO SISU) - INGRESSO NO PERÍODO LETIVO 2024.1
-                  </Typography><br/>
+                  </Typography><br />
                   <Typography variant="body1">
-                    <strong>Data de Nascimento:</strong> {}
+                    <strong>Data de Nascimento: </strong>
+                    {value.data.birtdate && isValid(parseISO(value.data.birtdate)) ?
+                      format(parseISO(value.data.birtdate), 'dd/MM/yyyy', { locale: ptBR }) :
+                      'Data inválida'}
                   </Typography>
                   <Typography variant="body1"><strong>Nome Completo:</strong> {value.data.name}</Typography>
                   <Typography variant="body1"><strong>Nome Social:</strong> {value.data.social_name || "Não informado"}</Typography>
                   <Typography variant="body1"><strong>Email:</strong> {value.data.email}</Typography>
                   <Typography variant="body1"><strong>CPF:</strong> {value.data.cpf}</Typography>
-                  <Typography variant="body1"><strong>Data de Nascimento:</strong>  {format(parseISO(value.data.birtdate), 'dd/MM/yyyy', { locale: ptBR })}</Typography>
                   <Typography variant="body1"><strong>Sexo:</strong> {value.data.sex}</Typography>
                   <Typography variant="body1"><strong>Telefone 1:</strong> {value.data.phone1}</Typography>
                   <Typography variant="body1"><strong>Endereço:</strong> {value.data.address}</Typography>
@@ -94,6 +93,9 @@ export function ApplicationTable({ applications, isFetching }: Props) {
                       </ListItem>
                     ))}
                   </List>
+                  <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+                    <Typography variant="body1"><strong>Código de Verificação:</strong> {value.verification_code}</Typography>
+                  </Box>
                 </CardContent>
               </Card>
             </Grid>
