@@ -10,6 +10,7 @@ import { format, parseISO, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import PrintIcon from '@mui/icons-material/Print';
 
 const ImageLogo = styled('img')`
   width: 300px;
@@ -84,12 +85,14 @@ export function ApplicationTable({ applications, isFetching }: Props) {
                         <Typography variant="body1"><strong>Email:</strong> {value.data.email}</Typography>
                         <Typography variant="body1"><strong>CPF:</strong> {value.data.cpf}</Typography>
                         <Typography variant="body1"><strong>Sexo:</strong> {value.data.sex}</Typography>
-                      </Grid>
-                      <Grid item xs={12} md={6}>
                         <Typography variant="body1"><strong>Telefone 1:</strong> {value.data.phone1}</Typography>
                         <Typography variant="body1"><strong>Endereço:</strong> {value.data.address}</Typography>
-                        <Typography variant="body1"><strong>UF:</strong> {value.data.uf}</Typography>
-                        <Typography variant="body1"><strong>Cidade:</strong> {value.data.city}</Typography>
+                        <Typography variant="body1"><strong>Cidade-UF:</strong> {value.data.city}-{value.data.uf}</Typography>
+
+                      </Grid>
+                      <Grid item xs={12} md={6}>
+
+
                         <Typography variant="body1"><strong>Edital:</strong> Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina</Typography>
                         <Typography variant="body1"><strong>Curso Pretendido:</strong> Medicina</Typography>
                         <Typography variant="body1"><strong>Local de Oferta:</strong> Baturité</Typography>
@@ -129,7 +132,7 @@ export function ApplicationTable({ applications, isFetching }: Props) {
             ))}
           </Grid>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-            <Button variant="contained" color="primary" onClick={generatePDF}>
+            <Button startIcon={<PrintIcon/>} variant="contained" color="primary" onClick={generatePDF}>
               Gerar PDF
             </Button>
           </Box>
