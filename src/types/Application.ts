@@ -28,6 +28,8 @@ export interface Application {
     vaga: string[];
     bonus?: string[];
     edital?: string;
+    position?: string;
+    location_position?: string;
     publicSchool: boolean;
     termsAgreement: boolean;
   };

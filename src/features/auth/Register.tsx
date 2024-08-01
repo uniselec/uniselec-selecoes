@@ -5,14 +5,16 @@ import { useNavigate } from 'react-router-dom';
 import { useRegisterMutation } from './authApiSlice';
 import { RegisterForm } from './components/RegisterForm';
 import { User } from "../../types/User";
+import useTranslate from '../polyglot/useTranslate';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
 interface UserForm {
-    id?:              number;
-    name?:            string;
-    email?:           string;
-    confirmEmail?:           string;
-    cpf?:           string;
-    password?:            string;
-    confirmPassword?:            string;
+    id?: number;
+    name?: string;
+    email?: string;
+    confirmEmail?: string;
+    cpf?: string;
+    password?: string;
+    confirmPassword?: string;
 }
 interface Credentials {
     name: string;
@@ -21,6 +23,7 @@ interface Credentials {
     password: string;
 }
 export const Register = () => {
+    const translate = useTranslate('auth');
     const [register, statusLogin] = useRegisterMutation();
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
@@ -55,17 +58,34 @@ export const Register = () => {
         await register(credentials);
     }
 
+
+
     useEffect(() => {
         if (statusLogin.isSuccess) {
-            enqueueSnackbar("Login Realizado com Sucesso!", { variant: "success" });
+            enqueueSnackbar("Registro realizado com sucesso!", { variant: "success" });
             setIsLoading(false);
             navigate('/applications/create');
         }
+
         if (statusLogin.error) {
-            enqueueSnackbar("Falha no Login", { variant: "error" });
+            if ('data' in statusLogin.error) {
+                const errors = (statusLogin.error as { data: { error: { [key: string]: string[] } } }).data.error;
+                if (errors) {
+                    Object.entries(errors).forEach(([field, messages]) => {
+                        if (Array.isArray(messages)) {
+                            messages.forEach((message) => {
+                                enqueueSnackbar(translate(message), { variant: "error" });
+                            });
+                        }
+                    });
+                }
+            }
+
             setIsLoading(false);
         }
     }, [enqueueSnackbar, statusLogin.error, statusLogin.isSuccess, navigate]);
+
+
 
     return (
         <Box>
