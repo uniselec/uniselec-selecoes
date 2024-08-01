@@ -38,7 +38,7 @@ export function ApplicationTable({ applications, isFetching }: Props) {
       ) : (
         <Grid container spacing={3}>
           {applications?.data?.map((value, key) => (
-            <Grid item xs={12} md={6} lg={4} key={key}>
+            <Grid item xs={12} md={12} lg={12} key={key}>
               <Card>
                 <CardContent>
                   <Typography variant="h6" component="div">

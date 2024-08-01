@@ -9,7 +9,6 @@ import { ApplicationList } from "./features/applications/ApplicationList";
 import { ApplicationEdit } from "./features/applications/ApplicationEdit";
 import { ApplicationCreate } from "./features/applications/ApplicationCreate";
 import { Register } from "./features/auth/Register";
-import { SelectionProcess } from "./features/applications/SelectionProcess";
 import { SelectionProcessSelected } from "./features/applications/SelectionProcessSelected";
 
 

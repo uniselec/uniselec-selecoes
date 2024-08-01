@@ -18,7 +18,7 @@ export const ApplicationCreate = () => {
   }
   useEffect(() => {
     if (status.isSuccess) {
-      enqueueSnackbar("Application created successfully", { variant: "success" });
+      enqueueSnackbar("Inscrição Realizada Com Sucesso", { variant: "success" });
       setIsdisabled(true);
       navigate('/applications');
     }

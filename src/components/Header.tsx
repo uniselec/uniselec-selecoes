@@ -4,6 +4,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import { Box, Button, IconButton, Toolbar } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { AccountMenu } from "./AccountMenu";
+import { Link } from 'react-router-dom'; // Importando Link
 import LogoUNILAB from "../assets/img/logo-unilab.png";
 
 const ImageLogo = styled('img')`
@@ -22,7 +23,9 @@ export function Header({ toggle, isAuth = false, isDark = false, handleDrawerTog
   return (
     <Box>
       <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <ImageLogo alt="Logo UNILAB" src={LogoUNILAB}/>
+        <Link to="/">
+          <ImageLogo alt="Logo UNILAB" src={LogoUNILAB}/>
+        </Link>
         <Box sx={{ flexGrow: 1 }} />
         {isAuth && (
           <AccountMenu isDark={isDark} toggleTheme={toggle} />
