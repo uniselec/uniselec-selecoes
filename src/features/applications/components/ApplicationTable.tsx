@@ -94,8 +94,9 @@ export function ApplicationTable({ applications, isFetching }: Props) {
                     ))}
                   </List>
                   <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-                    <Typography variant="body1"><strong>Código de Verificação:</strong> {value.verification_code}</Typography>
+                    <Typography variant="body1"><strong>Código de Verificação:</strong> {value.verification_code}{" - "}<strong> {value.valid_verification_code ? "Válido" : "Inválido"}</strong></Typography>
                   </Box>
+
                 </CardContent>
               </Card>
             </Grid>
