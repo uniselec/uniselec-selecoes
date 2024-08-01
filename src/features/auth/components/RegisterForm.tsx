@@ -22,10 +22,12 @@ export const RegisterForm = ({
 }: Props) => {
   const [errorEmail, setErrorEmail] = useState({ valid: true, text: "" });
   const [errorConfirmEmail, setErrorConfirmEmail] = useState({ valid: true, text: "" });
+  const [errorCPF, setErrorCPF] = useState({ valid: true, text: "" });
   const [errorPassword, setErrorPassword] = useState({ valid: true, text: "" });
   const [errorConfirmPassword, setErrorConfirmPassword] = useState({ valid: true, text: "" });
   const [email, setEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
+  const [cpf, setCpf] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -35,6 +37,39 @@ export const RegisterForm = ({
     } else {
       setErrorConfirmEmail({ valid: true, text: "" });
     }
+  };
+
+  const validateCPF = (cpf: string): boolean => {
+    cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
+
+    if (cpf.length !== 11) return false;
+
+    // Elimina CPFs conhecidos como inválidos
+    if (/^(\d)\1+$/.test(cpf)) return false;
+
+    let sum = 0;
+    let remainder;
+
+    // Validação do primeiro dígito verificador
+    for (let i = 1; i <= 9; i++) {
+      sum += parseInt(cpf.substring(i - 1, i), 10) * (11 - i);
+    }
+    remainder = (sum * 10) % 11;
+
+    if (remainder === 10 || remainder === 11) remainder = 0;
+    if (remainder !== parseInt(cpf.substring(9, 10), 10)) return false;
+
+    // Validação do segundo dígito verificador
+    sum = 0;
+    for (let i = 1; i <= 10; i++) {
+      sum += parseInt(cpf.substring(i - 1, i), 10) * (12 - i);
+    }
+    remainder = (sum * 10) % 11;
+
+    if (remainder === 10 || remainder === 11) remainder = 0;
+    if (remainder !== parseInt(cpf.substring(10, 11), 10)) return false;
+
+    return true;
   };
 
   const validatePassword = () => {
@@ -96,7 +131,24 @@ export const RegisterForm = ({
                 label="CPF"
                 name="cpf"
                 autoComplete="cpf"
-                onChange={handleInputChange}
+                onChange={(e) => {
+                  handleInputChange(e);
+                  setCpf(e.target.value);
+                  if (!validateCPF(e.target.value)) {
+                    setErrorCPF({ valid: false, text: "CPF inválido" });
+                  } else {
+                    setErrorCPF({ valid: true, text: "" });
+                  }
+                }}
+                onBlur={() => {
+                  if (!validateCPF(cpf)) {
+                    setErrorCPF({ valid: false, text: "CPF inválido" });
+                  } else {
+                    setErrorCPF({ valid: true, text: "" });
+                  }
+                }}
+                error={!errorCPF.valid}
+                helperText={errorCPF.text}
               />
             </Grid>
             <Grid item xs={12}>
