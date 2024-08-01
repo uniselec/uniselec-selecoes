@@ -406,8 +406,8 @@ export function ApplicationForm({
           </Grid>
           <Grid item xs={12}>
             <Box display="flex" gap={2}>
-              <Button variant="contained" component={Link} to="/applications">
-                Voltar
+              <Button variant="contained" component={Link} to="/">
+                Página Inicial
               </Button>
               <Button
                 type="submit"

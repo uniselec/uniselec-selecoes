@@ -6,13 +6,15 @@ import { ApplicationTable } from "./components/ApplicationTable";
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
-
+import { selectIsAuthenticated } from "../auth/authSlice";
+import { useSelector } from "react-redux";
 interface PaginationModel {
   pageSize: number;
   page: number;
 }
 
 export const ApplicationList = () => {
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const [options, setOptions] = useState({
     page: 1,
     search: "",
@@ -24,9 +26,10 @@ export const ApplicationList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (data?.data && Array.isArray(data.data) && data.data.length === 0) {
-      navigate("/applications/create");
+    if(!isAuthenticated) {
+      navigate("/register");
     }
+
   }, [data, navigate]);
 
   if (error) {
@@ -48,6 +51,8 @@ export const ApplicationList = () => {
           >
             Página Inicial
           </Button>
+
+
           <Button
             variant="contained"
             color="primary"
@@ -55,7 +60,7 @@ export const ApplicationList = () => {
             to="/applications/create"
             sx={{ mb: 2 }}
           >
-            Alterar Inscrição
+            {(data?.data && Array.isArray(data.data) && data.data.length === 0) ? "Realizar Inscrição":"Alterar Inscrição"}
           </Button>
         </Box>
       </Paper>

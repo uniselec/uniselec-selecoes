@@ -2,12 +2,19 @@ import { useState } from "react";
 import { Box, Paper, Typography, List, ListItem, ListItemText, ListItemButton, Grid, Button, Modal } from "@mui/material";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { useGetDocumentsQuery } from "../documents/documentSlice";
+import { Link } from "react-router-dom";
+import { selectIsAuthenticated } from "../auth/authSlice";
+import { useSelector } from "react-redux";
+import { useGetApplicationsQuery } from "./applicationSlice";
+
 const baseUrl = import.meta.env.VITE_API_URL;
 
 const REGISTRATION_START_DATE = new Date("2024-08-01T23:59:00");
 const REGISTRATION_END_DATE = new Date("2024-08-03T23:59:00");
 
 export const SelectionProcessSelected = () => {
+
+  const isAuthenticated = useSelector(selectIsAuthenticated);
   const [isModalOpen, setModalOpen] = useState(false);
   const [options, setOptions] = useState({
     page: 1,
@@ -15,22 +22,25 @@ export const SelectionProcessSelected = () => {
     perPage: 10,
     rowsPerPage: [10, 20, 30],
   });
+  const { data: dataApplication, isFetching: isFetchingApplications, error: errorApplications } = useGetApplicationsQuery(options);
   const { data, isFetching, error } = useGetDocumentsQuery(options);
 
-  const handleButtonClick = () => {
-    const now = new Date();
-    if (now >= REGISTRATION_START_DATE && now <= REGISTRATION_END_DATE) {
-      window.location.href = "/applications";
-    } else {
-      setModalOpen(true);
-    }
-  };
+  // const handleButtonClick = () => {
+  //
+  //   if () {
+  //     window.location.href = "/applications";
+  //   } else {
+  //     setModalOpen(true);
+  //   }
+  // };
+  const now = new Date();
 
   const handleClose = () => setModalOpen(false);
 
   if (error) {
     return <Typography>Error fetching applications</Typography>;
   }
+
 
   return (
     <Box sx={{ backgroundColor: "#f5f5f5", padding: 3 }}>
@@ -46,7 +56,7 @@ export const SelectionProcessSelected = () => {
           </Box>
           <Grid container spacing={2}>
             {/* Left Column */}
-            <Grid item xs={12} sm={12} md={12} lg={6}  xl={6} >
+            <Grid item xs={12} sm={12} md={12} lg={6} xl={6} >
               <Typography variant="h6" sx={{ color: "#0d47a1" }}>
                 PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1
               </Typography>
@@ -61,15 +71,43 @@ export const SelectionProcessSelected = () => {
               </Box>
             </Grid>
             {/* Right Column */}
-            <Grid item xs={12} sm={12} md={12} lg={6}  xl={6} >
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleButtonClick}
-                sx={{ mb: 2 }}
-              >
-                Inscrições
-              </Button>
+            <Grid item xs={12} sm={12} md={12} lg={6} xl={6} >
+
+              {!(now >= REGISTRATION_START_DATE && now <= REGISTRATION_END_DATE) ? (
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => {
+                    setModalOpen(true);
+                  }}
+                  sx={{ mb: 2 }}
+                >
+                  Inscrições
+                </Button>
+              ) : (
+                <Button
+                  variant="contained"
+                  color="primary"
+                  component={Link}
+                  to={(() => {
+                    if (!isAuthenticated) {
+                      return "/register";
+                    }
+                    if (dataApplication?.data.length === 0) {
+                      return "/applications/create";
+                    }
+                    return "/applications";
+                  })()}
+                  sx={{ mb: 2 }}
+                >
+                  Inscrições
+                </Button>
+
+              )}
+
+
+
               <Typography variant="h6" sx={{ color: "#0d47a1" }}>Documentos Publicados</Typography>
               <List dense>
                 {data?.data.map((document) => (
