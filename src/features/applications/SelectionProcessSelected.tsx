@@ -4,8 +4,8 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { useGetDocumentsQuery } from "../documents/documentSlice";
 const baseUrl = import.meta.env.VITE_API_URL;
 
-const REGISTRATION_START_DATE = new Date("2024-08-02T08:00:00");
-const REGISTRATION_END_DATE = new Date("2024-08-04T23:59:00");
+const REGISTRATION_START_DATE = new Date("2024-08-01T23:59:00");
+const REGISTRATION_END_DATE = new Date("2024-08-03T23:59:00");
 
 export const SelectionProcessSelected = () => {
   const [isModalOpen, setModalOpen] = useState(false);
@@ -46,23 +46,22 @@ export const SelectionProcessSelected = () => {
           </Box>
           <Grid container spacing={2}>
             {/* Left Column */}
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} sm={12} md={12} lg={6}  xl={6} >
               <Typography variant="h6" sx={{ color: "#0d47a1" }}>
                 PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1
               </Typography>
-              <Typography variant="body2">Início: 02/08/2024 a partir das 08:00</Typography>
-              <Typography variant="body2">Término: 04/08/2024 às 23:59</Typography>
+              <Typography variant="body2">Início: 01/08/2024 a partir das 23:59</Typography>
+              <Typography variant="body2">Término: 03/08/2024 às 23:59</Typography>
               <Box mt={2}>
                 <Typography variant="h6" sx={{ color: "#0d47a1" }}>Vagas ofertadas</Typography>
                 <Typography variant="body2" sx={{ mt: 1 }}>Campus de Baturité - CE</Typography>
                 <List dense>
                   <ListItem><ListItemText primary="Medicina (CE)" /></ListItem>
-                  {/* Adicione mais itens conforme necessário */}
                 </List>
               </Box>
             </Grid>
             {/* Right Column */}
-            <Grid item xs={12} md={6}>
+            <Grid item xs={12} sm={12} md={12} lg={6}  xl={6} >
               <Button
                 variant="contained"
                 color="primary"
@@ -110,7 +109,7 @@ export const SelectionProcessSelected = () => {
             Período de Inscrições
           </Typography>
           <Typography id="modal-description" sx={{ mt: 2 }}>
-            As inscrições estarão abertas de 02/08/2024 a partir das 08:00 até 04/08/2024 às 23:59.
+            As inscrições estarão abertas de 01/08/2024 a partir das 23:59 até 03/08/2024 às 23:59.
           </Typography>
         </Box>
       </Modal>
