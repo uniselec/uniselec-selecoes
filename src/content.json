@@ -10,9 +10,14 @@
             "pending customer response": "Aguardando Resposta do Cliente",
             "committed": "Confirmado",
             "canceled": "Cancelado"
+        },
+        "auth" : {
+            "The cpf has already been taken." : "Este CPF já está em Uso",
+            "The email has already been taken." : "Este e-mail já está em uso"
         }
     },
     "en": {
+
         "status": {
             "reopened": "Opened",
             "opened": "opened",
@@ -23,6 +28,10 @@
             "pending customer response": "pending customer response",
             "committed": "committed",
             "canceled": "canceled"
+        },
+        "auth" : {
+            "The cpf has already been taken." : "Este CPF já está em Uso",
+            "The email has already been taken." : "Este e-mail já está em uso"
         }
     },
     "fr": {
@@ -36,6 +45,10 @@
             "pending customer response": "En attente de la réponse du client",
             "committed": "Engagé",
             "canceled": "Annulé"
+        },
+        "auth" : {
+            "The cpf has already been taken." : "Este CPF já está em Uso",
+            "The email has already been taken." : "Este e-mail já está em uso"
         }
     },
     "es": {
@@ -49,6 +62,10 @@
             "pending customer response": "Pendiente de respuesta del cliente",
             "committed": "Comprometido",
             "canceled": "Cancelado"
+        },
+        "auth" : {
+            "The cpf has already been taken." : "Este CPF já está em Uso",
+            "The email has already been taken." : "Este e-mail já está em uso"
         }
     }
 }
