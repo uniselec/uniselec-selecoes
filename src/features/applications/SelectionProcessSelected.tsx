@@ -20,7 +20,7 @@ export const SelectionProcessSelected = () => {
   const handleButtonClick = () => {
     const now = new Date();
     if (now >= REGISTRATION_START_DATE && now <= REGISTRATION_END_DATE) {
-      window.location.href = "/applications/create";
+      window.location.href = "/applications";
     } else {
       setModalOpen(true);
     }
