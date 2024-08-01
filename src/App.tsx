@@ -6,7 +6,6 @@ import { Login } from "./features/auth/Login";
 import { AuthProfile } from "./features/auth/AuthProfile";
 import { NotFoundCard } from "./components/NotFoundCard";
 import { ApplicationList } from "./features/applications/ApplicationList";
-import { ApplicationEdit } from "./features/applications/ApplicationEdit";
 import { ApplicationCreate } from "./features/applications/ApplicationCreate";
 import { Register } from "./features/auth/Register";
 import { SelectionProcessSelected } from "./features/applications/SelectionProcessSelected";
@@ -27,7 +26,6 @@ function App() {
           <Route path="/" element={<SelectionProcessSelected />} />
           <Route path="/selection-process/1" element={<SelectionProcessSelected />} />
           <Route path="/applications" element={<ProtectedRoute><ApplicationList /></ProtectedRoute>} />
-          <Route path="/applications/edit/:id" element={<ProtectedRoute><ApplicationEdit /></ProtectedRoute>} />
           <Route path="/applications/create" element={<ProtectedRoute><ApplicationCreate /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><AuthProfile /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />

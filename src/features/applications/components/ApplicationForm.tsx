@@ -65,8 +65,8 @@ export function ApplicationForm({
   const userAuth = useAppSelector(selectAuthUser);
 
   useEffect(() => {
-    setFormState({ ...formState, edital: "Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina", position: "Medicina", location_position: "Baturité-CE" });
-  }, []);
+    setFormState({ ...formState, ...application?.data, edital: "Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina", position: "Medicina", location_position: "Baturité-CE" });
+  }, [application]);
   useEffect(() => {
     if (userAuth) {
       setFormState((prevState) => ({
@@ -111,7 +111,6 @@ export function ApplicationForm({
   const handleConfirmSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     const formEvent = new Event('submit', { bubbles: true, cancelable: true }) as unknown as FormEvent<HTMLFormElement>;
-
     handleSubmit(formEvent, {data: {...formState}} as Application);
   };
 

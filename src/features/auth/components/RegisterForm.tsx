@@ -1,8 +1,7 @@
-import { Box, Button, FormControl, Grid, Typography, TextField, Avatar, FormControlLabel, Checkbox, Divider } from "@mui/material";
+import { Box, Button, Grid, Typography, TextField, Avatar, Divider } from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link } from "react-router-dom";
 import { useState, ChangeEvent } from 'react';
-import { Credentials } from '../authApiSlice';
 import { User } from "../../../types/User";
 
 type Props = {
@@ -40,17 +39,17 @@ export const RegisterForm = ({
   };
 
   const validateCPF = (cpf: string): boolean => {
-    cpf = cpf.replace(/[^\d]+/g, ''); // Remove caracteres não numéricos
+    cpf = cpf.replace(/[^\d]+/g, '');
 
     if (cpf.length !== 11) return false;
 
-    // Elimina CPFs conhecidos como inválidos
+
     if (/^(\d)\1+$/.test(cpf)) return false;
 
     let sum = 0;
     let remainder;
 
-    // Validação do primeiro dígito verificador
+
     for (let i = 1; i <= 9; i++) {
       sum += parseInt(cpf.substring(i - 1, i), 10) * (11 - i);
     }
@@ -59,7 +58,7 @@ export const RegisterForm = ({
     if (remainder === 10 || remainder === 11) remainder = 0;
     if (remainder !== parseInt(cpf.substring(9, 10), 10)) return false;
 
-    // Validação do segundo dígito verificador
+
     sum = 0;
     for (let i = 1; i <= 10; i++) {
       sum += parseInt(cpf.substring(i - 1, i), 10) * (12 - i);
@@ -105,7 +104,7 @@ export const RegisterForm = ({
           event.preventDefault();
           validateEmail();
           validatePassword();
-          if (errorConfirmEmail.valid && errorConfirmPassword.valid) {
+          if (errorConfirmEmail.valid && errorConfirmPassword.valid && errorCPF.valid) {
             handleSubmit(event);
           }
         }}
@@ -132,12 +131,15 @@ export const RegisterForm = ({
                 name="cpf"
                 autoComplete="cpf"
                 onChange={(e) => {
-                  handleInputChange(e);
-                  setCpf(e.target.value);
-                  if (!validateCPF(e.target.value)) {
-                    setErrorCPF({ valid: false, text: "CPF inválido" });
-                  } else {
-                    setErrorCPF({ valid: true, text: "" });
+                  const numericValue = e.target.value.replace(/[^0-9]/g, ''); // Remove caracteres não numéricos
+                  if (numericValue.length <= 11) {
+                    handleInputChange(e);
+                    setCpf(numericValue);
+                    if (!validateCPF(numericValue)) {
+                      setErrorCPF({ valid: false, text: "CPF inválido" });
+                    } else {
+                      setErrorCPF({ valid: true, text: "" });
+                    }
                   }
                 }}
                 onBlur={() => {
@@ -147,8 +149,10 @@ export const RegisterForm = ({
                     setErrorCPF({ valid: true, text: "" });
                   }
                 }}
+                value={cpf}
                 error={!errorCPF.valid}
                 helperText={errorCPF.text}
+                inputProps={{ maxLength: 11 }}
               />
             </Grid>
             <Grid item xs={12}>
