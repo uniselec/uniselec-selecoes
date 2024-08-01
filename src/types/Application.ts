@@ -10,6 +10,7 @@ export interface Result {
 
 export interface Application {
   id: string;
+  verification_code: string;
   data: {
     name: string;
     social_name: string;
