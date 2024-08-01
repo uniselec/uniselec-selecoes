@@ -4,7 +4,7 @@ import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { useGetDocumentsQuery } from "../documents/documentSlice";
 const baseUrl = import.meta.env.VITE_API_URL;
 
-const REGISTRATION_START_DATE = new Date("2024-07-01T23:59:00");
+const REGISTRATION_START_DATE = new Date("2024-08-01T23:59:00");
 const REGISTRATION_END_DATE = new Date("2024-08-03T23:59:00");
 
 export const SelectionProcessSelected = () => {
