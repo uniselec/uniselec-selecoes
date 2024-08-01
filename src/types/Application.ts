@@ -32,6 +32,7 @@ export interface Application {
     location_position?: string;
     publicSchool: boolean;
     termsAgreement: boolean;
+    updated_at?: string;
   };
   verification_expected: string,
   verification_code: string,
