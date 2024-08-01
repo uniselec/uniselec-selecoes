@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Paper, Typography, List, ListItem, ListItemText, ListItemButton, Grid, Button, Modal } from "@mui/material";
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { useGetDocumentsQuery } from "../documents/documentSlice";
@@ -7,14 +7,9 @@ import { selectIsAuthenticated } from "../auth/authSlice";
 import { useSelector } from "react-redux";
 import { useGetApplicationsQuery } from "./applicationSlice";
 
-
 const baseUrl = import.meta.env.VITE_API_URL;
 
-const REGISTRATION_START_DATE = new Date("2024-08-02T23:08:00");
-const REGISTRATION_END_DATE = new Date("2024-08-03T23:59:00");
-
 export const SelectionProcessSelected = () => {
-
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [isModalOpen, setModalOpen] = useState(false);
   const [options, setOptions] = useState({
@@ -23,17 +18,27 @@ export const SelectionProcessSelected = () => {
     perPage: 10,
     rowsPerPage: [10, 20, 30],
   });
+  const [registrationStartDate, setRegistrationStartDate] = useState<Date | null>(null);
+  const [registrationEndDate, setRegistrationEndDate] = useState<Date | null>(null);
   const { data: dataApplication, isFetching: isFetchingApplications, error: errorApplications } = useGetApplicationsQuery(options);
   const { data, isFetching, error } = useGetDocumentsQuery(options);
 
-  // const handleButtonClick = () => {
-  //
-  //   if () {
-  //     window.location.href = "/applications";
-  //   } else {
-  //     setModalOpen(true);
-  //   }
-  // };
+  useEffect(() => {
+
+    const fetchRegistrationDates = async () => {
+      try {
+        const response = await fetch(`${baseUrl}/api/inscription-period`);
+        const json = await response.json();
+        setRegistrationStartDate(new Date(json.start));
+        setRegistrationEndDate(new Date(json.end));
+      } catch (error) {
+        console.error("Erro ao buscar as datas de inscrição:", error);
+      }
+    };
+
+    fetchRegistrationDates();
+  }, []);
+
   const now = new Date();
 
   const handleClose = () => setModalOpen(false);
@@ -41,7 +46,6 @@ export const SelectionProcessSelected = () => {
   if (error) {
     return <Typography>Error fetching applications</Typography>;
   }
-
 
   return (
     <Box sx={{ backgroundColor: "#f5f5f5", padding: 3 }}>
@@ -61,8 +65,16 @@ export const SelectionProcessSelected = () => {
               <Typography variant="h6" sx={{ color: "#0d47a1" }}>
                 PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1
               </Typography>
-              <Typography variant="body2">Início: 02/08/2024 a partir das 08:00</Typography>
-              <Typography variant="body2">Término: 03/08/2024 às 23:59</Typography>
+              {registrationStartDate && registrationEndDate && (
+                <>
+                  <Typography variant="body2">
+                    Início: {registrationStartDate.toLocaleDateString('pt-BR')} a partir das {registrationStartDate.toLocaleTimeString('pt-BR')}
+                  </Typography>
+                  <Typography variant="body2">
+                    Término: {registrationEndDate.toLocaleDateString('pt-BR')} às {registrationEndDate.toLocaleTimeString('pt-BR')}
+                  </Typography>
+                </>
+              )}
               <Box mt={2}>
                 <Typography variant="h6" sx={{ color: "#0d47a1" }}>Vagas ofertadas</Typography>
                 <Typography variant="body2" sx={{ mt: 1 }}>Campus de Baturité - CE</Typography>
@@ -74,8 +86,12 @@ export const SelectionProcessSelected = () => {
             {/* Right Column */}
             <Grid item xs={12} sm={12} md={12} lg={6} xl={6} >
 
-              {!(now >= REGISTRATION_START_DATE && now <= REGISTRATION_END_DATE) ? (
-
+              {!(
+                registrationStartDate &&
+                registrationEndDate &&
+                now >= registrationStartDate &&
+                now <= registrationEndDate
+              ) ? (
                 <Button
                   variant="contained"
                   color="primary"
@@ -104,10 +120,7 @@ export const SelectionProcessSelected = () => {
                 >
                   Inscrições
                 </Button>
-
               )}
-
-
 
               <Typography variant="h6" sx={{ color: "#0d47a1" }}>Documentos Publicados</Typography>
               <List dense>
