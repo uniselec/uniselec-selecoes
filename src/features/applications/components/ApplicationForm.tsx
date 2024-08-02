@@ -28,7 +28,6 @@ import { Link } from "react-router-dom";
 import { format, parseISO, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-
 type Props = {
   application: Application;
   isdisabled?: boolean;
@@ -66,12 +65,14 @@ export function ApplicationForm({
 }: Props) {
   const [formState, setFormState] = useState(application.data || {});
   const [cpfError, setCpfError] = useState<string | null>(null);
+  const [enemError, setEnemError] = useState<string | null>(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const userAuth = useAppSelector(selectAuthUser);
 
   useEffect(() => {
     setFormState({ ...formState, ...application?.data, edital: "Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina", position: "Medicina", location_position: "Baturité-CE" });
   }, [application]);
+
   useEffect(() => {
     if (userAuth) {
       setFormState((prevState) => ({
@@ -89,6 +90,7 @@ export function ApplicationForm({
       [name]: value || "",
     }));
   };
+
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, checked } = e.target;
     setFormState((prevState) => {
@@ -113,10 +115,40 @@ export function ApplicationForm({
   const handleConfirmDialogClose = () => {
     setOpenConfirmDialog(false);
   };
+
   const handleConfirmSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
     const formEvent = new Event('submit', { bubbles: true, cancelable: true }) as unknown as FormEvent<HTMLFormElement>;
     handleSubmit(formEvent, { data: { ...formState } } as Application);
+  };
+
+  const validateEnemNumber = (enem: string) => {
+    // Verifica se o número de inscrição tem exatamente 12 caracteres
+    if (enem.length !== 12) {
+      return "O número de inscrição do ENEM deve ter 12 dígitos.";
+    }
+    // Verifica se todos os caracteres são dígitos numéricos
+    if (!/^\d+$/.test(enem)) {
+      return "O número de inscrição do ENEM deve conter apenas números.";
+    }
+    // Verifica se os primeiros dois dígitos correspondem ao ano 2023
+    if (enem.slice(0, 2) !== "23") {
+      return "O número de inscrição do ENEM não corresponde ao ano de 2023.";
+    }
+    return null;
+  };
+
+  const handleEnemChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let { value } = e.target;
+
+    // Limita o valor a 12 dígitos
+    if (value.length > 12) {
+      value = value.slice(0, 12);
+    }
+
+    const error = validateEnemNumber(value);
+    setEnemError(error);
+    setFormState({ ...formState, enem: value });
   };
 
   return (
@@ -325,8 +357,10 @@ export function ApplicationForm({
                 name="enem"
                 label="Número de Inscrição do ENEM"
                 value={formState.enem || ""}
+                error={!!enemError}
+                helperText={enemError || ""}
                 disabled={isdisabled}
-                onChange={(e) => setFormState({ ...formState, enem: e.target.value })}
+                onChange={handleEnemChange}
                 data-testid="enem"
               />
             </FormControl>
@@ -472,7 +506,6 @@ export function ApplicationForm({
             </List>
           </Box>
         </DialogContent>
-
 
         <DialogActions>
           <Button onClick={handleConfirmDialogClose} color="primary">
