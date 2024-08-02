@@ -6,6 +6,9 @@ import { Link } from "react-router-dom";
 import { selectIsAuthenticated } from "../auth/authSlice";
 import { useSelector } from "react-redux";
 import { useGetApplicationsQuery } from "./applicationSlice";
+import { format, parseISO, isValid } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -157,12 +160,14 @@ export const SelectionProcessSelected = () => {
             outline: 'none',
           }}
         >
-          <Typography id="modal-title" variant="h6" component="h2">
-            Período de Inscrições
-          </Typography>
-          <Typography id="modal-description" sx={{ mt: 2 }}>
-            As inscrições estarão abertas de 02/08/2024 a partir das 08:00 até 03/08/2024 às 23:59.
-          </Typography>
+          {registrationStartDate && registrationEndDate && (
+            <>
+              <Typography id="modal-description" sx={{ mt: 2 }}>
+                As inscrições estarão abertas de {registrationStartDate.toLocaleDateString('pt-BR')} a partir das {registrationStartDate.toLocaleTimeString('pt-BR')} até  {registrationEndDate.toLocaleDateString('pt-BR')} às {registrationEndDate.toLocaleTimeString('pt-BR')}.
+              </Typography>
+            </>
+          )}
+
         </Box>
       </Modal>
     </Box>

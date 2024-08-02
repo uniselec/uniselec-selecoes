@@ -9,6 +9,8 @@ import { ApplicationList } from "./features/applications/ApplicationList";
 import { ApplicationCreate } from "./features/applications/ApplicationCreate";
 import { Register } from "./features/auth/Register";
 import { SelectionProcessSelected } from "./features/applications/SelectionProcessSelected";
+import { ProtectedRouteSubscriptionRange } from "./components/ProtectedRouteSubscriptionRange";
+import { ProtectedRouteBeforeStart } from "./components/ProtectedRouteBeforeStart";
 
 
 
@@ -23,13 +25,14 @@ function App() {
     >
       <Layout>
         <Routes>
+
           <Route path="/" element={<SelectionProcessSelected />} />
           <Route path="/selection-process/1" element={<SelectionProcessSelected />} />
-          <Route path="/applications" element={<ProtectedRoute><ApplicationList /></ProtectedRoute>} />
-          <Route path="/applications/create" element={<ProtectedRoute><ApplicationCreate /></ProtectedRoute>} />
+          <Route path="/applications" element={<ProtectedRoute><ProtectedRouteBeforeStart><ApplicationList /></ProtectedRouteBeforeStart></ProtectedRoute>} />
+          <Route path="/applications/create" element={<ProtectedRoute><ProtectedRouteSubscriptionRange><ApplicationCreate /></ProtectedRouteSubscriptionRange></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><AuthProfile /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Route path="/register" element={<ProtectedRouteBeforeStart><Register /></ProtectedRouteBeforeStart>} />
           <Route path="*" element={<NotFoundCard/>} />
         </Routes>
       </Layout>
