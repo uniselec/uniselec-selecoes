@@ -30,13 +30,28 @@ export function ApplicationTable({ applications, isFetching }: Props) {
   const generatePDF = async () => {
     const input = pdfRef.current;
     if (input) {
-      const canvas = await html2canvas(input);
+      const canvas = await html2canvas(input, { scale: 2 });
       const imgData = canvas.toDataURL("image/png");
+
       const pdf = new jsPDF("p", "mm", "a4");
-      const imgProps = pdf.getImageProperties(imgData);
       const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      let position = 0;
+      let imgHeight = pdfHeight;
+      if (imgHeight > pdf.internal.pageSize.getHeight()) {
+        while (imgHeight > 0) {
+          pdf.addImage(imgData, "PNG", 0, position, pdfWidth, imgHeight);
+          imgHeight -= pdf.internal.pageSize.getHeight();
+          position -= pdf.internal.pageSize.getHeight();
+          if (imgHeight > 0) {
+            pdf.addPage();
+          }
+        }
+      } else {
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      }
+
       pdf.save("comprovante_inscricao.pdf");
     }
   };
@@ -132,7 +147,7 @@ export function ApplicationTable({ applications, isFetching }: Props) {
             ))}
           </Grid>
           <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-            <Button startIcon={<PrintIcon/>} variant="contained" color="primary" onClick={generatePDF}>
+            <Button startIcon={<PrintIcon />} variant="contained" color="primary" onClick={generatePDF}>
               Gerar PDF
             </Button>
           </Box>
