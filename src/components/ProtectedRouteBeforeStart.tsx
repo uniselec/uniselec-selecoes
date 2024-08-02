@@ -4,40 +4,31 @@ import { Navigate } from "react-router-dom";
 import { selectIsAuthenticated } from "../features/auth/authSlice";
 const baseUrl = import.meta.env.VITE_API_URL;
 
-
 export const ProtectedRouteBeforeStart = ({ children }: { children: React.ReactNode }) => {
-  const [registrationStartDate, setRegistrationStartDate] = useState<Date | null>(null);
-  const [registrationEndDate, setRegistrationEndDate] = useState<Date | null>(null);
-  const now = new Date();
+  const [isAfterStart, setIsAfterStart] = useState<boolean | null>(null);
   useEffect(() => {
-
-    const fetchRegistrationDates = async () => {
+    const fetchIsAfterStart = async () => {
       try {
-        const response = await fetch(`${baseUrl}/api/inscription-period`);
+        const response = await fetch(`${baseUrl}/api/is-after-start-period`);
         const json = await response.json();
-        setRegistrationStartDate(new Date(json.start));
-        setRegistrationEndDate(new Date(json.end));
+        setIsAfterStart(json['is-after-start']);
       } catch (error) {
-        console.error("Erro ao buscar as datas de inscrição:", error);
+        console.error("Erro ao verificar o início do período de inscrição:", error);
       }
     };
 
-    fetchRegistrationDates();
+    fetchIsAfterStart();
   }, []);
 
   const isAuthenticated = useSelector(selectIsAuthenticated);
 
-
-  if (registrationEndDate != null && registrationStartDate != null) {
-    if (!(
-      registrationStartDate &&
-      registrationEndDate &&
-      now >= registrationStartDate
-    )) {
-      return <Navigate to="/" />;
-    }
+  if (isAfterStart === null) {
+    return <div>Carregando...</div>;
   }
 
+  if (!isAfterStart) {
+    return <Navigate to="/" />;
+  }
 
   return <>{children}</>;
 };
