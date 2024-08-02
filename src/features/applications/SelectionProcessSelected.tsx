@@ -92,8 +92,7 @@ export const SelectionProcessSelected = () => {
               {!(
                 registrationStartDate &&
                 registrationEndDate &&
-                now >= registrationStartDate &&
-                now <= registrationEndDate
+                now >= registrationStartDate
               ) ? (
                 <Button
                   variant="contained"
