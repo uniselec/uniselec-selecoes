@@ -76,11 +76,11 @@ export const RegisterForm = ({
   };
 
   const validatePassword = () => {
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/;
-    if (!passwordRegex.test(password)) {
-      setErrorPassword({ valid: false, text: "A senha deve ter no mínimo 6 caracteres e conter letras, números e caracteres especiais" });
-      return false;
-    }
+    // const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/;
+    // if (!passwordRegex.test(password)) {
+    //   setErrorPassword({ valid: false, text: "A senha deve ter no mínimo 6 caracteres e conter letras, números e caracteres especiais" });
+    //   return false;
+    // }
     setErrorPassword({ valid: true, text: "" });
 
     if (password !== confirmPassword) {

@@ -123,18 +123,18 @@ export function ApplicationForm({
   };
 
   const validateEnemNumber = (enem: string) => {
-    // Verifica se o número de inscrição tem exatamente 12 caracteres
-    if (enem.length !== 12) {
-      return "O número de inscrição do ENEM deve ter 12 dígitos.";
-    }
-    // Verifica se todos os caracteres são dígitos numéricos
-    if (!/^\d+$/.test(enem)) {
-      return "O número de inscrição do ENEM deve conter apenas números.";
-    }
-    // Verifica se os primeiros dois dígitos correspondem ao ano 2023
-    if (enem.slice(0, 2) !== "23") {
-      return "O número de inscrição do ENEM não corresponde ao ano de 2023.";
-    }
+    // // Verifica se o número de inscrição tem exatamente 12 caracteres
+    // if (enem.length !== 12) {
+    //   return "O número de inscrição do ENEM deve ter 12 dígitos.";
+    // }
+    // // Verifica se todos os caracteres são dígitos numéricos
+    // if (!/^\d+$/.test(enem)) {
+    //   return "O número de inscrição do ENEM deve conter apenas números.";
+    // }
+    // // Verifica se os primeiros dois dígitos correspondem ao ano 2023
+    // if (enem.slice(0, 2) !== "23") {
+    //   return "O número de inscrição do ENEM não corresponde ao ano de 2023.";
+    // }
     return null;
   };
 
