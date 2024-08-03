@@ -24,21 +24,8 @@ export const SelectionProcessSelected = () => {
   const [registrationEndDate, setRegistrationEndDate] = useState<Date | null>(null);
 
   const { data, isFetching, error } = useGetDocumentsQuery(options);
+  const { data: dataApplication, isFetching: isFetchingApplications, error: errorApplications } = useGetApplicationsQuery(options);
 
-  if(isFetching) {
-    return <Typography>Carregando dados, aguarde...</Typography>;
-  }
-
-  let dataApplication = null;
-  let isFetchingApplications = false;
-  let errorApplications = null;
-
-  if (isAuthenticated) {
-    const result = useGetApplicationsQuery(options);
-    dataApplication = result.data;
-    isFetchingApplications = result.isFetching;
-    errorApplications = result.error;
-  }
 
   useEffect(() => {
     if (studentSelectionData?.studentSelection) {
@@ -52,7 +39,7 @@ export const SelectionProcessSelected = () => {
     if (!isAuthenticated) {
       return "/register";
     }
-    if (studentSelectionData?.studentSelection?.isInPeriod && dataApplication?.length === 0) {
+    if (studentSelectionData?.studentSelection?.isInPeriod && dataApplication?.data?.length === 0) {
       return "/applications/create";
     }
     return "/applications";
