@@ -9,13 +9,13 @@ import { ApplicationList } from "./features/applications/ApplicationList";
 import { ApplicationCreate } from "./features/applications/ApplicationCreate";
 import { Register } from "./features/auth/Register";
 import { SelectionProcessSelected } from "./features/applications/SelectionProcessSelected";
-import { ProtectedRouteSubscriptionRange } from "./components/ProtectedRouteSubscriptionRange";
+import { ProtectedRoutePeriod } from "./components/ProtectedRoutePeriod";
 import { ProtectedRouteBeforeStart } from "./components/ProtectedRouteBeforeStart";
 
 
 
-
 function App() {
+
   return (
     <Box
       component="main"
@@ -29,7 +29,7 @@ function App() {
           <Route path="/" element={<SelectionProcessSelected />} />
           <Route path="/selection-process/1" element={<SelectionProcessSelected />} />
           <Route path="/applications" element={<ProtectedRoute><ProtectedRouteBeforeStart><ApplicationList /></ProtectedRouteBeforeStart></ProtectedRoute>} />
-          <Route path="/applications/create" element={<ProtectedRoute><ProtectedRouteSubscriptionRange><ApplicationCreate /></ProtectedRouteSubscriptionRange></ProtectedRoute>} />
+          <Route path="/applications/create" element={<ProtectedRoute><ProtectedRoutePeriod><ApplicationCreate /></ProtectedRoutePeriod></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><AuthProfile /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<ProtectedRouteBeforeStart><Register /></ProtectedRouteBeforeStart>} />

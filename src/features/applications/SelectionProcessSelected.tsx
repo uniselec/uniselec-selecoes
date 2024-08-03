@@ -6,13 +6,12 @@ import { Link } from "react-router-dom";
 import { selectIsAuthenticated } from "../auth/authSlice";
 import { useSelector } from "react-redux";
 import { useGetApplicationsQuery } from "./applicationSlice";
-import { format, parseISO, isValid } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-
+import { useGetStudentSelectionQuery } from "../studentSelection/studentSelectionSlice";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export const SelectionProcessSelected = () => {
+  const { data: studentSelectionData } = useGetStudentSelectionQuery();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [isModalOpen, setModalOpen] = useState(false);
   const [options, setOptions] = useState({
@@ -27,23 +26,24 @@ export const SelectionProcessSelected = () => {
   const { data, isFetching, error } = useGetDocumentsQuery(options);
 
   useEffect(() => {
+    if (studentSelectionData?.studentSelection) {
+      const { start, end } = studentSelectionData.studentSelection;
+      setRegistrationStartDate(start ? new Date(start) : null);
+      setRegistrationEndDate(end ? new Date(end) : null);
+    }
+  }, [studentSelectionData]);
 
-    const fetchRegistrationDates = async () => {
-      try {
-        const response = await fetch(`${baseUrl}/api/inscription-period`);
-        const json = await response.json();
-        setRegistrationStartDate(new Date(json.start));
-        setRegistrationEndDate(new Date(json.end));
-      } catch (error) {
-        console.error("Erro ao buscar as datas de inscrição:", error);
-      }
-    };
-
-    fetchRegistrationDates();
-  }, []);
+  const determineButtonLink = () => {
+    if (!isAuthenticated) {
+      return "/register";
+    }
+    if (studentSelectionData?.studentSelection?.isInPeriod && dataApplication?.data.length === 0) {
+      return "/applications/create";
+    }
+    return "/applications";
+  };
 
   const now = new Date();
-
   const handleClose = () => setModalOpen(false);
 
   if (error) {
@@ -64,7 +64,7 @@ export const SelectionProcessSelected = () => {
           </Box>
           <Grid container spacing={2}>
             {/* Left Column */}
-            <Grid item xs={12} sm={12} md={12} lg={6} xl={6} >
+            <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
               <Typography variant="h6" sx={{ color: "#0d47a1" }}>
                 PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1
               </Typography>
@@ -87,13 +87,8 @@ export const SelectionProcessSelected = () => {
               </Box>
             </Grid>
             {/* Right Column */}
-            <Grid item xs={12} sm={12} md={12} lg={6} xl={6} >
-
-              {!(
-                registrationStartDate &&
-                registrationEndDate &&
-                now >= registrationStartDate
-              ) ? (
+            <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
+              {!(studentSelectionData?.studentSelection?.isAfterStart) ? (
                 <Button
                   variant="contained"
                   color="primary"
@@ -109,15 +104,7 @@ export const SelectionProcessSelected = () => {
                   variant="contained"
                   color="primary"
                   component={Link}
-                  to={(() => {
-                    if (!isAuthenticated) {
-                      return "/register";
-                    }
-                    if (dataApplication?.data.length === 0) {
-                      return "/applications/create";
-                    }
-                    return "/applications";
-                  })()}
+                  to={determineButtonLink()}
                   sx={{ mb: 2 }}
                 >
                   Inscrições
@@ -166,7 +153,6 @@ export const SelectionProcessSelected = () => {
               </Typography>
             </>
           )}
-
         </Box>
       </Modal>
     </Box>
