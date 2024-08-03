@@ -31,24 +31,29 @@ export const RegisterForm = ({
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const validateEmail = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setErrorEmail({ valid: false, text: "Email inválido" });
+      return false;
+    }
+    setErrorEmail({ valid: true, text: "" });
+
     if (email !== confirmEmail) {
       setErrorConfirmEmail({ valid: false, text: "Os e-mails não coincidem" });
-    } else {
-      setErrorConfirmEmail({ valid: true, text: "" });
+      return false;
     }
+    setErrorConfirmEmail({ valid: true, text: "" });
+    return true;
   };
 
   const validateCPF = (cpf: string): boolean => {
     cpf = cpf.replace(/[^\d]+/g, '');
 
     if (cpf.length !== 11) return false;
-
-
     if (/^(\d)\1+$/.test(cpf)) return false;
 
     let sum = 0;
     let remainder;
-
 
     for (let i = 1; i <= 9; i++) {
       sum += parseInt(cpf.substring(i - 1, i), 10) * (11 - i);
@@ -57,7 +62,6 @@ export const RegisterForm = ({
 
     if (remainder === 10 || remainder === 11) remainder = 0;
     if (remainder !== parseInt(cpf.substring(9, 10), 10)) return false;
-
 
     sum = 0;
     for (let i = 1; i <= 10; i++) {
@@ -72,11 +76,19 @@ export const RegisterForm = ({
   };
 
   const validatePassword = () => {
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/;
+    if (!passwordRegex.test(password)) {
+      setErrorPassword({ valid: false, text: "A senha deve ter no mínimo 6 caracteres e conter letras, números e caracteres especiais" });
+      return false;
+    }
+    setErrorPassword({ valid: true, text: "" });
+
     if (password !== confirmPassword) {
       setErrorConfirmPassword({ valid: false, text: "As senhas não coincidem" });
-    } else {
-      setErrorConfirmPassword({ valid: true, text: "" });
+      return false;
     }
+    setErrorConfirmPassword({ valid: true, text: "" });
+    return true;
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -102,9 +114,9 @@ export const RegisterForm = ({
       <form
         onSubmit={(event) => {
           event.preventDefault();
-          validateEmail();
-          validatePassword();
-          if (errorConfirmEmail.valid && errorConfirmPassword.valid && errorCPF.valid) {
+          const isEmailValid = validateEmail();
+          const isPasswordValid = validatePassword();
+          if (isEmailValid && isPasswordValid && errorCPF.valid) {
             handleSubmit(event);
           }
         }}
@@ -232,6 +244,7 @@ export const RegisterForm = ({
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={isLoading}
             >
               Registrar
             </Button>
