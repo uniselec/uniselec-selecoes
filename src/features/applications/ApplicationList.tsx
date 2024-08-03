@@ -8,12 +8,14 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
 import { selectIsAuthenticated } from "../auth/authSlice";
 import { useSelector } from "react-redux";
+import { useGetStudentSelectionQuery } from "../studentSelection/studentSelectionSlice";
 interface PaginationModel {
   pageSize: number;
   page: number;
 }
 
 export const ApplicationList = () => {
+  const { data: studentSelectionData } = useGetStudentSelectionQuery();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [options, setOptions] = useState({
     page: 1,
@@ -53,6 +55,7 @@ export const ApplicationList = () => {
           </Button>
 
 
+          {studentSelectionData?.studentSelection?.isInPeriod && (
           <Button
             variant="contained"
             color="primary"
@@ -61,7 +64,8 @@ export const ApplicationList = () => {
             sx={{ mb: 2 }}
           >
             {(data?.data && Array.isArray(data.data) && data.data.length === 0) ? "Realizar Inscrição":"Alterar Inscrição"}
-          </Button>
+          </Button>) }
+
         </Box>
       </Paper>
     </Box>
