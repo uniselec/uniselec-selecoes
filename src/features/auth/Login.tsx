@@ -1,4 +1,5 @@
 import {
+    Alert,
     Box,
     Paper,
     Typography
@@ -17,7 +18,7 @@ export const Login = () => {
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
-
+    const [emailSended, setEmailSended] = useState("");
     const [credentials, setCredentials] = useState<Credentials>({
         email: "",
         password: "",
@@ -38,8 +39,10 @@ export const Login = () => {
         await forgotPassword(forgotData);
     }
     useEffect(() => {
+
         if (statusForgotPassword.isSuccess) {
-            enqueueSnackbar(`Nós enviamos um e-mail para email`, { variant: "success" });
+            setEmailSended(statusForgotPassword?.data?.email)
+            enqueueSnackbar(`Nós recebemos sua solicitação.`, { variant: "success" });
             setIsLoading(false);
         }
         if (statusForgotPassword.error) {
@@ -71,15 +74,24 @@ export const Login = () => {
         }
     }, [enqueueSnackbar, statusLogin.error, statusLogin.isSuccess]);
     return (
-        <Box>
+        <Box display="flex" justifyContent="center" alignItems="center">
             <Paper>
-                <LoginForm
-                    credentials={credentials}
-                    handleChange={handleChange}
-                    handleSubmit={handleSubmit}
-                    isLoading={isLoading}
-                    handleSubmitFormForgot={handleSubmitFormForgot}
-                />
+                {emailSended != "" && emailSended != null ?
+                    (
+                        <Box display="flex" justifyContent="center">
+                            <Alert severity="success">{`Enviamos um email para `}<strong>{emailSended}</strong></Alert>
+                        </Box>
+                    )
+                    : (
+                        <LoginForm
+                            credentials={credentials}
+                            handleChange={handleChange}
+                            handleSubmit={handleSubmit}
+                            isLoading={isLoading}
+                            handleSubmitFormForgot={handleSubmitFormForgot}
+                        />
+                    )}
+
             </Paper>
         </Box>
     )
