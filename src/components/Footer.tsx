@@ -4,26 +4,26 @@ import { Link } from "react-router-dom";
 
 export function Footer() {
     return (
-        <Box component="footer" sx={{ py: 3, px: 2, mt: 'auto' }}>
+        <Box component="footer" sx={{ px: 2, mt: 'auto' }}>  <Typography
+            variant="subtitle1"
+            align="center"
+            color="text.secondary"
+            component="p"
+        >
+            <Button
+                component={Link}
+                to="https://wa.me/558533326139"
+                startIcon={<WhatsAppIcon />}
+                variant="contained"
+                color="success"
+            >
+                Suporte Técnico
+            </Button>
+        </Typography><br></br>
             <Typography variant="h6" align="center" gutterBottom>
                 Sistema de Seleção de Alunos da UNILAB
             </Typography>
-            <Typography
-                variant="subtitle1"
-                align="center"
-                color="text.secondary"
-                component="p"
-            >
-                <Button
-                    component={Link}
-                    to="https://wa.me/558533326139"
-                    startIcon={<WhatsAppIcon />}
-                    variant="contained"
-                    color="success"
-                >
-                    Suporte Técnico
-                </Button>
-            </Typography>
+
         </Box>
     );
 }

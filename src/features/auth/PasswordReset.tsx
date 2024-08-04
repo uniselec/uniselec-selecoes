@@ -49,7 +49,7 @@ export const PasswordReset = () => {
       <Paper>
         <Box p={2}>
           <Box mb={2}>
-            <Typography variant="h4">Create ResetPassword</Typography>
+            <Typography variant="h4">Digite Sua Nova Senha Duas Vezes</Typography>
           </Box>
         </Box>
         <ResetPasswordForm
