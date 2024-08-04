@@ -11,6 +11,7 @@ import { Register } from "./features/auth/Register";
 import { SelectionProcessSelected } from "./features/applications/SelectionProcessSelected";
 import { ProtectedRoutePeriod } from "./components/ProtectedRoutePeriod";
 import { ProtectedRouteBeforeStart } from "./components/ProtectedRouteBeforeStart";
+import { PasswordReset } from "./features/auth/PasswordReset";
 
 
 
@@ -33,7 +34,8 @@ function App() {
           <Route path="/profile" element={<ProtectedRoute><AuthProfile /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<ProtectedRouteBeforeStart><Register /></ProtectedRouteBeforeStart>} />
-          <Route path="*" element={<NotFoundCard/>} />
+          <Route path="/reset-password/:token/:email" element={<PasswordReset />} />
+          <Route path="*" element={<NotFoundCard />} />
         </Routes>
       </Layout>
 

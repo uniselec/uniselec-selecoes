@@ -1,7 +1,7 @@
+import { Forgot, ResetPassword } from '../../types/ResetPassword';
 import { User } from '../../types/User';
 import { apiSlice } from '../api/apiSlice';
 import { logOut, setCredentials } from './authSlice';
-
 
 
 export type Credentials = {
@@ -42,6 +42,20 @@ export const authApiSlice = apiSlice.injectEndpoints({
 				}
 			},
 		}),
+		resetPassword: builder.mutation({
+			query: (passwordResetData: ResetPassword) => ({
+				url: '/reset-password',
+				method: 'POST',
+				body: { ...passwordResetData },
+			})
+		}),
+		passwordForgot: builder.mutation({
+			query: (passwordForgot: Forgot) => ({
+				url: '/password/forgot',
+				method: 'POST',
+				body: { ...passwordForgot },
+			})
+		}),
 		sendLogOut: builder.mutation({
 			query: () => ({
 				url: '/logout',
@@ -60,5 +74,5 @@ export const authApiSlice = apiSlice.injectEndpoints({
 	}),
 });
 
-export const { useLoginMutation, useRegisterMutation, useSendLogOutMutation } =
+export const { useLoginMutation, usePasswordForgotMutation, useRegisterMutation, useSendLogOutMutation, useResetPasswordMutation } =
 	authApiSlice;
