@@ -36,6 +36,7 @@ export function ResetPasswordForm({
                             <TextField
                                 required
                                 name="password"
+                                type="password"
                                 label="Senha"
                                 value={resetPassword.password || ""}
                                 disabled={isdisabled}
@@ -50,6 +51,7 @@ export function ResetPasswordForm({
                                 required
                                 name="password_confirmation"
                                 label="Confirmação da Senha"
+                                type="password"
                                 value={resetPassword.password_confirmation || ""}
                                 disabled={isdisabled}
                                 onChange={handleChange}
