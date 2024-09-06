@@ -17,7 +17,7 @@ export const SelectionProcessSelected = () => {
   const [options, setOptions] = useState({
     page: 1,
     search: "",
-    perPage: 30,
+    perPage: 120,
     rowsPerPage: [30, 20, 30],
   });
   const [registrationStartDate, setRegistrationStartDate] = useState<Date | null>(null);
