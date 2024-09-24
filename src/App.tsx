@@ -24,8 +24,7 @@ function App() {
         height: "100vh"
       }}
     >
-      <h1>Ola teste</h1>
-      {/* <Layout>
+      <Layout>
         <Routes>
 
           <Route path="/" element={<SelectionProcessSelected />} />
@@ -38,7 +37,7 @@ function App() {
           <Route path="/reset-password/:token/:email" element={<PasswordReset />} />
           <Route path="*" element={<NotFoundCard />} />
         </Routes>
-      </Layout> */}
+      </Layout>
 
     </Box>
 
