@@ -30,7 +30,7 @@ function App() {
         <Routes>
           <Route path="/" element={<ProcessSelectionList />} />
           <Route path="/process-selections/details/:id" element={<ProcessSelectionDetails />} />
-          <Route path="/applications" element={<ProtectedRoute><ProtectedRouteBeforeStart><ApplicationList /></ProtectedRouteBeforeStart></ProtectedRoute>} />
+          <Route path="/applications" element={<ProtectedRoute><ApplicationList /></ProtectedRoute>} />
           <Route path="/applications/create" element={<ProtectedRoute><ApplicationCreate /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><AuthProfile /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />

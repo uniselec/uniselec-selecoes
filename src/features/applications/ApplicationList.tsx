@@ -15,8 +15,7 @@ interface PaginationModel {
 }
 
 export const ApplicationList = () => {
-  const { data: studentSelectionData } = useGetStudentSelectionQuery();
-  const isAuthenticated = useSelector(selectIsAuthenticated);
+const isAuthenticated = useSelector(selectIsAuthenticated);
   const [options, setOptions] = useState({
     page: 1,
     search: "",
@@ -55,7 +54,7 @@ export const ApplicationList = () => {
           </Button>
 
 
-          {studentSelectionData?.studentSelection?.isInPeriod && (
+
           <Button
             variant="contained"
             color="primary"
@@ -64,7 +63,7 @@ export const ApplicationList = () => {
             sx={{ mb: 2 }}
           >
             {(data?.data && Array.isArray(data.data) && data.data.length === 0) ? "Realizar Inscrição":"Alterar Inscrição"}
-          </Button>) }
+          </Button>
 
         </Box>
       </Paper>
