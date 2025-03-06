@@ -34,9 +34,6 @@ function App() {
 
           <Route path="/" element={<ProcessSelectionList />} />
           <Route path="/process-selections/details/:id" element={<ProcessSelectionDetails />} />
-
-
-          <Route path="/selection-process/1" element={<SelectionProcessSelected />} />
           <Route path="/applications" element={<ProtectedRoute><ProtectedRouteBeforeStart><ApplicationList /></ProtectedRouteBeforeStart></ProtectedRoute>} />
           <Route path="/applications/create" element={<ProtectedRoute><ProtectedRoutePeriod><ApplicationCreate /></ProtectedRoutePeriod></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><AuthProfile /></ProtectedRoute>} />
