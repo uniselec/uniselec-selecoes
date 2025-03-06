@@ -27,15 +27,19 @@ export const ProcessSelectionDetails = () => {
     perPage: 120,
     rowsPerPage: [30, 20, 30],
   });
-  const [registrationStartDate, setRegistrationStartDate] = useState<Date | null>(null);
-  const [registrationEndDate, setRegistrationEndDate] = useState<Date | null>(null);
+
 
   const { data, isFetching: isFetchingDocuments, error } = useGetDocumentsQuery(options);
   const { data: dataApplication, isFetching: isFetchingApplications, error: errorApplications } = useGetApplicationsQuery(options);
 
 
   const determineButtonLink = () => {
-
+    if (!isAuthenticated) {
+      return "/register";
+    }
+    // if (studentSelectionData?.studentSelection?.isInPeriod && dataApplication?.data?.length === 0) {
+    //   return "/applications/create";
+    // }
     return "/applications";
   };
 

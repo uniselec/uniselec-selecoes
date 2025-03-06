@@ -69,7 +69,7 @@ export const documentsApiSlice = apiSlice.injectEndpoints({
       providesTags: ["Documents"],
     }),
     getDocumentsByProcessSelection: query<Results, { processSelectionId: string }>({
-      query: ({ processSelectionId }) => `/documents?process_selection_id=${processSelectionId}`,
+      query: ({ processSelectionId }) => `/documents?process_selection=${processSelectionId}`,
       providesTags: ["Documents"],
     }),
     getDocument: query<Result, { id: string }>({

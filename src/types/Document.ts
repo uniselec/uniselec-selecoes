@@ -41,4 +41,5 @@ export interface DocumentParams {
   perPage?: number;
   search?: string;
   isActive?: boolean;
+  process_selection_id?:number;
 }
