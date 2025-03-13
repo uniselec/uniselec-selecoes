@@ -123,7 +123,7 @@ export const ProcessSelectionDetails = () => {
             {/* Right Column */}
             <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
 
-              <Button
+              {/* <Button
                 variant="contained"
                 color="primary"
                 component={Link}
@@ -131,7 +131,7 @@ export const ProcessSelectionDetails = () => {
                 sx={{ mb: 2 }}
               >
                 Inscrições
-              </Button>
+              </Button> */}
 
 
               <Typography variant="h6" sx={{ color: "#0d47a1" }}>Documentos Publicados</Typography>
