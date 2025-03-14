@@ -1,23 +1,22 @@
 
 
 export interface Results {
-    data:  Document[];
+    data:  Course[];
     links: Links;
     meta:  Meta;
 }
 export interface Result {
-    data:  Document;
+    data:  Course;
 }
 
-export interface Document {
-    id:          number;
-    title:       string;
-    description: string;
-    path:        string;
-    filename:    string;
-    email_verified_at: null | string;
-    created_at: null | string;
-    updated_at: null | string;
+export interface Course {
+    id?:              number;
+    name:            string;
+    modality:            string;
+    campus:           string;
+    state:           string;
+    created_at?: null | string;
+    updated_at?: null | string;
 }
 export interface Links {
   prev: string;
@@ -36,10 +35,9 @@ export interface Meta {
   current_page: number;
 }
 
-export interface DocumentParams {
+export interface CourseParams {
   page?: number;
   perPage?: number;
   search?: string;
   isActive?: boolean;
-  process_selection_id?:number;
 }
