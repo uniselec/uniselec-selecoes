@@ -30,7 +30,7 @@ export const ProcessSelectionDetails = () => {
 
 
   const { data, isFetching: isFetchingDocuments, error } = useGetDocumentsQuery(options);
-  const { data: dataApplication, isFetching: isFetchingApplications, error: errorApplications } = useGetApplicationsQuery(options);
+  // const { data: dataApplication, isFetching: isFetchingApplications, error: errorApplications } = useGetApplicationsQuery(options);
 
 
   const determineButtonLink = () => {
