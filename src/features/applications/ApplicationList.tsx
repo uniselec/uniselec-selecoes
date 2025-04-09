@@ -2,7 +2,7 @@ import { Box, Button, Typography } from "@mui/material";
 import { useGetApplicationsQuery } from "./applicationSlice";
 import { Paper } from "@mui/material";
 import { useState } from "react";
-import { ApplicationTable } from "./components/ApplicationTable";
+// import { ApplicationTable } from "./components/ApplicationTable";
 import { Link } from "react-router-dom";
 import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
@@ -41,7 +41,7 @@ const isAuthenticated = useSelector(selectIsAuthenticated);
     <Box>
       <Paper sx={{ p: 5 }}>
         <Box p={2}>
-          <ApplicationTable applications={data} isFetching={isFetching} />
+          {/* <ApplicationTable applications={data} isFetching={isFetching} /> */}
           <br></br><br></br>
           <Button
             variant="contained"
