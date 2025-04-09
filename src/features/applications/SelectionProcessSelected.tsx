@@ -6,12 +6,10 @@ import { Link } from "react-router-dom";
 import { selectIsAuthenticated } from "../auth/authSlice";
 import { useSelector } from "react-redux";
 import { useGetApplicationsQuery } from "./applicationSlice";
-import { useGetStudentSelectionQuery } from "../studentSelection/studentSelectionSlice";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export const SelectionProcessSelected = () => {
-  const { data: studentSelectionData } = useGetStudentSelectionQuery();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [isModalOpen, setModalOpen] = useState(false);
   const [options, setOptions] = useState({
@@ -27,22 +25,14 @@ export const SelectionProcessSelected = () => {
   const { data: dataApplication, isFetching: isFetchingApplications, error: errorApplications } = useGetApplicationsQuery(options);
 
 
-  useEffect(() => {
-    if (studentSelectionData?.studentSelection) {
-      const { start, end } = studentSelectionData.studentSelection;
-      setRegistrationStartDate(start ? new Date(start) : null);
-      setRegistrationEndDate(end ? new Date(end) : null);
-    }
-  }, [studentSelectionData]);
+
 
   const determineButtonLink = () => {
     if (!isAuthenticated) {
       return "/register";
     }
-    if (studentSelectionData?.studentSelection?.isInPeriod && dataApplication?.data?.length === 0) {
-      return "/applications/create";
-    }
-    return "/applications";
+
+    return "/applications/create";
   };
 
   const now = new Date();
@@ -90,18 +80,8 @@ export const SelectionProcessSelected = () => {
             </Grid>
             {/* Right Column */}
             <Grid item xs={12} sm={12} md={12} lg={6} xl={6}>
-              {!(studentSelectionData?.studentSelection?.isAfterStart) ? (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={() => {
-                    setModalOpen(true);
-                  }}
-                  sx={{ mb: 2 }}
-                >
-                  Inscrições
-                </Button>
-              ) : (
+
+
                 <Button
                   variant="contained"
                   color="primary"
@@ -111,7 +91,6 @@ export const SelectionProcessSelected = () => {
                 >
                   Inscrições
                 </Button>
-              )}
 
               <Typography variant="h6" sx={{ color: "#0d47a1" }}>Documentos Publicados</Typography>
               <List dense>

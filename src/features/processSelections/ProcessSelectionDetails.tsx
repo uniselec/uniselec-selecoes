@@ -10,7 +10,6 @@ import { Link } from "react-router-dom";
 import { selectIsAuthenticated } from "../auth/authSlice";
 import { useSelector } from "react-redux";
 import { useGetApplicationsQuery } from "../applications/applicationSlice";
-import { useGetStudentSelectionQuery } from "../studentSelection/studentSelectionSlice";
 import { Document } from "../../types/Document";
 const apiUrl = import.meta.env.VITE_API_URL;
 

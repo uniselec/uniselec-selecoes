@@ -9,8 +9,6 @@ import { ApplicationList } from "./features/applications/ApplicationList";
 import { ApplicationCreate } from "./features/applications/ApplicationCreate";
 import { Register } from "./features/auth/Register";
 import { SelectionProcessSelected } from "./features/applications/SelectionProcessSelected";
-import { ProtectedRoutePeriod } from "./components/ProtectedRoutePeriod";
-import { ProtectedRouteBeforeStart } from "./components/ProtectedRouteBeforeStart";
 import { PasswordReset } from "./features/auth/PasswordReset";
 import { ProcessSelectionList } from "./features/processSelections/ProcessSelectionList";
 import { ProcessSelectionDetails } from "./features/processSelections/ProcessSelectionDetails";
@@ -34,7 +32,7 @@ function App() {
           <Route path="/applications/create" element={<ProtectedRoute><ApplicationCreate /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><AuthProfile /></ProtectedRoute>} />
           <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<ProtectedRouteBeforeStart><Register /></ProtectedRouteBeforeStart>} />
+          <Route path="/register" element={<Register />} />
           <Route path="/reset-password/:token/:email" element={<PasswordReset />} />
           <Route path="*" element={<NotFoundCard />} />
         </Routes>
