@@ -8,7 +8,6 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
 import { selectIsAuthenticated } from "../auth/authSlice";
 import { useSelector } from "react-redux";
-import { useGetStudentSelectionQuery } from "../studentSelection/studentSelectionSlice";
 interface PaginationModel {
   pageSize: number;
   page: number;
