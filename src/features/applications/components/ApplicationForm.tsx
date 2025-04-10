@@ -24,9 +24,10 @@ import { useState, useEffect, FormEvent, SyntheticEvent } from "react";
 import { Application } from "../../../types/Application";
 import { useAppSelector } from "../../../app/hooks";
 import { selectAuthUser } from "../../auth/authSlice";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { format, parseISO, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useGetProcessSelectionQuery } from "../../processSelections/processSelectionSlice";
 
 type Props = {
   application: Application;
@@ -68,6 +69,10 @@ export function ApplicationForm({
   const [enemError, setEnemError] = useState<string | null>(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const userAuth = useAppSelector(selectAuthUser);
+
+  const { id } = useParams();
+  const { data: processSelection, isFetching: isFetchingProcess } = useGetProcessSelectionQuery({ id: id! });
+
 
   useEffect(() => {
     setFormState({ ...formState, ...application?.data, edital: "Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina", position: "Medicina", location_position: "Baturité-CE" });
@@ -150,6 +155,13 @@ export function ApplicationForm({
     setEnemError(error);
     setFormState({ ...formState, enem: value });
   };
+
+
+  useEffect(() => {
+
+    alert(JSON.stringify(processSelection));
+  }, [processSelection]);
+
 
   return (
     <Box p={2}>

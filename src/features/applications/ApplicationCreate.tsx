@@ -4,11 +4,15 @@ import { FormEvent, useEffect, useState } from "react";
 import { Application } from "../../types/Application";
 import { useCreateApplicationMutation } from "./applicationSlice";
 import { ApplicationForm } from "./components/ApplicationForm";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useGetApplicationsQuery, useUpdateApplicationMutation } from "./applicationSlice";
+import { useGetProcessSelectionQuery } from "../processSelections/processSelectionSlice";
 
 
 export const ApplicationCreate = () => {
+
+
+
   const { enqueueSnackbar } = useSnackbar();
   const [createApplication, status] = useCreateApplicationMutation();
   const [updateApplication, statusUpdate] = useUpdateApplicationMutation();
@@ -56,7 +60,7 @@ export const ApplicationCreate = () => {
               <Typography variant="h4">Realizar Inscrição</Typography>
 
             )}
-
+            {JSON.stringify(applicationState)}
           </Box>
         </Box>
         <ApplicationForm
