@@ -24,59 +24,86 @@ import { useState, useEffect, FormEvent, SyntheticEvent } from "react";
 import { Application } from "../../../types/Application";
 import { useAppSelector } from "../../../app/hooks";
 import { selectAuthUser } from "../../auth/authSlice";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { format, parseISO, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useGetProcessSelectionQuery } from "../../processSelections/processSelectionSlice";
+import { ProcessSelection } from "../../../types/ProcessSelection";
+
+type CourseOption = {
+  id: string;
+  name: string;
+  academic_unit: {
+    name: string;
+    state: string;
+  };
+};
+
+interface ApplicationFormState {
+  // campos pessoais
+  name: string;
+  social_name?: string;
+  cpf: string;
+  enem: string;
+  birtdate: string;
+  sex: string;
+  email: string;
+  phone1: string;
+  phone2?: string;
+  address: string;
+  uf: string;
+  city: string;
+
+  // campos de candidatura
+  edital: string;
+  position: string;
+  location_position: string;
+
+  // valores que vêm dos autocompletes / seleções
+  course?: CourseOption | null;
+  enem_year?: number | null;
+  modalidade: string[];
+  bonus: string | null;
+}
 
 type Props = {
   application: Application;
   isdisabled?: boolean;
   isLoading?: boolean;
-  handleSubmit: (e: React.FormEvent<HTMLFormElement>, applicationData2: Application) => void;
+  processSelection: ProcessSelection;
+  handleSubmit: (e: FormEvent<HTMLFormElement>, applicationData2: Application) => void;
 };
-
-const sexOptions = ["Masculino", "Feminino", "Outro"];
-const ufOptions = [
-  "AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG",
-  "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"
-];
-const vagaOptions = [
-  { label: "LB - PPI: Candidatos autodeclarados pretos, pardos ou indígenas, com renda familiar bruta per capita igual ou inferior a 1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - PPI: Candidatos autodeclarados pretos, pardos ou indígenas, com renda familiar bruta per capita igual ou inferior a 1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012)." },
-  { label: "LB - Q: Candidatos autodeclarados quilombolas, com renda familiar bruta per capita igual ou inferior a  1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - Q: Candidatos autodeclarados quilombolas, com renda familiar bruta per capita igual ou inferior a  1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012)." },
-  { label: "LB - PCD: Candidatos com deficiência, que tenham renda familiar bruta per capita igual ou inferior a 1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - PCD: Candidatos com deficiência, que tenham renda familiar bruta per capita igual ou inferior a 1 salário mínimo e que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012)." },
-  { label: "LB - EP: Candidatos com renda familiar bruta per capita igual ou inferior a 1 salário mínimo que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LB - EP: Candidatos com renda familiar bruta per capita igual ou inferior a 1 salário mínimo que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012)." },
-  { label: "LI - PPI: Candidatos autodeclarados pretos, pardos ou indígenas, independentemente da renda, que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LI - PPI: Candidatos autodeclarados pretos, pardos ou indígenas, independentemente da renda, que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012)." },
-  { label: "LI - Q: Candidatos autodeclarados quilombolas, independentemente da renda, tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LI - Q: Candidatos autodeclarados quilombolas, independentemente da renda, tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012)." },
-  { label: "LI - PCD: Candidatos com deficiência, independentemente da renda, que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LI - PCD: Candidatos com deficiência, independentemente da renda, que tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012)." },
-  { label: "LI - EP: Candidatos que, independentemente da renda, tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012).", value: "LI - EP: Candidatos que, independentemente da renda, tenham cursado integralmente o ensino médio em escolas públicas (Lei nº 12.711/2012)." },
-];
-
-const bonusOptions = [
-  { label: "10%: Estudantes que tenham cursado integralmente o ensino médio em escolas públicas.", value: "10%: Estudantes que tenham cursado integralmente o ensino médio em escolas públicas." },
-  { label: "20%: Estudantes que tenham cursado e concluído integralmente o ensino médio em instituições de ensino, públicas ou privadas, localizadas na região do Maciço do Baturité.", value: "20%: Estudantes que tenham cursado e concluído integralmente o ensino médio em instituições de ensino, públicas ou privadas, localizadas na região do Maciço do Baturité." },
-  { label: "Nenhuma das anteriores", value: "Nenhuma das anteriores" },
-];
 
 export function ApplicationForm({
   application,
   isdisabled = false,
   isLoading = false,
-  handleSubmit
+  processSelection,
+  handleSubmit,
 }: Props) {
-  const [formState, setFormState] = useState(application.data || {});
+  // Inicializa o estado com os dados da candidatura e vincula dados default (se necessário)
+  const [formState, setFormState] = useState(application.data || {} as ApplicationFormState);
   const [cpfError, setCpfError] = useState<string | null>(null);
   const [enemError, setEnemError] = useState<string | null>(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
+  const [selectedEnemYear, setSelectedEnemYear] = useState<number | null>(null);
+  const [selectedModalidades, setSelectedModalidades] = useState<string[]>([]);
+  const [selectedBonus, setSelectedBonus] = useState<string>("none");
+
   const userAuth = useAppSelector(selectAuthUser);
 
-  const { id } = useParams();
-  const { data: processSelection, isFetching: isFetchingProcess } = useGetProcessSelectionQuery({ id: id! });
-
-
+  // Atualiza o estado com dados default do processo e usuário autenticado
   useEffect(() => {
-    setFormState({ ...formState, ...application?.data, edital: "Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina", position: "Medicina", location_position: "Baturité-CE" });
-  }, [application]);
+    setFormState((prevState) => ({
+      ...prevState,
+      ...application?.data,
+      edital: processSelection.name, // O edital será fixo
+      position: selectedCourse ? selectedCourse.name : "", // será definido pelo Autocomplete
+      location_position: processSelection.courses
+      ?.find((course: any) => course.id === selectedCourse?.id)
+      ?.academic_unit?.name || "",
+    }));
+  }, [application, processSelection, selectedCourse]);
 
   useEffect(() => {
     if (userAuth) {
@@ -89,31 +116,45 @@ export function ApplicationForm({
     }
   }, [userAuth]);
 
-  const handleAutocompleteChange = (event: SyntheticEvent<Element, Event>, value: string | null, name: string) => {
+  // Manipulador para mudanças no Autocomplete (genérico)
+  const handleAutocompleteChange = (
+    event: SyntheticEvent<Element, Event>,
+    value: any,
+    name: string
+  ) => {
     setFormState((prevState) => ({
       ...prevState,
-      [name]: value || "",
+      [name]: value ? value : "",
     }));
   };
 
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, checked } = e.target;
-    setFormState((prevState) => {
-      const vaga = prevState.vaga || [];
-      if (checked) {
-        return { ...prevState, vaga: [...vaga, value] };
-      } else {
-        return { ...prevState, vaga: vaga.filter((item: string) => item !== value) };
-      }
-    });
+  // Para checkbox de modalidades (usando admission_categories do objeto processSelection)
+  const handleModalidadeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, checked } = e.target;
+    if (checked) {
+      setSelectedModalidades((prev) => [...prev, value]);
+    } else {
+      setSelectedModalidades((prev) => prev.filter((item) => item !== value));
+    }
   };
 
+  // Manipulador para a seleção de bônus
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormState({ ...formState, bonus: e.target.value === "none" ? [] : [e.target.value] });
+    setSelectedBonus(e.target.value);
   };
 
-  const handleConfirmDialogOpen = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleConfirmDialogOpen = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    // Atualiza o estado final com os valores selecionados
+    setFormState(prev => ({
+      ...prev,
+      ...application?.data,
+      edital: processSelection.name,
+      position: selectedCourse ? selectedCourse.name : "",
+      location_position: processSelection.courses
+        ?.find(c => c.id === selectedCourse?.id)
+        ?.academic_unit?.name || "",
+    }));
     setOpenConfirmDialog(true);
   };
 
@@ -123,45 +164,24 @@ export function ApplicationForm({
 
   const handleConfirmSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    const formEvent = new Event('submit', { bubbles: true, cancelable: true }) as unknown as FormEvent<HTMLFormElement>;
-    handleSubmit(formEvent, { data: { ...formState } } as Application);
+    // Submete o formulário com os dados atualizados
+    handleSubmit(e as unknown as FormEvent<HTMLFormElement>, { data: { ...formState } } as Application);
   };
 
   const validateEnemNumber = (enem: string) => {
-    // // Verifica se o número de inscrição tem exatamente 12 caracteres
-    // if (enem.length !== 12) {
-    //   return "O número de inscrição do ENEM deve ter 12 dígitos.";
-    // }
-    // // Verifica se todos os caracteres são dígitos numéricos
-    // if (!/^\d+$/.test(enem)) {
-    //   return "O número de inscrição do ENEM deve conter apenas números.";
-    // }
-    // // Verifica se os primeiros dois dígitos correspondem ao ano 2023
-    // if (enem.slice(0, 2) !== "23") {
-    //   return "O número de inscrição do ENEM não corresponde ao ano de 2023.";
-    // }
+    // Caso queira implementar validações, descomente e ajuste conforme necessário
     return null;
   };
 
   const handleEnemChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let { value } = e.target;
-
-    // Limita o valor a 12 dígitos
     if (value.length > 12) {
       value = value.slice(0, 12);
     }
-
     const error = validateEnemNumber(value);
     setEnemError(error);
-    setFormState({ ...formState, enem: value });
+    setFormState((prevState) => ({ ...prevState, enem: value }));
   };
-
-
-  useEffect(() => {
-
-    alert(JSON.stringify(processSelection));
-  }, [processSelection]);
-
 
   return (
     <Box p={2}>
@@ -181,7 +201,6 @@ export function ApplicationForm({
                 label="Nome Completo"
                 value={formState.name || ""}
                 onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                data-testid="name"
               />
             </FormControl>
           </Grid>
@@ -192,7 +211,6 @@ export function ApplicationForm({
                 label="Nome Social"
                 value={formState.social_name || ""}
                 onChange={(e) => setFormState({ ...formState, social_name: e.target.value })}
-                data-testid="social_name"
               />
             </FormControl>
           </Grid>
@@ -205,7 +223,6 @@ export function ApplicationForm({
                 type="email"
                 value={formState.email || ""}
                 disabled
-                data-testid="email"
               />
             </FormControl>
           </Grid>
@@ -219,7 +236,6 @@ export function ApplicationForm({
                 error={!!cpfError}
                 helperText={cpfError || ""}
                 disabled={isdisabled}
-                data-testid="cpf"
               />
             </FormControl>
           </Grid>
@@ -230,32 +246,20 @@ export function ApplicationForm({
                 name="birtdate"
                 label="Data de Nascimento"
                 type="date"
-                InputLabelProps={{
-                  shrink: true,
-                }}
+                InputLabelProps={{ shrink: true }}
                 value={formState.birtdate || ""}
                 disabled={isdisabled}
                 onChange={(e) => setFormState({ ...formState, birtdate: e.target.value })}
-                data-testid="birtdate"
               />
             </FormControl>
           </Grid>
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <Autocomplete
-                options={sexOptions}
-                getOptionLabel={(option) => option}
+                options={["Masculino", "Feminino", "Outro"]}
                 onChange={(event, value) => handleAutocompleteChange(event, value, "sex")}
                 renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Sexo"
-                    name="sex"
-                    required
-                    value={formState.sex || ""}
-                    disabled={isdisabled}
-                    data-testid="sex"
-                  />
+                  <TextField {...params} label="Sexo" required value={formState.sex || ""} disabled={isdisabled} />
                 )}
               />
             </FormControl>
@@ -269,7 +273,6 @@ export function ApplicationForm({
                 value={formState.phone1 || ""}
                 onChange={(e) => setFormState({ ...formState, phone1: e.target.value })}
                 disabled={isdisabled}
-                data-testid="phone1"
               />
             </FormControl>
           </Grid>
@@ -280,28 +283,18 @@ export function ApplicationForm({
                 name="address"
                 label="Endereço"
                 value={formState.address || ""}
-                disabled={isdisabled}
                 onChange={(e) => setFormState({ ...formState, address: e.target.value })}
-                data-testid="address"
+                disabled={isdisabled}
               />
             </FormControl>
           </Grid>
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <Autocomplete
-                options={ufOptions}
-                getOptionLabel={(option) => option}
+                options={["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"]}
                 onChange={(event, value) => handleAutocompleteChange(event, value, "uf")}
                 renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="UF"
-                    name="uf"
-                    required
-                    value={formState.uf || ""}
-                    disabled={isdisabled}
-                    data-testid="uf"
-                  />
+                  <TextField {...params} label="UF" required value={formState.uf || ""} disabled={isdisabled} />
                 )}
               />
             </FormControl>
@@ -315,7 +308,6 @@ export function ApplicationForm({
                 value={formState.city || ""}
                 onChange={(e) => setFormState({ ...formState, city: e.target.value })}
                 disabled={isdisabled}
-                data-testid="city"
               />
             </FormControl>
           </Grid>
@@ -326,42 +318,48 @@ export function ApplicationForm({
               <Typography variant="h6">Dados da Candidatura</Typography>
             </Box>
           </Grid>
+          {/* Edital fixo */}
           <Grid item xs={12}>
             <FormControl fullWidth>
-              <TextField
-                required
-                name="edital"
-                label="Edital"
-                value="Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina"
-                disabled
-                data-testid="edital"
-              />
+              <Typography variant="subtitle1">
+                {processSelection.name}
+              </Typography>
             </FormControl>
           </Grid>
+          {/* Curso com Autocomplete */}
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
-              <TextField
-                required
-                name="course"
-                label="Curso Pretendido"
-                value="Medicina"
-                disabled
-                data-testid="course"
+              <Autocomplete
+                options={processSelection.courses || []}
+                getOptionLabel={(option: any) =>
+                  `${option.name} - ${option.academic_unit.name} (${option.academic_unit.state})`
+                }
+                onChange={(event, value) => {
+                  setSelectedCourse(value);
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Curso Pretendido" required value={selectedCourse ? `${selectedCourse.name}` : ""} />
+                )}
               />
             </FormControl>
           </Grid>
+          {/* Local de Oferta fixo, pode ser definido a partir do curso ou diretamente */}
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
                 required
                 name="campus"
                 label="Local de Oferta"
-                value="Baturité"
+                value={
+                  selectedCourse
+                    ? selectedCourse.academic_unit.name
+                    : ""
+                }
                 disabled
-                data-testid="campus"
               />
             </FormControl>
           </Grid>
+          {/* Número do ENEM e Ano do ENEM */}
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
@@ -373,81 +371,91 @@ export function ApplicationForm({
                 helperText={enemError || ""}
                 disabled={isdisabled}
                 onChange={handleEnemChange}
-                data-testid="enem"
               />
             </FormControl>
           </Grid>
-
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <Autocomplete
+                options={processSelection.allowed_enem_years || []}
+                getOptionLabel={(option: any) => option.toString()}
+                onChange={(event, value) => setSelectedEnemYear(value)}
+                renderInput={(params) => (
+                  <TextField {...params} label="Ano do ENEM" required value={selectedEnemYear ? selectedEnemYear.toString() : ""} />
+                )}
+              />
+            </FormControl>
+          </Grid>
+          {/* Modalidades (Checkboxes) a partir de admission_categories */}
           <Grid item xs={12}>
             <Box borderBottom={1} mb={2}>
               <Typography variant="h6">Modalidade</Typography>
             </Box>
             <Typography variant="body2" color="textSecondary" mb={2}>
-              O candidato pode se inscrever em mais de uma modalidade, desde que faça jus a elas.
+              Selecione a modalidade de inscrição:
             </Typography>
-            <Box display="flex" alignItems="center" mb={2}>
-              <Check style={{ color: "green" }} />
-              <Typography variant="body1" ml={1}>
-                AC: Ampla Concorrência
-              </Typography>
-            </Box>
             <FormGroup>
-              {vagaOptions.map((option) => (
+              {(processSelection.admission_categories || []).map((option: any) => (
                 <FormControlLabel
-                  key={option.value}
+                  key={option.id}
                   control={
                     <Checkbox
-                      name="vaga"
-                      value={option.value}
-                      checked={formState.vaga?.includes(option.value) || false}
-                      onChange={(e) => handleCheckboxChange(e as React.ChangeEvent<HTMLInputElement>)}
-                      data-testid={`vaga-${option.value}`}
+                      name="modalidade"
+                      value={option.name}
+                      checked={selectedModalidades.includes(option.name)}
+                      onChange={handleModalidadeChange}
                     />
                   }
-                  label={option.label}
+                  label={option.description}
                 />
               ))}
             </FormGroup>
           </Grid>
+          {/* Critérios de Bonificação (Radio Group) */}
           <Grid item xs={12}>
             <Box borderBottom={1} mb={2}>
               <Typography variant="h6">Critérios de Bonificação</Typography>
             </Box>
             <Typography variant="body2" color="textSecondary" mb={2}>
-              O candidato pode marcar apenas uma opção de bonificação, se fizer jus a ela.
+              Marque apenas uma opção, se fizer jus:
             </Typography>
             <RadioGroup
               name="bonus"
-              value={formState.bonus && formState.bonus.length > 0 ? formState.bonus[0] : "none"}
+              value={selectedBonus}
               onChange={handleRadioChange}
             >
-              {bonusOptions.map((option) => (
+              <FormControlLabel
+                value="none"
+                control={<Radio disabled={isdisabled} />}
+                label="Nenhuma das anteriores"
+              />
+              {(processSelection.bonus_options || []).map((option: any) => (
                 <FormControlLabel
-                  key={option.value}
-                  value={option.value}
+                  key={option.id}
+                  value={option.description}
                   control={<Radio disabled={isdisabled} />}
-                  label={option.label}
-                  data-testid={`bonus-${option.value}`}
+                  label={option.description}
                 />
               ))}
             </RadioGroup>
           </Grid>
+          {/* Termos de Responsabilidade */}
           <Grid item xs={12}>
             <Box borderBottom={1} mb={2}>
               <Typography variant="h6">Termos de Responsabilidade</Typography>
             </Box>
             <Typography variant="body2" mb={2}>
-              1. O candidato deverá ler o Edital da respectiva seleção, seus anexos e os atos normativos neles mencionados, para certificar-se de que preenche todos os requisitos exigidos para a participação e aceita todas as condições nele estabelecidas.
+              1. O candidato deverá ler o Edital, seus anexos e os atos normativos para certificar-se de que preenche todos os requisitos.
             </Typography>
             <Typography variant="body2" mb={2}>
-              2. Antes de efetuar sua inscrição, verifique se os dados digitados estão corretos e somente depois, confirme o envio de suas informações.
+              2. Verifique se os dados digitados estão corretos antes de confirmar o envio.
             </Typography>
             <Typography variant="body2" mb={2}>
-              3. A Unilab não se responsabiliza por solicitação de inscrição não recebida devido a quaisquer motivos de ordem técnica dos computadores, falhas de comunicação, congestionamento das linhas de comunicação, procedimento indevido do candidato, bem como por outros fatores que impossibilitem a transferência de dados, sendo de responsabilidade exclusiva do candidato acompanhar a situação de sua inscrição.
+              3. A Unilab não se responsabiliza por problemas técnicos ou falhas na comunicação durante a inscrição.
             </Typography>
             <FormControlLabel
               control={<Checkbox required name="termsAgreement" />}
-              label="Declaro que li e concordo com o termo de responsabilidade."
+              label="Declaro que li e concordo com os termos de responsabilidade."
             />
           </Grid>
           <Grid item xs={12}>
@@ -455,13 +463,8 @@ export function ApplicationForm({
               <Button variant="contained" component={Link} to="/">
                 Página Inicial
               </Button>
-              <Button
-                type="submit"
-                variant="contained"
-                color="secondary"
-                disabled={isdisabled || isLoading}
-              >
-                {isLoading ? "Loading..." : "Realizar Inscrições"}
+              <Button type="submit" variant="contained" color="secondary" disabled={isdisabled || isLoading}>
+                {isLoading ? "Loading..." : "Realizar Inscrição"}
               </Button>
             </Box>
           </Grid>
@@ -487,48 +490,41 @@ export function ApplicationForm({
             <Typography variant="body1"><strong>CPF:</strong> {formState.cpf}</Typography>
             <Typography variant="body1">
               <strong>Data de Nascimento: </strong>
-              {formState.birtdate && isValid(parseISO(formState.birtdate)) ?
-                format(parseISO(formState.birtdate), 'dd/MM/yyyy', { locale: ptBR }) :
-                'Data inválida'}
+              {formState.birtdate && isValid(parseISO(formState.birtdate))
+                ? format(parseISO(formState.birtdate), 'dd/MM/yyyy', { locale: ptBR })
+                : 'Data inválida'}
             </Typography>
             <Typography variant="body1"><strong>Sexo:</strong> {formState.sex}</Typography>
             <Typography variant="body1"><strong>Telefone 1:</strong> {formState.phone1}</Typography>
             <Typography variant="body1"><strong>Endereço:</strong> {formState.address}</Typography>
             <Typography variant="body1"><strong>UF:</strong> {formState.uf}</Typography>
             <Typography variant="body1"><strong>Cidade:</strong> {formState.city}</Typography>
-            <Typography variant="body1"><strong>Edital:</strong> Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina</Typography>
-            <Typography variant="body1"><strong>Curso Pretendido:</strong> Medicina</Typography>
-            <Typography variant="body1"><strong>Local de Oferta:</strong> Baturité</Typography>
+            <Typography variant="body1"><strong>Edital:</strong> {processSelection.name}</Typography>
+            <Typography variant="body1"><strong>Curso Pretendido:</strong> {selectedCourse ? selectedCourse.name : ""}</Typography>
+            <Typography variant="body1"><strong>Local de Oferta:</strong> {selectedCourse ? selectedCourse.academic_unit.name : ""}</Typography>
             <Typography variant="body1"><strong>Número de Inscrição do ENEM:</strong> {formState.enem}</Typography>
+            <Typography variant="body1"><strong>Ano do ENEM:</strong> {selectedEnemYear}</Typography>
             <Typography variant="body1"><strong>Modalidades:</strong></Typography>
             <List>
-              {formState.vaga?.map((vaga, index) => (
+              {selectedModalidades.map((modalidade, index) => (
                 <ListItem key={index}>
-                  <Typography variant="body2">• {vaga}</Typography>
+                  <Typography variant="body2">• {modalidade}</Typography>
                 </ListItem>
               ))}
             </List>
             <Typography variant="body1"><strong>Critérios de Bonificação:</strong></Typography>
             <List>
-              {formState.bonus?.map((bonus, index) => (
-                <ListItem key={index}>
-                  <Typography variant="body2">• {bonus}</Typography>
-                </ListItem>
-              ))}
+              <ListItem>
+                <Typography variant="body2">• {selectedBonus === "none" ? "Nenhuma das anteriores" : selectedBonus}</Typography>
+              </ListItem>
             </List>
           </Box>
         </DialogContent>
-
         <DialogActions>
           <Button onClick={handleConfirmDialogClose} color="primary">
             Cancelar
           </Button>
-          <Button
-            type="button"
-            onClick={handleConfirmSubmit}
-            color="secondary"
-            autoFocus
-          >
+          <Button type="button" onClick={handleConfirmSubmit} color="secondary" autoFocus>
             Confirmar
           </Button>
         </DialogActions>
