@@ -200,6 +200,7 @@ export function ApplicationForm({
                 name="name"
                 label="Nome Completo"
                 value={formState.name || ""}
+                disabled
                 onChange={(e) => setFormState({ ...formState, name: e.target.value })}
               />
             </FormControl>
