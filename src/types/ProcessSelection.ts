@@ -1,5 +1,6 @@
 import { Course } from "./Course";
-
+import { BonusOption } from "./BonusOption";
+import { AdmissionCategory } from "./AdmissionCategory";
 
 export interface Results {
     data:  ProcessSelection[];
@@ -11,16 +12,20 @@ export interface Result {
 }
 
 export interface ProcessSelection {
-    id?:              number;
-    name:            string;
-    description:            string;
-    status:           string;
-    start_date:           string;
-    end_date:           string;
-    type:           string;
-    courses: Course[];
-    created_at?: null | string;
-    updated_at?: null | string;
+  id?:              number;
+  name:            string;
+  description:            string;
+  status:           string;
+  start_date:           string;
+  end_date:           string;
+  type:           string;
+  courses: Course[];
+  documents?: Document[];
+  bonus_options?: BonusOption[];
+  allowed_enem_years?: number[];
+  admission_categories?: AdmissionCategory[];
+  created_at?: null | string;
+  updated_at?: null | string;
 }
 export interface Links {
   prev: string;
