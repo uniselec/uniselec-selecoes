@@ -100,8 +100,8 @@ export function ApplicationForm({
       edital: processSelection.name, // O edital será fixo
       position: selectedCourse ? selectedCourse.name : "", // será definido pelo Autocomplete
       location_position: processSelection.courses
-      ?.find((course: any) => course.id === selectedCourse?.id)
-      ?.academic_unit?.name || "",
+        ?.find((course: any) => course.id === selectedCourse?.id)
+        ?.academic_unit?.name || "",
     }));
   }, [application, processSelection, selectedCourse]);
 
@@ -164,9 +164,18 @@ export function ApplicationForm({
 
   const handleConfirmSubmit = (e: SyntheticEvent) => {
     e.preventDefault();
-    // Submete o formulário com os dados atualizados
-    handleSubmit(e as unknown as FormEvent<HTMLFormElement>, { data: { ...formState } } as Application);
-  };
+    // monta o objeto final incluindo os campos extras
+    const payload = {
+      ...formState,
+      bonus: selectedBonus,
+      modalidade: selectedModalidades,
+      enem_year: selectedEnemYear,
+    };
+    handleSubmit(
+      e as unknown as FormEvent<HTMLFormElement>,
+      { data: payload } as Application
+    );
+  }
 
   const validateEnemNumber = (enem: string) => {
     // Caso queira implementar validações, descomente e ajuste conforme necessário

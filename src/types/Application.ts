@@ -11,10 +11,12 @@ export interface Result {
 export interface Application {
   id: string;
   data: {
+    // Dados pessoais
     name: string;
-    social_name: string;
+    social_name?: string;
     cpf: string;
     enem: string;
+    enem_year?: number;
     birtdate: string;
     sex: string;
     email: string;
@@ -23,22 +25,27 @@ export interface Application {
     address: string;
     uf: string;
     city: string;
-    campus: string;
-    course: string;
-    vaga: string[];
-    bonus?: string[];
-    edital?: string;
-    position?: string;
-    location_position?: string;
+
+    // Dados da candidatura
+    edital: string;
+    course: string;               // id do curso
+    campus: string;               // nome do campus
+    position: string;             // nome do curso (posição)
+    location_position: string;    // nome da unidade acadêmica
+    modalidade: string[];         // lista de categorias de admissão
+    bonus: string;                // critério de bonificação selecionado
+
+    // Confirmações
     publicSchool: boolean;
     termsAgreement: boolean;
+
     updated_at?: string;
   };
-  verification_expected: string,
-  verification_code: string,
-  valid_verification_code: boolean,
-  created_at: null | string;
-  updated_at: null | string;
+  verification_expected: string;
+  verification_code: string;
+  valid_verification_code: boolean;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 export interface Links {
