@@ -76,7 +76,7 @@ export const ApplicationCreate = () => {
               <Typography variant="h4">Realizar Inscrição</Typography>
             )}
             {/* Exibe o objeto processSelection para debug */}
-            {/* <pre>{JSON.stringify(processSelectionState, null, 2)}</pre> */}
+
           </Box>
         </Box>
         <ApplicationForm
