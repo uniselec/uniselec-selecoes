@@ -194,6 +194,7 @@ export function ApplicationForm({
 
   return (
     <Box p={2}>
+      {/* <pre>{JSON.stringify(processSelection, null, 2)}</pre> */}
       <form onSubmit={handleConfirmDialogOpen}>
         <Grid container spacing={3}>
           {/* Dados Pessoais */}
@@ -405,21 +406,28 @@ export function ApplicationForm({
               Selecione a modalidade de inscrição:
             </Typography>
             <FormGroup>
-              {(processSelection.admission_categories || []).map((option: any) => (
-                <FormControlLabel
-                  key={option.id}
-                  control={
-                    <Checkbox
-                      name="modalidade"
-                      value={option.name}
-                      checked={selectedModalidades.includes(option.name)}
-                      onChange={handleModalidadeChange}
+              {(processSelection.admission_categories || [])
+                // só inclui se houver pelo menos 1 vaga naquele curso para esta categoria
+                .filter(option => (selectedCourse?.vacanciesByCategory?.[option.name] ?? 0) > 0)
+                .map(option => {
+                  const vagas = selectedCourse!.vacanciesByCategory![option.name];
+                  return (
+                    <FormControlLabel
+                      key={option.id}
+                      control={
+                        <Checkbox
+                          name="modalidade"
+                          value={option.name}
+                          checked={selectedModalidades.includes(option.name)}
+                          onChange={handleModalidadeChange}
+                        />
+                      }
+                      label={`${option.description} (${vagas} vagas)`}
                     />
-                  }
-                  label={option.description}
-                />
-              ))}
+                  );
+                })}
             </FormGroup>
+
           </Grid>
           {/* Critérios de Bonificação (Radio Group) */}
           <Grid item xs={12}>
