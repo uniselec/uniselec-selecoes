@@ -91,23 +91,17 @@ export const ProcessSelectionDetails = () => {
     <Box sx={{ backgroundColor: "#f5f5f5", padding: 3 }}>
       <Box sx={{ mb: 3 }}>
         <Typography variant="h4" align="center" sx={{ color: "#0d47a1", fontWeight: "bold" }}>
-          Sistema de Seleção de Alunos da UNILAB
+          {processSelection.data.name}
         </Typography>
       </Box>
       <Paper sx={{ p: 4, backgroundColor: "#e3f2fd" }}>
         <Box p={2}>
           <Box mb={2}>
-            <Typography variant="h5" sx={{ color: "#1565c0" }}>Seleções em Andamento</Typography>
+            <Typography variant="h5" sx={{ color: "#1565c0" }}>{processSelection.data.description}</Typography>
           </Box>
           <Grid container spacing={2}>
             {/* Coluna Esquerda */}
             <Grid item xs={12} lg={6}>
-              <Typography variant="h6" sx={{ color: "#0d47a1" }}>
-                {processSelection.data.name}
-              </Typography>
-              <Typography variant="body1" sx={{ mt: 2 }}>
-                {processSelection.data.description}
-              </Typography>
               <Typography variant="body2" sx={{ mt: 2 }}>
                 Início: {new Date(processSelection.data.start_date).toLocaleDateString('pt-BR')} às {new Date(processSelection.data.start_date).toLocaleTimeString('pt-BR')}
               </Typography>
@@ -116,7 +110,7 @@ export const ProcessSelectionDetails = () => {
               </Typography>
               <Box mt={2}>
                 <Typography variant="h6" sx={{ color: "#0d47a1" }}>
-                  Vagas ofertadas agrupadas por Campus
+                  Vagas ofertadas
                 </Typography>
                 {Object.keys(campusGroups).length > 0 ? (
                   <List>
