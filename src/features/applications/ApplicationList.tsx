@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from "react";
 import { selectIsAuthenticated } from "../auth/authSlice";
 import { useSelector } from "react-redux";
+import { ApplicationTable } from "./components/ApplicationTable";
 interface PaginationModel {
   pageSize: number;
   page: number;
@@ -40,7 +41,7 @@ const isAuthenticated = useSelector(selectIsAuthenticated);
     <Box>
       <Paper sx={{ p: 5 }}>
         <Box p={2}>
-          {/* <ApplicationTable applications={data} isFetching={isFetching} /> */}
+          <ApplicationTable applications={data} isFetching={isFetching} />
           <br></br><br></br>
           <Button
             variant="contained"
