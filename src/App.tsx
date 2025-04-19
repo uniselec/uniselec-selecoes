@@ -12,6 +12,7 @@ import { SelectionProcessSelected } from "./features/applications/SelectionProce
 import { PasswordReset } from "./features/auth/PasswordReset";
 import { ProcessSelectionList } from "./features/processSelections/ProcessSelectionList";
 import { ProcessSelectionDetails } from "./features/processSelections/ProcessSelectionDetails";
+import { ProcessSelectionResume } from "./features/processSelections/ProcessSelectionResume";
 
 
 
@@ -26,7 +27,7 @@ function App() {
     >
       <Layout>
         <Routes>
-          <Route path="/" element={<ProcessSelectionList />} />
+          <Route path="/" element={<ProcessSelectionResume />} />
           <Route path="/process-selections/details/:id" element={<ProcessSelectionDetails />} />
           <Route path="/applications" element={<ProtectedRoute><ApplicationList /></ProtectedRoute>} />
           <Route path="/applications/create/:id" element={<ProtectedRoute><ApplicationCreate /></ProtectedRoute>} />

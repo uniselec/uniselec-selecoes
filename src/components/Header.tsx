@@ -1,36 +1,215 @@
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
-import MenuIcon from "@mui/icons-material/Menu";
-import { Box, Button, IconButton, Toolbar } from "@mui/material";
-import { AccountMenu } from "./AccountMenu";
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { styled } from '@mui/material/styles';
-import LogoUNILAB from "../assets/img/logo-unilab.png";
+import {
+  AppBar,
+  Box,
+  Button,
+  Toolbar,
+  Typography,
+  Drawer,
+  useMediaQuery,
+  Container,
+  Menu,
+  MenuItem,
+  Tooltip,
+  IconButton,
+  Avatar,
+  useTheme,
+} from '@mui/material';
+import MenuIcon from '@mui/icons-material/Menu';
+import Logo from "../assets/img/logo-unilab.png";
+import { AccountMenu } from './AccountMenu';
 
-const ImageLogo = styled('img')`
-  width: 300px;
-  padding: 30px;
-`;
-
-type HeaderProps = {
+interface MenuProps {
+  handleDrawerToggle: () => void;
   toggle: () => void;
-  isDark?: boolean;
-  isAuth?: boolean;
-  handleDrawerToggle?: () => void;
-};
+  isDark: boolean;
+  isAuth: boolean;
+  mobileOpen: boolean;
+  setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
-export function Header({ toggle, isAuth = false, isDark = false, handleDrawerToggle }: HeaderProps) {
+const pages = [
+  { name: 'Início', path: '/' },
+  { name: 'Seleções', path: '/' },
+  { name: 'Sobre', path: '/about' },
+  { name: 'Contato', path: '/contact' },
+];
+
+const LargeMenu: React.FC<{ handleCloseNavMenu: () => void }> = ({ handleCloseNavMenu }) => {
+  const theme = useTheme();
   return (
-    <Box>
-      <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Link to="/">
-          <ImageLogo alt="Logo UNILAB" src={LogoUNILAB}/>
+    <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center' }}>
+      {pages.map((page) => (
+        <Link key={page.name} to={page.path} style={{ textDecoration: 'none' }}>
+          <Box
+            onClick={handleCloseNavMenu}
+            sx={{
+              color: theme.palette.common.white,
+              fontSize: 24,
+              fontFamily: 'Fjalla One',
+              fontWeight: 400,
+              px: 2,
+              cursor: 'pointer'
+            }}
+          >
+            {page.name}
+          </Box>
         </Link>
-        <Box sx={{ flexGrow: 1 }} />
-        {isAuth && (
-          <AccountMenu isDark={isDark} toggleTheme={toggle} />
-        )}
-      </Toolbar>
+      ))}
     </Box>
   );
-}
+};
+
+const SmallMenu: React.FC<{
+  anchorElNav: null | HTMLElement;
+  handleOpenNavMenu: (event: React.MouseEvent<HTMLElement>) => void;
+  handleCloseNavMenu: () => void;
+}> = ({ anchorElNav, handleOpenNavMenu, handleCloseNavMenu }) => {
+  const theme = useTheme();
+  return (
+    <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+      <IconButton
+        size="large"
+        aria-label="menu"
+        aria-controls="menu-appbar"
+        aria-haspopup="true"
+        onClick={handleOpenNavMenu}
+        color="inherit"
+      >
+        <MenuIcon />
+      </IconButton>
+      <Menu
+        id="menu-appbar"
+        anchorEl={anchorElNav}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        keepMounted
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'left',
+        }}
+        open={Boolean(anchorElNav)}
+        onClose={handleCloseNavMenu}
+        sx={{ display: { xs: 'block', md: 'none' } }}
+      >
+        {pages.map((page) => (
+          <MenuItem key={page.name} onClick={handleCloseNavMenu}>
+            <Typography
+              sx={{
+                textAlign: 'center',
+                color: theme.palette.text.primary,
+              }}
+            >
+              <Link
+                to={page.path}
+                style={{
+                  textDecoration: 'none',
+                  color: theme.palette.primary.main,
+                }}
+              >
+                {page.name}
+              </Link>
+            </Typography>
+          </MenuItem>
+        ))}
+      </Menu>
+    </Box>
+  );
+};
+
+export const Header: React.FC<MenuProps> = ({
+  handleDrawerToggle,
+  toggle,
+  isDark,
+  isAuth,
+  mobileOpen,
+  setMobileOpen,
+}) => {
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const toggleDrawer = () => {
+    setDrawerOpen(!drawerOpen);
+    setMobileOpen(!mobileOpen);
+  };
+
+  const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
+
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorElNav(event.currentTarget);
+  };
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
+
+
+
+
+  return (
+    <AppBar
+      position="static"
+      sx={{
+
+        boxShadow: 'none',
+        borderBottom: `1px solid ${theme.palette.divider}`,
+      }}
+    >
+      <Container maxWidth="xl" sx={{ height: 80, mt: 2 }}>
+        <Toolbar disableGutters>
+          <Link to="/">
+            <Box
+              component="img"
+              sx={{
+                height: 64,
+                display: { xs: 'none', md: 'flex' },
+              }}
+              alt="Logo"
+              src={Logo}
+            />
+          </Link>
+          <Link to="/home">
+            <Box
+              component="img"
+              sx={{
+                height: 64,
+                mr: 1,
+                display: { xs: 'flex', md: 'none' },
+              }}
+              alt="Logo"
+              src={Logo}
+            />
+          </Link>
+          <Typography
+            variant="h5"
+            noWrap
+            component="div"
+            sx={{
+              display: { xs: 'flex', md: 'none' },
+              flexGrow: 1,
+              fontFamily: 'monospace',
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: theme.palette.text.primary,
+              textDecoration: 'none',
+            }}
+          />
+          <LargeMenu handleCloseNavMenu={handleCloseNavMenu} />
+
+            {isAuth && (
+              <AccountMenu isDark={isDark} toggleTheme={toggle} />
+            )}
+
+          <SmallMenu
+            anchorElNav={anchorElNav}
+            handleOpenNavMenu={handleOpenNavMenu}
+            handleCloseNavMenu={handleCloseNavMenu}
+          />
+        </Toolbar>
+      </Container>
+    </AppBar>
+  );
+};
