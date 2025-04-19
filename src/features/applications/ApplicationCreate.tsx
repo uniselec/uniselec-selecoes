@@ -8,8 +8,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useGetApplicationsQuery, useUpdateApplicationMutation } from "./applicationSlice";
 import { useGetProcessSelectionQuery } from "../processSelections/processSelectionSlice";
 import { ProcessSelection } from "../../types/ProcessSelection";
+import { selectIsAuthenticated } from "../auth/authSlice";
+import { useAppSelector } from "../../app/hooks";
+import { Register } from "../auth/Register";
 
 export const ApplicationCreate = () => {
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const { id } = useParams();
   const { data: processSelection, isFetching: isFetchingProcess } = useGetProcessSelectionQuery({ id: id! });
   const [processSelectionState, setProcessSelectionState] = useState({} as ProcessSelection);
@@ -65,6 +69,9 @@ export const ApplicationCreate = () => {
     return <>LOADING</>;
   }
 
+  if(!isAuthenticated) {
+    return (<Register />);
+  }
   return (
     <Box>
       <Paper sx={{ p: 5 }}>

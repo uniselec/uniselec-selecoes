@@ -347,6 +347,7 @@ export function ApplicationForm({
                 }
                 onChange={(event, value) => {
                   setSelectedCourse(value);
+                  setSelectedModalidades([]); // limpa todas as modalidades selecionadas
                 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Curso Pretendido" required value={selectedCourse ? `${selectedCourse.name}` : ""} />
@@ -356,20 +357,16 @@ export function ApplicationForm({
           </Grid>
           {/* Local de Oferta fixo, pode ser definido a partir do curso ou diretamente */}
           <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <TextField
-                required
-                name="campus"
-                label="Local de Oferta"
-                value={
-                  selectedCourse
-                    ? selectedCourse.academic_unit.name
-                    : ""
-                }
-                disabled
-              />
-            </FormControl>
+            <Box mb={1}>
+              <Typography variant="subtitle2" color="textSecondary">
+                Local de Oferta
+              </Typography>
+            </Box>
+            <Typography variant="body1">
+              {(selectedCourse?.academic_unit.description ?? "")}
+            </Typography>
           </Grid>
+
           {/* Número do ENEM e Ano do ENEM */}
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
@@ -405,28 +402,37 @@ export function ApplicationForm({
             <Typography variant="body2" color="textSecondary" mb={2}>
               Selecione a modalidade de inscrição:
             </Typography>
-            <FormGroup>
+            <List>
               {(processSelection.admission_categories || [])
-                // só inclui se houver pelo menos 1 vaga naquele curso para esta categoria
                 .filter(option => (selectedCourse?.vacanciesByCategory?.[option.name] ?? 0) > 0)
                 .map(option => {
                   const vagas = selectedCourse!.vacanciesByCategory![option.name];
                   return (
-                    <FormControlLabel
+                    <ListItem
                       key={option.id}
-                      control={
-                        <Checkbox
-                          name="modalidade"
-                          value={option.name}
-                          checked={selectedModalidades.includes(option.name)}
-                          onChange={handleModalidadeChange}
-                        />
-                      }
-                      label={`${option.description} (${vagas} vagas)`}
-                    />
+                      disableGutters
+                      sx={{
+                        mb: 1,                    // margem entre itens
+                        border: '1px solid #ddd', // borda sutil
+                        borderRadius: 1,
+                        p: 1                      // padding interno
+                      }}
+                    >
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            name="modalidade"
+                            value={option.name}
+                            checked={selectedModalidades.includes(option.name)}
+                            onChange={handleModalidadeChange}
+                          />
+                        }
+                        label={`${option.description} (${vagas} vagas)`}
+                      />
+                    </ListItem>
                   );
                 })}
-            </FormGroup>
+            </List>
 
           </Grid>
           {/* Critérios de Bonificação (Radio Group) */}
