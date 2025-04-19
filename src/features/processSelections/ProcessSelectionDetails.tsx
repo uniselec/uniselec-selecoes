@@ -74,16 +74,7 @@ export const ProcessSelectionDetails = () => {
     return groups;
   }, {} as Record<string, CampusGroup>);
 
-  const determineButtonLink = () => {
-    if (!isAuthenticated) {
-      return "/register";
-    }
-    return `/applications/create/${id}`;
-  };
 
-  const handleApply = () => {
-    navigate(isAuthenticated ? "/applications" : "/applications/create");
-  };
 
   const handleClose = () => setModalOpen(false);
 
@@ -147,7 +138,7 @@ export const ProcessSelectionDetails = () => {
                   variant="contained"
                   color="primary"
                   component={Link}
-                  to={determineButtonLink()}
+                  to={`/applications/create/${id}`}
                   sx={{ mb: 2 }}
                 >
                   Inscrições
