@@ -123,9 +123,9 @@ export function AccountMenu({ isDark, toggleTheme }: Props) {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link to="/candidate-dashboard" style={{ textDecoration: 'none', color: 'inherit' }}>
                     <MenuItem onClick={handleClose}>
-                        <Avatar /> Perfil
+                        <Avatar /> Portal do Candidato
                     </MenuItem>
                 </Link>
                 {/* <MenuItem onClick={handleClose}>
