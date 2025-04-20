@@ -100,7 +100,7 @@ export function ApplicationTable({ applications, isFetching }: Props) {
                         <Typography variant="body1"><strong>Email:</strong> {value.data.email}</Typography>
                         <Typography variant="body1"><strong>CPF:</strong> {value.data.cpf}</Typography>
                         <Typography variant="body1"><strong>Sexo:</strong> {value.data.sex}</Typography>
-                        <Typography variant="body1"><strong>Telefone 1:</strong> {value.data.phone1}</Typography>
+                        <Typography variant="body1"><strong>Telefone:</strong> {value.data.phone1}</Typography>
                         <Typography variant="body1"><strong>Endereço:</strong> {value.data.address}</Typography>
                         <Typography variant="body1"><strong>Cidade-UF:</strong> {value.data.city}-{value.data.uf}</Typography>
 
