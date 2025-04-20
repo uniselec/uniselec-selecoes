@@ -40,10 +40,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
           position="fixed"
         >
           <Header
+
             handleDrawerToggle={handleDrawerToggle}
             toggle={toggleCurrentTheme}
             isDark={currentTheme.palette.mode === "dark"}
             isAuth={isAuthenticated}
+            mobileOpen={mobileOpen}
+            setMobileOpen={setMobileOpen}
           />
         </AppBar>
         <SnackbarProvider
@@ -51,9 +54,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           maxSnack={3}
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
-                <Container sx={{ color: "white", mt: 25, mb: 5, flexGrow: 1 }}>
-                  {children}
-                </Container>
+          <Container sx={{ color: "white", mt: 25, mb: 5, flexGrow: 1 }}>
+            {children}
+          </Container>
         </SnackbarProvider>
 
       </Box>
