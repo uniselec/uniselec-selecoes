@@ -32,8 +32,9 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useNavigate } from "react-router-dom";
 import { useSendLogOutMutation } from "../auth/authApiSlice";
 import { useSnackbar } from "notistack";
-import { logOut, selectIsAuthenticated } from "../auth/authSlice";
+import { logOut, selectAuthUser, selectIsAuthenticated } from "../auth/authSlice";
 import { Register } from "../auth/Register";
+import { useGetUserQuery } from "../users/userSlice";
 
 /** Types **/
 export type Application = {
@@ -98,6 +99,10 @@ const statusColor = (status: Application["status"]) => {
 
 /** New visual – accordion master‑detail **/
 const CandidateDashboard: React.FC = () => {
+  const userAuth = useAppSelector(selectAuthUser);
+  const id = userAuth.id as string;
+  const { data: user, isFetching } = useGetUserQuery({ id });
+
 
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const dispatch = useAppDispatch();
@@ -137,7 +142,7 @@ const CandidateDashboard: React.FC = () => {
     }
   }, [enqueueSnackbar, statusLogout.error, statusLogout.isSuccess]);
 
-  if(!isAuthenticated) {
+  if (!isAuthenticated) {
     return (<Register />);
   }
   return (
@@ -156,16 +161,16 @@ const CandidateDashboard: React.FC = () => {
           <Grid container spacing={2} alignItems="center">
             <Grid item>
               <Avatar sx={{ width: 56, height: 56 }}>
-                {candidate.name.split(" ")[0][0]}
+                {userAuth?.name.split(" ")[0][0]}
               </Avatar>
             </Grid>
             <Grid item xs>
               <Typography variant="h6" gutterBottom>
-                {candidate.name}
+                {userAuth?.name}
               </Typography>
-              <Typography>{candidate.email}</Typography>
+              <Typography>{userAuth?.email}</Typography>
               <Typography variant="body2" color="text.secondary">
-                {candidate.phone} · {candidate.document}
+                {userAuth?.cpf}
               </Typography>
             </Grid>
             {/* <Grid item>
