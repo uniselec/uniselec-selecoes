@@ -35,6 +35,7 @@ import { useSnackbar } from "notistack";
 import { logOut, selectAuthUser, selectIsAuthenticated } from "../auth/authSlice";
 import { Register } from "../auth/Register";
 import { useGetUserQuery } from "../users/userSlice";
+import { useGetApplicationsQuery } from "./applicationSlice";
 
 /** Types **/
 export type Application = {
@@ -109,6 +110,15 @@ const CandidateDashboard: React.FC = () => {
   const navigate = useNavigate();
   const [logout, statusLogout] = useSendLogOutMutation();
   const { enqueueSnackbar } = useSnackbar();
+
+  const [options, setOptions] = useState({
+    page: 1,
+    search: "",
+    perPage: 10,
+    rowsPerPage: [10, 20, 30],
+  });
+
+  const { data: applications, isFetching: isFetchingApplication, error } = useGetApplicationsQuery(options);
 
 
 
@@ -186,7 +196,7 @@ const CandidateDashboard: React.FC = () => {
           Minhas Inscrições
         </Typography>
         <Divider sx={{ mb: 2 }} />
-
+        <pre>{JSON.stringify(applications, null, 2)}</pre>
         {apps
           .sort((a, b) => +new Date(b.submittedAt) - +new Date(a.submittedAt))
           .map((app) => (

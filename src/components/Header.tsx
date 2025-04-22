@@ -171,7 +171,7 @@ export const Header: React.FC<MenuProps> = ({
               src={Logo}
             />
           </Link>
-          <Link to="/home">
+          <Link to="/">
             <Box
               component="img"
               sx={{
