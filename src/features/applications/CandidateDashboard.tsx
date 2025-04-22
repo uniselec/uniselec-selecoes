@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AppBar,
   Toolbar,
@@ -28,6 +28,12 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import EditIcon from "@mui/icons-material/Edit";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SchoolIcon from "@mui/icons-material/School";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useNavigate } from "react-router-dom";
+import { useSendLogOutMutation } from "../auth/authApiSlice";
+import { useSnackbar } from "notistack";
+import { logOut, selectIsAuthenticated } from "../auth/authSlice";
+import { Register } from "../auth/Register";
 
 /** Types **/
 export type Application = {
@@ -92,6 +98,15 @@ const statusColor = (status: Application["status"]) => {
 
 /** New visual – accordion master‑detail **/
 const CandidateDashboard: React.FC = () => {
+
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const [logout, statusLogout] = useSendLogOutMutation();
+  const { enqueueSnackbar } = useSnackbar();
+
+
+
   const theme = useTheme();
   const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
 
@@ -106,13 +121,32 @@ const CandidateDashboard: React.FC = () => {
     setSnackOpen(true);
   };
 
+
+  const handleLogout = () => {
+    logout({});
+    dispatch(logOut());
+  }
+
+  useEffect(() => {
+    if (statusLogout.isSuccess) {
+      enqueueSnackbar("Logout realizado", { variant: "success" });
+      navigate("/");
+    }
+    if (statusLogout.error) {
+      enqueueSnackbar("Falha no logout", { variant: "error" });
+    }
+  }, [enqueueSnackbar, statusLogout.error, statusLogout.isSuccess]);
+
+  if(!isAuthenticated) {
+    return (<Register />);
+  }
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default", color: "text.primary" }}>
       {/* AppBar */}
       <AppBar position="static">
         <Toolbar sx={{ justifyContent: "space-between" }}>
           <Typography variant="h6">Portal do Candidato</Typography>
-          <Button color="inherit" startIcon={<LogoutIcon />}>Sair</Button>
+          <Button color="inherit" onClick={handleLogout} startIcon={<LogoutIcon />}>Sair</Button>
         </Toolbar>
       </AppBar>
 
