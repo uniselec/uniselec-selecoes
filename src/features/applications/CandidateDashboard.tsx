@@ -1,3 +1,4 @@
+// src/features/applications/CandidateDashboard.tsx
 import React, { useEffect, useState } from "react";
 import {
   AppBar,
@@ -8,140 +9,51 @@ import {
   Paper,
   Grid,
   Avatar,
-  IconButton,
+  Divider,
   Accordion,
   AccordionSummary,
   AccordionDetails,
-  Chip,
-  Divider,
+  Snackbar,
+  Alert,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   TextField,
-  Snackbar,
-  Alert,
   useMediaQuery,
   useTheme,
+  CircularProgress,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import EditIcon from "@mui/icons-material/Edit";
 import LogoutIcon from "@mui/icons-material/Logout";
 import SchoolIcon from "@mui/icons-material/School";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { useNavigate } from "react-router-dom";
-import { useSendLogOutMutation } from "../auth/authApiSlice";
 import { useSnackbar } from "notistack";
-import { logOut, selectAuthUser, selectIsAuthenticated } from "../auth/authSlice";
+import {
+  logOut,
+  selectAuthUser,
+  selectIsAuthenticated,
+} from "../auth/authSlice";
+import { useSendLogOutMutation } from "../auth/authApiSlice";
 import { Register } from "../auth/Register";
 import { useGetUserQuery } from "../users/userSlice";
 import { useGetApplicationsQuery } from "./applicationSlice";
 
-/** Types **/
-export type Application = {
-  id: string;
-  courseName: string;
-  status: "Pending" | "Approved" | "Rejected";
-  submittedAt: string;
-  details: string;
-};
-
-export type Candidate = {
-  name: string;
-  email: string;
-  phone: string;
-  document: string;
-};
-
-/** Mock data **/
-const mockCandidate: Candidate = {
-  name: "João da Silva",
-  email: "joao.silva@example.com",
-  phone: "(11) 99999‑8888",
-  document: "123.456.789‑00",
-};
-
-const mockApps: Application[] = [
-  {
-    id: "APP‑001",
-    courseName: "Medicina",
-    status: "Pending",
-    submittedAt: "2025‑04‑01",
-    details:
-      "Inscrição para Medicina turno integral. Modalidade ampla concorrência.",
-  },
-  {
-    id: "APP‑002",
-    courseName: "Engenharia de Software",
-    status: "Approved",
-    submittedAt: "2025‑03‑15",
-    details:
-      "Inscrição aprovada para Engenharia de Software turno noturno.",
-  },
-  {
-    id: "APP‑003",
-    courseName: "Direito",
-    status: "Rejected",
-    submittedAt: "2025‑02‑10",
-    details: "Inscrição recusada por documentação incompleta.",
-  },
-];
-
-const statusColor = (status: Application["status"]) => {
-  switch (status) {
-    case "Approved":
-      return "success";
-    case "Rejected":
-      return "error";
-    default:
-      return "warning";
-  }
-};
-
-/** New visual – accordion master‑detail **/
 const CandidateDashboard: React.FC = () => {
+  /* ------------ auth & user ------------ */
   const userAuth = useAppSelector(selectAuthUser);
-  const id = userAuth.id as string;
-  const { data: user, isFetching } = useGetUserQuery({ id });
-
-
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const [logout, statusLogout] = useSendLogOutMutation();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [options, setOptions] = useState({
-    page: 1,
-    search: "",
-    perPage: 10,
-    rowsPerPage: [10, 20, 30],
-  });
-
-  const { data: applications, isFetching: isFetchingApplication, error } = useGetApplicationsQuery(options);
-
-
-
-  const theme = useTheme();
-  const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
-
-  const [candidate, setCandidate] = useState<Candidate>(mockCandidate);
-  const [apps] = useState<Application[]>(mockApps);
-  const [editOpen, setEditOpen] = useState(false);
-  const [snackOpen, setSnackOpen] = useState(false);
-
-  const handleSave = (c: Candidate) => {
-    setCandidate(c);
-    setEditOpen(false);
-    setSnackOpen(true);
-  };
-
-
+  /* ------------ logout ------------ */
+  const [logout, statusLogout] = useSendLogOutMutation();
   const handleLogout = () => {
     logout({});
     dispatch(logOut());
-  }
-
+  };
   useEffect(() => {
     if (statusLogout.isSuccess) {
       enqueueSnackbar("Logout realizado", { variant: "success" });
@@ -150,28 +62,53 @@ const CandidateDashboard: React.FC = () => {
     if (statusLogout.error) {
       enqueueSnackbar("Falha no logout", { variant: "error" });
     }
-  }, [enqueueSnackbar, statusLogout.error, statusLogout.isSuccess]);
+  }, [enqueueSnackbar, statusLogout, navigate]);
 
-  if (!isAuthenticated) {
-    return (<Register />);
-  }
+  /* ------------ user info (para avatar) ------------ */
+  const { data: userRemote } = useGetUserQuery({ id: userAuth?.id });
+
+  /* ------------ applications ------------ */
+  const [options] = useState({ page: 1, perPage: 20, search: "" });
+  const {
+    data: applicationsResponse,
+    isFetching,
+    error,
+  } = useGetApplicationsQuery(options);
+
+  /* ------------ UI helpers ------------ */
+  const theme = useTheme();
+  const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
+
+  /* ------------ snackbar demo para edição (placeholder) ------------ */
+  const [editOpen, setEditOpen] = useState(false);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const handleSaveProfile = () => {
+    setEditOpen(false);
+    setSnackOpen(true);
+  };
+
+  if (!isAuthenticated) return <Register />;
+
   return (
-    <Box sx={{ minHeight: "100vh", bgcolor: "background.default", color: "text.primary" }}>
+    <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       {/* AppBar */}
       <AppBar position="static">
         <Toolbar sx={{ justifyContent: "space-between" }}>
           <Typography variant="h6">Portal do Candidato</Typography>
-          <Button color="inherit" onClick={handleLogout} startIcon={<LogoutIcon />}>Sair</Button>
+          <Button color="inherit" onClick={handleLogout} startIcon={<LogoutIcon />}>
+            Sair
+          </Button>
         </Toolbar>
       </AppBar>
 
-      {/* Candidate summary */}
+      {/* Conteúdo */}
       <Box sx={{ p: { xs: 2, md: 4 } }}>
+        {/* Resumo do candidato */}
         <Paper elevation={2} sx={{ p: 3, borderRadius: 3, mb: 4 }}>
           <Grid container spacing={2} alignItems="center">
             <Grid item>
               <Avatar sx={{ width: 56, height: 56 }}>
-                {userAuth?.name.split(" ")[0][0]}
+                {userAuth?.name?.charAt(0)}
               </Avatar>
             </Grid>
             <Grid item xs>
@@ -183,62 +120,65 @@ const CandidateDashboard: React.FC = () => {
                 {userAuth?.cpf}
               </Typography>
             </Grid>
-            {/* <Grid item>
-              <IconButton onClick={() => setEditOpen(true)}>
-                <EditIcon />
-              </IconButton>
-            </Grid> */}
           </Grid>
         </Paper>
 
-        {/* Applications accordion */}
+        {/* Lista de inscrições */}
         <Typography variant="h6" gutterBottom>
           Minhas Inscrições
         </Typography>
         <Divider sx={{ mb: 2 }} />
-        <pre>{JSON.stringify(applications, null, 2)}</pre>
-        {apps
-          .sort((a, b) => +new Date(b.submittedAt) - +new Date(a.submittedAt))
-          .map((app) => (
-            <Accordion key={app.id} sx={{ mb: 1, borderRadius: 2 }}>
-              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                <Grid container spacing={2} alignItems="center">
-                  <Grid item>
-                    <SchoolIcon fontSize="small" />
-                  </Grid>
-                  <Grid item xs>
-                    <Typography>{app.courseName}</Typography>
-                    {isSmUp && (
-                      <Typography variant="caption" color="text.secondary">
-                        Enviado em {new Date(app.submittedAt).toLocaleDateString("pt-BR")}
-                      </Typography>
-                    )}
-                  </Grid>
-                  <Grid item>
-                    <Chip label={app.status} size="small" color={statusColor(app.status)} />
-                  </Grid>
+
+        {isFetching && (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+            <CircularProgress />
+          </Box>
+        )}
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            Não foi possível carregar suas inscrições.
+          </Alert>
+        )}
+
+        {(applicationsResponse?.data ?? []).map((app: any) => (
+          <Accordion key={app.id} sx={{ mb: 1, borderRadius: 2 }}>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Grid container spacing={2} alignItems="center">
+                <Grid item>
+                  <SchoolIcon fontSize="small" />
                 </Grid>
-              </AccordionSummary>
-              <AccordionDetails>
-                <Typography variant="body2" gutterBottom>
-                  <strong>Data de envio:</strong> {new Date(app.submittedAt).toLocaleDateString("pt-BR")}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {app.details}
-                </Typography>
-              </AccordionDetails>
-            </Accordion>
-          ))}
+                <Grid item xs>
+                  <Typography>{app.data.position}</Typography>
+                  {isSmUp && (
+                    <Typography variant="caption" color="text.secondary">
+                      Enviada em{" "}
+                      {new Date(app.created_at).toLocaleDateString("pt-BR")}
+                    </Typography>
+                  )}
+                </Grid>
+              </Grid>
+            </AccordionSummary>
+            <AccordionDetails>
+              <Typography variant="body2" gutterBottom>
+                <strong>Data de envio:</strong>{" "}
+                {new Date(app.created_at).toLocaleDateString("pt-BR")}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Campus: {app.data.location_position}
+              </Typography>
+            </AccordionDetails>
+          </Accordion>
+        ))}
       </Box>
 
-      {/* Edit dialog */}
+      {/* Diálogo de edição (placeholder) */}
       <EditProfileDialog
         open={editOpen}
-        candidate={candidate}
         onClose={() => setEditOpen(false)}
-        onSave={handleSave}
+        onSave={handleSaveProfile}
       />
 
+      {/* Snackbar */}
       <Snackbar
         open={snackOpen}
         autoHideDuration={3000}
@@ -253,75 +193,31 @@ const CandidateDashboard: React.FC = () => {
   );
 };
 
-/** Edit dialog **/
+/* ---------- Diálogo de edição ---------- */
 interface EditProfileDialogProps {
   open: boolean;
-  candidate: Candidate;
   onClose: () => void;
-  onSave: (c: Candidate) => void;
+  onSave: () => void;
 }
-
 const EditProfileDialog: React.FC<EditProfileDialogProps> = ({
   open,
-  candidate,
   onClose,
   onSave,
-}) => {
-  const [form, setForm] = useState<Candidate>(candidate);
-
-  const handleChange = (field: keyof Candidate) => (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => setForm((prev) => ({ ...prev, [field]: e.target.value }));
-
-  const handleSubmit = () => onSave(form);
-
-  return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Editar Perfil</DialogTitle>
-      <DialogContent dividers sx={{ pt: 2 }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <TextField
-              label="Nome"
-              fullWidth
-              value={form.name}
-              onChange={handleChange("name")}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="E‑mail"
-              fullWidth
-              value={form.email}
-              onChange={handleChange("email")}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Telefone"
-              fullWidth
-              value={form.phone}
-              onChange={handleChange("phone")}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Documento"
-              fullWidth
-              value={form.document}
-              onChange={handleChange("document")}
-            />
-          </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button variant="contained" onClick={handleSubmit}>
-          Salvar
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
+}) => (
+  <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <DialogTitle>Editar Perfil</DialogTitle>
+    <DialogContent dividers sx={{ pt: 2 }}>
+      {/* coloque campos de edição se/quando precisar */}
+      <TextField label="Nome" fullWidth sx={{ mb: 2 }} disabled />
+      <TextField label="E-mail" fullWidth sx={{ mb: 2 }} disabled />
+    </DialogContent>
+    <DialogActions>
+      <Button onClick={onClose}>Cancelar</Button>
+      <Button variant="contained" onClick={onSave}>
+        Salvar
+      </Button>
+    </DialogActions>
+  </Dialog>
+);
 
 export { CandidateDashboard };
