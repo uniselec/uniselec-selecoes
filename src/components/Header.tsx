@@ -29,11 +29,11 @@ interface MenuProps {
   setMobileOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const pages = [
+const pages: any[] = [
   { name: 'Início', path: '/' },
-  { name: 'Seleções', path: '/' },
-  { name: 'Sobre', path: '/about' },
-  { name: 'Contato', path: '/contact' },
+  { name: 'Institucional', path: '/institucional' },
+  { name: 'Sobre', path: '/sobre' },
+  { name: 'Area do Candidato', path: '/candidate-dashboard' },
 ];
 
 const LargeMenu: React.FC<{ handleCloseNavMenu: () => void }> = ({ handleCloseNavMenu }) => {
@@ -171,7 +171,7 @@ export const Header: React.FC<MenuProps> = ({
               src={Logo}
             />
           </Link>
-          <Link to="/home">
+          <Link to="/">
             <Box
               component="img"
               sx={{

@@ -123,14 +123,11 @@ export function AccountMenu({ isDark, toggleTheme }: Props) {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link to="/candidate-dashboard" style={{ textDecoration: 'none', color: 'inherit' }}>
                     <MenuItem onClick={handleClose}>
-                        <Avatar /> Perfil
+                        <Avatar /> Portal do Candidato
                     </MenuItem>
                 </Link>
-                {/* <MenuItem onClick={handleClose}>
-                    <Avatar /> My account
-                </MenuItem> */}
                 <Divider />
                 <MenuItem onClick={handleClickLanguage} id="language-menu-button">
                     <ListItemIcon>
@@ -138,12 +135,7 @@ export function AccountMenu({ isDark, toggleTheme }: Props) {
                     </ListItemIcon>
                     Idioma: {localeSelected?.label}
                 </MenuItem>
-                {/* <MenuItem onClick={handleClose}>
-                    <ListItemIcon>
-                        <Settings fontSize="small" />
-                    </ListItemIcon>
-                    Settings
-                </MenuItem> */}
+
 
 
 
@@ -154,16 +146,6 @@ export function AccountMenu({ isDark, toggleTheme }: Props) {
                     Mudar Tema
                 </MenuItem>
                 <Divider />
-
-                {/* <MenuItem onClick={handleClose}>
-                    Nível Admin
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                    Nível Técnico
-                </MenuItem>
-                <MenuItem onClick={handleClose}>
-                    Nível Cliente
-                </MenuItem> */}
                 <LogoutItemMenu />
             </Menu>
 

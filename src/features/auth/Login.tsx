@@ -54,7 +54,7 @@ export const Login = () => {
         if (statusLogin.isSuccess) {
             enqueueSnackbar("Login Realizado com Sucesso!", { variant: "success" });
             setIsLoading(false);
-            navigate('/applications');
+            navigate('/candidate-dashboard');
         }
         if (statusLogin.error) {
             enqueueSnackbar("Falha no Login", { variant: "error" });
@@ -62,17 +62,6 @@ export const Login = () => {
         }
     }, [enqueueSnackbar, statusLogin.error, statusLogin.isSuccess]);
 
-    useEffect(() => {
-        if (statusLogin.isSuccess) {
-            enqueueSnackbar("Login Realizado com Sucesso!", { variant: "success" });
-            setIsLoading(false);
-            navigate('/applications');
-        }
-        if (statusLogin.error) {
-            enqueueSnackbar("Falha no Login", { variant: "error" });
-            setIsLoading(false);
-        }
-    }, [enqueueSnackbar, statusLogin.error, statusLogin.isSuccess]);
     return (
         <Box display="flex" justifyContent="center" alignItems="center">
             <Paper>

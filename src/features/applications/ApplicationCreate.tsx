@@ -52,7 +52,7 @@ export const ApplicationCreate = () => {
     if (status.isSuccess) {
       enqueueSnackbar("Inscrição Realizada Com Sucesso", { variant: "success" });
       setIsdisabled(true);
-      navigate('/applications');
+      navigate('/candidate-dashboard');
     }
     if (status.error) {
       enqueueSnackbar("Application not created", { variant: "error" });

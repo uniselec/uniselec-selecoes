@@ -280,7 +280,7 @@ export function ApplicationForm({
               <TextField
                 required
                 name="phone1"
-                label="Telefone 1"
+                label="Telefone"
                 value={formState.phone1 || ""}
                 onChange={(e) => setFormState({ ...formState, phone1: e.target.value })}
                 disabled={isdisabled}
@@ -519,7 +519,7 @@ export function ApplicationForm({
                 : 'Data inválida'}
             </Typography>
             <Typography variant="body1"><strong>Sexo:</strong> {formState.sex}</Typography>
-            <Typography variant="body1"><strong>Telefone 1:</strong> {formState.phone1}</Typography>
+            <Typography variant="body1"><strong>Telefone:</strong> {formState.phone1}</Typography>
             <Typography variant="body1"><strong>Endereço:</strong> {formState.address}</Typography>
             <Typography variant="body1"><strong>UF:</strong> {formState.uf}</Typography>
             <Typography variant="body1"><strong>Cidade:</strong> {formState.city}</Typography>

@@ -37,7 +37,7 @@ export const LogoutItemMenu = () => {
             <ListItemIcon>
                 <Logout fontSize="small" />
             </ListItemIcon>
-            Logout
+            Sair
         </MenuItem>
     )
 }
