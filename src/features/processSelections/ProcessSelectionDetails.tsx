@@ -61,7 +61,6 @@ export const ProcessSelectionDetails = () => {
   if (!processSelection)
     return <Typography>Processo Seletivo não encontrado.</Typography>;
 
-  /* ---------- vagas por campus ---------- */
   const courses: Course[] = processSelection.data.courses || [];
   const campusGroups: Record<string, CampusGroup> = courses.reduce(
     (groups, course) => {
@@ -94,15 +93,16 @@ export const ProcessSelectionDetails = () => {
   return (
     <Box
       sx={{
-        backgroundColor: "background.default",             // ← theme‑aware
+        backgroundColor: "background.default",
         padding: 3,
       }}
     >
+      {/* <pre>{JSON.stringify(processSelection, null, 2)}</pre> */}
       <Box sx={{ mb: 3 }}>
         <Typography
           variant="h4"
           align="center"
-          sx={{ color: "text.primary", fontWeight: "bold" }} // ← theme‑aware
+          sx={{ color: "text.primary", fontWeight: "bold" }}
         >
           {processSelection.data.name}
         </Typography>
@@ -111,7 +111,7 @@ export const ProcessSelectionDetails = () => {
       <Paper
         sx={{
           p: 4,
-          backgroundColor: "background.paper",             // ← theme‑aware
+          backgroundColor: "background.paper",
         }}
         elevation={3}
       >
@@ -119,7 +119,7 @@ export const ProcessSelectionDetails = () => {
           <Box mb={2}>
             <Typography
               variant="h5"
-              sx={{ color: "text.primary" }}               // ← theme‑aware
+              sx={{ color: "text.primary" }}
             >
               {processSelection.data.description}
             </Typography>
@@ -152,7 +152,7 @@ export const ProcessSelectionDetails = () => {
               <Box mt={2}>
                 <Typography
                   variant="h6"
-                  sx={{ color: "text.primary" }}            // ← theme‑aware
+                  sx={{ color: "text.primary" }}
                 >
                   Vagas ofertadas
                 </Typography>
@@ -187,17 +187,46 @@ export const ProcessSelectionDetails = () => {
 
             {/* Coluna Direita */}
             <Grid item xs={12} lg={6}>
-              {processSelection.data.type !== "sisu" && (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  component={Link}
-                  to={`/applications/create/${id}`}
-                  sx={{ mb: 2 }}
-                >
-                  Inscrições
-                </Button>
-              )}
+              {processSelection.data.type !== "sisu" && (() => {
+                const now = new Date();
+                const start = new Date(processSelection.data.start_date);
+                const end = new Date(processSelection.data.end_date);
+                const isActive = processSelection.data.status === "active";
+                const withinPeriod = now >= start && now <= end;
+
+                if (isActive && withinPeriod) {
+                  /* inscrições abertas */
+                  return (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      component={Link}
+                      to={`/applications/create/${id}`}
+                      sx={{ mb: 2 }}
+                    >
+                      Inscrições
+                    </Button>
+                  );
+                }
+
+                if (now > end || processSelection.data.status === "finished") {
+                  /* inscrições encerradas */
+                  return (
+                    <Typography color="error" sx={{ mb: 2 }}>
+                      Inscrições Encerradas.
+                    </Typography>
+                  );
+                }
+
+                /* ainda não começou */
+                return (
+                  <Typography sx={{ mb: 2 }}>
+                    Inscrições começam em{" "}
+                    {start.toLocaleDateString("pt-BR")} às{" "}
+                    {start.toLocaleTimeString("pt-BR")}.
+                  </Typography>
+                );
+              })()}
 
               <Typography
                 variant="h6"
