@@ -206,7 +206,7 @@ export function ApplicationForm({
   return (
     <Box p={2}>
 
-      <pre>{JSON.stringify(processSelection, null, 2)}</pre>
+      {/* <pre>{JSON.stringify(processSelection, null, 2)}</pre> */}
       <form onSubmit={handleConfirmDialogOpen}>
         <Grid container spacing={3}>
           {/* Dados Pessoais */}
