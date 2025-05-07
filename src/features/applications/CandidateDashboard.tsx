@@ -37,18 +37,19 @@ import {
 } from "../auth/authSlice";
 import { useSendLogOutMutation } from "../auth/authApiSlice";
 import { Register } from "../auth/Register";
-import { useGetUserQuery } from "../users/userSlice";
 import { useGetApplicationsQuery } from "./applicationSlice";
+import { Login } from "../auth/Login";
+import { RootState } from "../../app/store";
+
 
 const CandidateDashboard: React.FC = () => {
-  /* ------------ auth & user ------------ */
+  const token = useAppSelector((state: RootState) => state.auth.token);
   const userAuth = useAppSelector(selectAuthUser);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
 
-  /* ------------ logout ------------ */
   const [logout, statusLogout] = useSendLogOutMutation();
   const handleLogout = () => {
     logout({});
@@ -64,17 +65,23 @@ const CandidateDashboard: React.FC = () => {
     }
   }, [enqueueSnackbar, statusLogout, navigate]);
 
-  /* ------------ user info (para avatar) ------------ */
-  const { data: userRemote } = useGetUserQuery({ id: userAuth?.id });
 
-  /* ------------ applications ------------ */
+
+
   const [options] = useState({ page: 1, perPage: 20, search: "" });
   const {
     data: applicationsResponse,
     isFetching,
     error,
-  } = useGetApplicationsQuery(options);
-
+    refetch,
+  } = useGetApplicationsQuery(options, {
+    skip: !token,            // só dispara se já existe token
+  });
+  useEffect(() => {
+    if (token) {
+      refetch();             // garante nova chamada já com /api/client e Authorization
+    }
+  }, [token, refetch]);
   /* ------------ UI helpers ------------ */
   const theme = useTheme();
   const isSmUp = useMediaQuery(theme.breakpoints.up("sm"));
@@ -87,8 +94,7 @@ const CandidateDashboard: React.FC = () => {
     setSnackOpen(true);
   };
 
-  if (!isAuthenticated) return <Register />;
-
+  if (!isAuthenticated) return <Login />;
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default" }}>
       {/* AppBar */}

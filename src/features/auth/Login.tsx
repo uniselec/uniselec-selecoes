@@ -54,7 +54,7 @@ export const Login = () => {
         if (statusLogin.isSuccess) {
             enqueueSnackbar("Login Realizado com Sucesso!", { variant: "success" });
             setIsLoading(false);
-            navigate('/candidate-dashboard');
+            navigate("/candidate-dashboard", { replace: true });
         }
         if (statusLogin.error) {
             enqueueSnackbar("Falha no Login", { variant: "error" });
