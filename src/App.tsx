@@ -8,7 +8,6 @@ import { NotFoundCard } from "./components/NotFoundCard";
 import { ApplicationList } from "./features/applications/ApplicationList";
 import { ApplicationCreate } from "./features/applications/ApplicationCreate";
 import { Register } from "./features/auth/Register";
-import { SelectionProcessSelected } from "./features/applications/SelectionProcessSelected";
 import { PasswordReset } from "./features/auth/PasswordReset";
 import { ProcessSelectionList } from "./features/processSelections/ProcessSelectionList";
 import { ProcessSelectionDetails } from "./features/processSelections/ProcessSelectionDetails";
