@@ -87,11 +87,22 @@ export function ApplicationForm({
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [selectedCourse, setSelectedCourse] = useState<any>(null);
   const [selectedEnemYear, setSelectedEnemYear] = useState<number | null>(null);
-  const [selectedModalidades, setSelectedModalidades] = useState<string[]>([]);
+  const [selectedModalidades, setSelectedModalidades] = useState<string[]>(() =>
+    processSelection.admission_categories?.some((c) => c.name === "AC")
+      ? ["AC"]                       // AC marcada por padrão
+      : []
+  );
+
   const [selectedBonus, setSelectedBonus] = useState<string>("none");
 
   const userAuth = useAppSelector(selectAuthUser);
-
+  useEffect(() => {
+    if (processSelection.admission_categories?.some((c) => c.name === "AC")) {
+      setSelectedModalidades((prev) =>
+        prev.includes("AC") ? prev : ["AC", ...prev]  // garante AC
+      );
+    }
+  }, [processSelection, selectedCourse]);
   // Atualiza o estado com dados default do processo e usuário autenticado
   useEffect(() => {
     setFormState((prevState) => ({
@@ -194,7 +205,8 @@ export function ApplicationForm({
 
   return (
     <Box p={2}>
-      {/* <pre>{JSON.stringify(processSelection, null, 2)}</pre> */}
+
+      <pre>{JSON.stringify(processSelection, null, 2)}</pre>
       <form onSubmit={handleConfirmDialogOpen}>
         <Grid container spacing={3}>
           {/* Dados Pessoais */}
@@ -347,7 +359,12 @@ export function ApplicationForm({
                 }
                 onChange={(event, value) => {
                   setSelectedCourse(value);
-                  setSelectedModalidades([]); // limpa todas as modalidades selecionadas
+                  /* reinicia, mas mantendo AC */
+                  setSelectedModalidades(
+                    processSelection.admission_categories?.some((c) => c.name === "AC")
+                      ? ["AC"]
+                      : []
+                  );
                 }}
                 renderInput={(params) => (
                   <TextField {...params} label="Curso Pretendido" required value={selectedCourse ? `${selectedCourse.name}` : ""} />
