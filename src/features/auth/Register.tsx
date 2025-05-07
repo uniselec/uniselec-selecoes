@@ -1,7 +1,7 @@
 import { Box, Paper, Typography } from "@mui/material";
 import { useSnackbar } from 'notistack';
 import React, { useEffect, useState, ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useRegisterMutation } from './authApiSlice';
 import { RegisterForm } from './components/RegisterForm';
 import { User } from "../../types/User";
@@ -26,6 +26,7 @@ export const Register = () => {
     const translate = useTranslate('auth');
     const [register, statusLogin] = useRegisterMutation();
     const navigate = useNavigate();
+    const location = useLocation();
     const [isLoading, setIsLoading] = useState(false);
     const { enqueueSnackbar } = useSnackbar();
 
@@ -64,9 +65,11 @@ export const Register = () => {
         if (statusLogin.isSuccess) {
             enqueueSnackbar("Registro realizado com sucesso!", { variant: "success" });
             setIsLoading(false);
-            navigate('/applications/create');
-        }
 
+            if (location.pathname === '/register') {
+                navigate('/candidate-dashboard');
+            }
+        }
         if (statusLogin.error) {
             if ('data' in statusLogin.error) {
                 const errors = (statusLogin.error as { data: { error: { [key: string]: string[] } } }).data.error;
@@ -83,7 +86,7 @@ export const Register = () => {
 
             setIsLoading(false);
         }
-    }, [enqueueSnackbar, statusLogin.error, statusLogin.isSuccess, navigate]);
+    }, [enqueueSnackbar, statusLogin.error, statusLogin.isSuccess, navigate, location.pathname]);
 
 
 
