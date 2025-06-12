@@ -1,10 +1,9 @@
-version: '3.8'
-
 services:
   react-app:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: react_dev
     ports:
       - "5173:5173"
     volumes:
@@ -12,4 +11,13 @@ services:
       - /app/node_modules
     environment:
       - NODE_ENV=development
-    command: ["yarn", "dev"]
+      - VITE_API_URL=http://localhost:8082
+    networks:
+      - react-network
+    restart: always
+    command: yarn dev --host
+
+
+networks:
+  react-network:
+    driver: bridge

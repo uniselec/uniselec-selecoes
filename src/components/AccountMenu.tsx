@@ -21,7 +21,10 @@ import TranslateIcon from '@mui/icons-material/Translate';
 import { Button } from "@mui/material";
 import { setLocale } from '../features/polyglot/polyglotSlice';
 import { selectLocale } from "../features/polyglot/polyglotSlice";
-type Lang  = {
+
+
+
+type Lang = {
     value: string;
     label: string;
 }
@@ -123,11 +126,14 @@ export function AccountMenu({ isDark, toggleTheme }: Props) {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <Link to="/candidate-dashboard" style={{ textDecoration: 'none', color: 'inherit' }}>
+                <Link to="/profile" style={{ textDecoration: 'none', color: 'inherit' }}>
                     <MenuItem onClick={handleClose}>
-                        <Avatar /> Portal do Candidato
+                        <Avatar /> Perfil
                     </MenuItem>
                 </Link>
+                {/* <MenuItem onClick={handleClose}>
+                    <Avatar /> My account
+                </MenuItem> */}
                 <Divider />
                 <MenuItem onClick={handleClickLanguage} id="language-menu-button">
                     <ListItemIcon>
@@ -135,7 +141,12 @@ export function AccountMenu({ isDark, toggleTheme }: Props) {
                     </ListItemIcon>
                     Idioma: {localeSelected?.label}
                 </MenuItem>
-
+                {/* <MenuItem onClick={handleClose}>
+                    <ListItemIcon>
+                        <Settings fontSize="small" />
+                    </ListItemIcon>
+                    Settings
+                </MenuItem> */}
 
 
 
@@ -162,8 +173,8 @@ export function AccountMenu({ isDark, toggleTheme }: Props) {
                     }}
                 >
                     <MenuItem onClick={() => {
-                        handleSelectLanguage('pt-BR');
-                    }}>Português (Brazil)</MenuItem>
+                        handleSelectLanguage('pt-PT');
+                    }}>Português</MenuItem>
                     <MenuItem onClick={() => {
                         handleSelectLanguage('en');
                     }}>English</MenuItem>

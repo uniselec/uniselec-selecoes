@@ -13,10 +13,11 @@ import {
     Typography,
     useTheme
 } from "@mui/material";
-import { FormEvent, SyntheticEvent, useState } from 'react';
+import { FormEvent, SyntheticEvent, useState, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Credentials } from '../authApiSlice';
-import { Forgot, ResetPassword } from "../../../types/ResetPassword";
+import { Forgot } from "../../../types/ResetPassword";
+import { IMaskInput } from 'react-imask';
 
 type Props = {
     credentials: Credentials;
@@ -26,6 +27,32 @@ type Props = {
     handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     handleSubmitFormForgot: (e: React.FormEvent<HTMLFormElement>, forgot: Forgot) => void;
 };
+
+// 1. Criamos o componente CPFMask que "embrulha" o IMaskInput
+const CPFMask = forwardRef<any, any>(function CPFMask(props, ref) {
+    const { onChange, name, ...other } = props;
+    return (
+        <IMaskInput
+            {...other}
+            mask="000.000.000-00"
+            definitions={{
+                '0': /[0-9]/,
+            }}
+            inputRef={ref}
+            // Quando o usuário digitar/perfurar a máscara,
+            // chamamos onChange simulando um ChangeEvent<HTMLInputElement>
+            onAccept={(value: any) => {
+                onChange({
+                    target: {
+                        name: name,
+                        value: value,
+                    },
+                } as React.ChangeEvent<HTMLInputElement>);
+            }}
+            overwrite
+        />
+    );
+});
 
 export const LoginForm = ({
     credentials,
@@ -43,7 +70,7 @@ export const LoginForm = ({
     const isDarkMode = theme.palette.mode === 'dark';
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
-    const [forgotState, setForgotState] = useState({ cpf: "" } as Forgot);
+    const [forgotState, setForgotState] = useState({ identifier: "" } as Forgot);
     const handleChangeForgot = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setForgotState({ ...forgotState, [name]: value });
@@ -51,7 +78,6 @@ export const LoginForm = ({
     const handleConfirmDialogClose = () => {
         setOpenConfirmDialog(false);
     };
-
 
     const handleConfirmSubmit = (e: SyntheticEvent) => {
         e.preventDefault();
@@ -61,7 +87,7 @@ export const LoginForm = ({
     };
 
     function validateLogin() {
-        if (credentials.email.length > 1) {
+        if (credentials.identifier.length > 1) {
             setErrorLogin({ valid: true, text: "" });
         } else {
             setErrorLogin({ valid: false, text: "Digite no mínimo 1 caractere" });
@@ -84,7 +110,8 @@ export const LoginForm = ({
                 alignItems: 'center',
                 padding: 5,
             }}
-            p={5}>
+            p={5}
+        >
             <Box p={2} mb={2}>
                 <Typography component="h1" variant="h5">Formulário de Login</Typography>
             </Box>
@@ -94,56 +121,64 @@ export const LoginForm = ({
                     handleSubmit(event);
                 }}
             >
+                <Typography variant="subtitle1" color="textSecondary" mb={2}>
+                    Entre com seu <b>CPF</b> e <b>Senha</b> para acessar sua conta.
+                </Typography>
                 <Grid container spacing={3}>
+                    {/* === CAMPO CPF (com máscara) === */}
                     <Grid item xs={12}>
                         <FormControl fullWidth>
-                            {errorLogin.valid ? (
-                                ""
-                            ) : (
+                            {!errorLogin.valid && (
                                 <Alert severity="error">{errorLogin.text}</Alert>
                             )}
                             <TextField
-                                required={true}
-                                value={credentials.email}
+                                required
+                                name="identifier"
+                                label="Digite o seu CPF"
+                                value={credentials.identifier}
                                 onChange={handleChange}
-                                name="email"
+                                onBlur={validateLogin}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                disabled={isLoading}
                                 error={!errorLogin.valid}
-                                onBlur={validateLogin}
                                 helperText={errorLogin.text}
-                                label="E-mail"
+                                disabled={isLoading}
                                 variant="outlined"
                                 margin="normal"
                                 fullWidth
+                                // 2. Passamos o CPFMask via InputProps.inputComponent
+                                InputProps={{
+                                    inputComponent: CPFMask as any,
+                                }}
                             />
                         </FormControl>
                     </Grid>
+                    {/* === CAMPO SENHA === */}
                     <Grid item xs={12}>
                         <FormControl fullWidth>
                             <TextField
-                                required={true}
+                                required
                                 name="password"
+                                label="Senha"
+                                type="password"
                                 value={credentials.password}
                                 onChange={handleChange}
+                                onBlur={validatePassword}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                disabled={isLoading}
                                 error={!errorPassword.valid}
-                                onBlur={validatePassword}
                                 helperText={errorPassword.text}
-                                label="Senha"
+                                disabled={isLoading}
                                 variant="outlined"
                                 margin="normal"
-                                type="password"
                                 fullWidth
                                 autoComplete="off"
                             />
                         </FormControl>
                     </Grid>
+                    {/* === BOTÕES DE ENVIO / RECUPERAR === */}
                     <Grid item xs={12}>
                         <Box display="flex" gap={2}>
                             <Button
@@ -151,7 +186,7 @@ export const LoginForm = ({
                                 type="submit"
                                 variant="contained"
                             >
-                                {isLoading ? "Aguarde..." : "Logar"}
+                                {isLoading ? "Aguarde..." : "Iniciar Sessão"}
                             </Button>
                             <Button
                                 variant="outlined"
@@ -160,17 +195,17 @@ export const LoginForm = ({
                                 Cadastrar-se
                             </Button>
                             <Button
-                                onClick={() => {
-                                    setOpenConfirmDialog(true);
-                                }}
+                                onClick={() => setOpenConfirmDialog(true)}
                                 variant="outlined"
                             >
-                                {isLoading ? "Aguarde..." : "Esqueci a Senha"}
+                                {isLoading ? "Aguarde..." : "Esqueceu a sua senha?"}
                             </Button>
                         </Box>
                     </Grid>
                 </Grid>
             </form>
+
+            {/* === DIALOG PARA RECUPERAÇÃO DE SENHA === */}
             <Dialog
                 open={openConfirmDialog}
                 onClose={handleConfirmDialogClose}
@@ -180,33 +215,32 @@ export const LoginForm = ({
                 <DialogTitle id="confirm-dialog-title">Recuperação da Senha</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="confirm-dialog-description">
-                        Digite o Seu CPF para recuperar sua senha:
+                        Digite o CPF para recuperar sua senha:
                     </DialogContentText>
                     <Box mt={2}>
                         <FormControl fullWidth>
                             <TextField
-                                required={true}
-                                name="cpf"
-                                value={forgotState.cpf || ""}
+                                required
+                                name="identifier"
+                                label="Seu CPF"
+                                value={forgotState.identifier || ""}
                                 onChange={handleChangeForgot}
+                                disabled={isLoading}
                                 InputLabelProps={{
                                     shrink: true,
                                 }}
-                                disabled={isLoading}
-                                // error={!errorPassword.valid}
-                                // onBlur={validatePassword}
-                                // helperText={errorPassword.text}
-                                label="CPF"
                                 variant="outlined"
                                 margin="normal"
-                                type="text"
                                 fullWidth
                                 autoComplete="off"
+                                // 3. Também aplicamos o CPFMask aqui dentro do diálogo
+                                InputProps={{
+                                    inputComponent: CPFMask as any,
+                                }}
                             />
                         </FormControl>
                     </Box>
                 </DialogContent>
-
                 <DialogActions>
                     <Button onClick={handleConfirmDialogClose} color="primary">
                         Cancelar
@@ -223,4 +257,4 @@ export const LoginForm = ({
             </Dialog>
         </Box>
     );
-}
+};
