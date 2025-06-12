@@ -9,7 +9,6 @@ import { PasswordReset } from "./features/auth/PasswordReset";
 import { AuthProfileEdit } from "./features/auth/AuthProfileEdit";
 import { useAppSelector } from "./app/hooks";
 import { selectAuthUser } from "./features/auth/authSlice";
-import { Dashboard } from "./features/dashboard/Dashboard";
 import { ProcessSelectionResume } from "./features/processSelections/ProcessSelectionResume";
 import { Register } from "./features/auth/Register";
 import { CandidateDashboard } from "./features/applications/CandidateDashboard";
