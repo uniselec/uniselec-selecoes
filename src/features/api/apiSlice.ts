@@ -7,10 +7,10 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const apiSlice = createApi({
   reducerPath: "api",
   tagTypes: [
-    "Admins",
+    "Applications",
     "Users",
     "Documents",
-    "EventSupportRequests"
+    "ProcessSelections"
   ],
   baseQuery: async (args, api, extraOptions) => {
     const state = api.getState() as RootState;
