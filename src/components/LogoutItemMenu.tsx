@@ -24,7 +24,7 @@ export const LogoutItemMenu = () => {
     useEffect(() => {
         if (statusLogout.isSuccess) {
             enqueueSnackbar("Logout realizado", { variant: "success" });
-            navigate("/");
+            navigate("/login");
         }
         if (statusLogout.error) {
             enqueueSnackbar("Falha no logout", { variant: "error" });

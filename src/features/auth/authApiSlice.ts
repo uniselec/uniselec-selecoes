@@ -1,11 +1,13 @@
-import { Forgot, ResetPassword } from '../../types/ResetPassword';
-import { User } from '../../types/User';
 import { apiSlice } from '../api/apiSlice';
 import { logOut, setCredentials } from './authSlice';
+import { Forgot, ResetPassword } from '../../types/ResetPassword';
+import { Admin } from '../../types/Admin';
+import { User } from '../../types/User';
 
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export type Credentials = {
-	email: string;
+	identifier: string;
 	password: string;
 	device_name: string;
 };
@@ -14,7 +16,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
 	endpoints: builder => ({
 		login: builder.mutation({
 			query: (credentials: Credentials) => ({
-				url: '/login',
+				url: `${apiUrl}/api/client/login`,
 				method: 'POST',
 				body: { ...credentials },
 			}),
@@ -44,21 +46,21 @@ export const authApiSlice = apiSlice.injectEndpoints({
 		}),
 		resetPassword: builder.mutation({
 			query: (passwordResetData: ResetPassword) => ({
-				url: '/reset-password',
+				url: `${apiUrl}/api/password/reset`,
 				method: 'POST',
 				body: { ...passwordResetData },
 			})
 		}),
 		passwordForgot: builder.mutation({
 			query: (passwordForgot: Forgot) => ({
-				url: '/password/forgot',
+				url: `${apiUrl}/api/password/forgot`,
 				method: 'POST',
 				body: { ...passwordForgot },
 			})
 		}),
 		sendLogOut: builder.mutation({
 			query: () => ({
-				url: '/logout',
+				url: `${apiUrl}/api/logout`,
 				method: 'POST',
 			}),
 			async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
@@ -71,8 +73,30 @@ export const authApiSlice = apiSlice.injectEndpoints({
 				}
 			},
 		}),
+
+		updateProfile: builder.mutation({
+			query: (updatedData: Partial<User>) => ({
+				url: '/profile',
+				method: 'PUT',
+				body: { ...updatedData },
+			}),
+			async onQueryStarted(_, { dispatch, queryFulfilled }) {
+				try {
+					const response = await queryFulfilled;
+					dispatch(setCredentials(response.data));
+				} catch (error) {
+					console.log(error);
+				}
+			},
+		}),
 	}),
 });
 
-export const { useLoginMutation, usePasswordForgotMutation, useRegisterMutation, useSendLogOutMutation, useResetPasswordMutation } =
-	authApiSlice;
+export const {
+	useLoginMutation,
+	useSendLogOutMutation,
+	useResetPasswordMutation,
+	usePasswordForgotMutation,
+	useUpdateProfileMutation,
+	useRegisterMutation
+} = authApiSlice;

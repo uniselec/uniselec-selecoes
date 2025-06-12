@@ -1,14 +1,17 @@
 import React from "react"
 import { createRoot } from "react-dom/client"
-import { Provider } from "react-redux";
-import App from "./App";
-import { store } from "./app/store";
-import "./index.css";
+import { Provider } from "react-redux"
+import App from "./App"
+import { store } from "./app/store"
+import "./index.css"
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import { BrowserRouter } from "react-router-dom";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import "dayjs/locale/pt-br";
 
 const container = document.getElementById("root")
 
@@ -16,9 +19,11 @@ if (container) {
   const root = createRoot(container)
 
   root.render(
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <Provider store={store}>
-        <App />
+        <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale="pt-br">
+          <App />
+        </LocalizationProvider>
       </Provider>
     </BrowserRouter>,
   )

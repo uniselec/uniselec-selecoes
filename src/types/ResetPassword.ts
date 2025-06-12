@@ -6,5 +6,5 @@ export interface ResetPassword {
 }
 
 export interface Forgot {
-    cpf?: string;
+    identifier?: string;
 }
