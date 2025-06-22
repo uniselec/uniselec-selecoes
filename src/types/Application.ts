@@ -10,14 +10,14 @@ export interface Result {
 
 export interface Application {
   id: string;
-  data: {
+  form_data: {
     // Dados pessoais
     name: string;
     social_name?: string;
     cpf: string;
     enem: string;
     enem_year?: number;
-    birtdate: string;
+    birthdate: string;
     sex: string;
     email: string;
     phone1: string;

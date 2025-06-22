@@ -59,20 +59,20 @@ export function ApplicationTable({ applications, isFetching }: Props) {
                     </Typography><br />
                     <Grid container spacing={3}>
                       <Grid item xs={12} md={6}>
-                        <Typography variant="body1"><strong>Nome Completo:</strong> {value.data.name}</Typography>
-                        <Typography variant="body1"><strong>Nome Social:</strong> {value.data.social_name || "Não informado"}</Typography>
+                        <Typography variant="body1"><strong>Nome Completo:</strong> {value.form_data.name}</Typography>
+                        <Typography variant="body1"><strong>Nome Social:</strong> {value.form_data.social_name || "Não informado"}</Typography>
                         <Typography variant="body1">
                           <strong>Data de Nascimento: </strong>
-                          {value.data.birtdate && isValid(parseISO(value.data.birtdate)) ?
-                            format(parseISO(value.data.birtdate), 'dd/MM/yyyy', { locale: ptBR }) :
+                          {value.form_data.birthdate && isValid(parseISO(value.form_data.birthdate)) ?
+                            format(parseISO(value.form_data.birthdate), 'dd/MM/yyyy', { locale: ptBR }) :
                             'Data inválida'}
                         </Typography>
-                        <Typography variant="body1"><strong>Email:</strong> {value.data.email}</Typography>
-                        <Typography variant="body1"><strong>CPF:</strong> {value.data.cpf}</Typography>
-                        <Typography variant="body1"><strong>Sexo:</strong> {value.data.sex}</Typography>
-                        <Typography variant="body1"><strong>Telefone:</strong> {value.data.phone1}</Typography>
-                        <Typography variant="body1"><strong>Endereço:</strong> {value.data.address}</Typography>
-                        <Typography variant="body1"><strong>Cidade-UF:</strong> {value.data.city}-{value.data.uf}</Typography>
+                        <Typography variant="body1"><strong>Email:</strong> {value.form_data.email}</Typography>
+                        <Typography variant="body1"><strong>CPF:</strong> {value.form_data.cpf}</Typography>
+                        <Typography variant="body1"><strong>Sexo:</strong> {value.form_data.sex}</Typography>
+                        <Typography variant="body1"><strong>Telefone:</strong> {value.form_data.phone1}</Typography>
+                        <Typography variant="body1"><strong>Endereço:</strong> {value.form_data.address}</Typography>
+                        <Typography variant="body1"><strong>Cidade-UF:</strong> {value.form_data.city}-{value.form_data.uf}</Typography>
 
                       </Grid>
                       <Grid item xs={12} md={6}>
@@ -81,12 +81,12 @@ export function ApplicationTable({ applications, isFetching }: Props) {
                         <Typography variant="body1"><strong>Edital:</strong> Edital nº 04/2024 - PROCESSO SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina</Typography>
                         <Typography variant="body1"><strong>Curso Pretendido:</strong> Medicina</Typography>
                         <Typography variant="body1"><strong>Local de Oferta:</strong> Baturité</Typography>
-                        <Typography variant="body1"><strong>Número de Inscrição do ENEM:</strong> {value.data.enem}</Typography>
+                        <Typography variant="body1"><strong>Número de Inscrição do ENEM:</strong> {value.form_data.enem}</Typography>
                       </Grid>
                     </Grid>
                     <Typography variant="body1"><strong>Modalidades:</strong></Typography>
                     {/* <List>
-                      {value.data.vaga?.map((vaga, index) => (
+                      {value.form_data.vaga?.map((vaga, index) => (
                         <ListItem key={index}>
                           <Typography variant="body2">• {vaga}</Typography>
                         </ListItem>
@@ -94,7 +94,7 @@ export function ApplicationTable({ applications, isFetching }: Props) {
                     </List> */}
                     <Typography variant="body1"><strong>Critérios de Bonificação:</strong></Typography>
                     {/* <List>
-                      {value.data.bonus?.map((bonus, index) => (
+                      {value.form_data.bonus?.map((bonus, index) => (
                         <ListItem key={index}>
                           <Typography variant="body2">• {bonus}</Typography>
                         </ListItem>
@@ -103,8 +103,8 @@ export function ApplicationTable({ applications, isFetching }: Props) {
                     <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
                       <Typography variant="body1">
                         <strong>Data da Inscrição: </strong>
-                        {value.data.updated_at && isValid(parseISO(value.data.updated_at)) ?
-                          format(parseISO(value.data.updated_at), 'dd/MM/yyyy HH:mm:ss', { locale: ptBR }) :
+                        {value.form_data.updated_at && isValid(parseISO(value.form_data.updated_at)) ?
+                          format(parseISO(value.form_data.updated_at), 'dd/MM/yyyy HH:mm:ss', { locale: ptBR }) :
                           'Data inválida'}
                       </Typography>
                     </Box>
