@@ -44,7 +44,7 @@ interface ApplicationFormState {
   social_name?: string;
   cpf: string;
   enem: string;
-  birtdate: string;
+  birthdate: string;
   sex: string;
   email: string;
   phone1: string;
@@ -81,7 +81,7 @@ export function ApplicationForm({
   handleSubmit,
 }: Props) {
   // Inicializa o estado com os dados da candidatura e vincula dados default (se necessário)
-  const [formState, setFormState] = useState(application.data || {} as ApplicationFormState);
+  const [formState, setFormState] = useState(application.form_data || {} as ApplicationFormState);
   const [cpfError, setCpfError] = useState<string | null>(null);
   const [enemError, setEnemError] = useState<string | null>(null);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -107,7 +107,7 @@ export function ApplicationForm({
   useEffect(() => {
     setFormState((prevState) => ({
       ...prevState,
-      ...application?.data,
+      ...application?.form_data,
       edital: processSelection.name, // O edital será fixo
       position: selectedCourse ? selectedCourse.name : "", // será definido pelo Autocomplete
       location_position: processSelection.courses
@@ -159,7 +159,7 @@ export function ApplicationForm({
     // Atualiza o estado final com os valores selecionados
     setFormState(prev => ({
       ...prev,
-      ...application?.data,
+      ...application?.form_data,
       edital: processSelection.name,
       position: selectedCourse ? selectedCourse.name : "",
       location_position: processSelection.courses
@@ -184,7 +184,7 @@ export function ApplicationForm({
     };
     handleSubmit(
       e as unknown as FormEvent<HTMLFormElement>,
-      { data: payload } as Application
+      { form_data: payload } as Application
     );
   }
 
@@ -266,13 +266,13 @@ export function ApplicationForm({
             <FormControl fullWidth>
               <TextField
                 required
-                name="birtdate"
+                name="birthdate"
                 label="Data de Nascimento"
                 type="date"
                 InputLabelProps={{ shrink: true }}
-                value={formState.birtdate || ""}
+                value={formState.birthdate || ""}
                 disabled={isdisabled}
-                onChange={(e) => setFormState({ ...formState, birtdate: e.target.value })}
+                onChange={(e) => setFormState({ ...formState, birthdate: e.target.value })}
               />
             </FormControl>
           </Grid>
@@ -531,8 +531,8 @@ export function ApplicationForm({
             <Typography variant="body1"><strong>CPF:</strong> {formState.cpf}</Typography>
             <Typography variant="body1">
               <strong>Data de Nascimento: </strong>
-              {formState.birtdate && isValid(parseISO(formState.birtdate))
-                ? format(parseISO(formState.birtdate), 'dd/MM/yyyy', { locale: ptBR })
+              {formState.birthdate && isValid(parseISO(formState.birthdate))
+                ? format(parseISO(formState.birthdate), 'dd/MM/yyyy', { locale: ptBR })
                 : 'Data inválida'}
             </Typography>
             <Typography variant="body1"><strong>Sexo:</strong> {formState.sex}</Typography>

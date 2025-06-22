@@ -23,7 +23,7 @@ export const ApplicationCreate = () => {
   const [updateApplication, statusUpdate] = useUpdateApplicationMutation();
 
   const [isdisabled, setIsdisabled] = useState(false);
-  const [applicationState, setApplicationState] = useState<Application>({ data: {} } as Application);
+  const [applicationState, setApplicationState] = useState<Application>({ form_data: {} } as Application);
   const navigate = useNavigate();
   const [options, setOptions] = useState({
     page: 1,
@@ -44,7 +44,7 @@ export const ApplicationCreate = () => {
 
   useEffect(() => {
     if (data?.data && Array.isArray(data.data) && data.data.length !== 0) {
-      setApplicationState({ data: data.data[0].data } as Application);
+      setApplicationState({ form_data: data.data[0].form_data } as Application);
     }
   }, [data]);
 
