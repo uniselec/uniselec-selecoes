@@ -27,12 +27,14 @@ export const ApplicationCreate = () => {
   const [isdisabled, setIsdisabled] = useState(false);
   const [applicationState, setApplicationState] = useState<Application>({ form_data: {} } as Application);
   const navigate = useNavigate();
-
-  const { data: myAppsData } = useGetApplicationsQuery({    // 🔶
+  const [options, setOptions] = useState({
     page: 1,
-    perPage: 1,
-    process_selection_id: id!,
+    perPage: 25,
+    search: "",
+    filters: { process_selection_id: id! } as Record<string, string>,
   });
+
+  const { data: myAppsData } = useGetApplicationsQuery(options);
 
   const saveApplication = async (app: Application) => {
     const payload: Application = { ...app, process_selection_id: processSelectionState.id! };

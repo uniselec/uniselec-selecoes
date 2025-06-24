@@ -31,8 +31,14 @@ function getApplication({ id }: { id: string }) {
 
 export const applicationsApiSlice = apiSlice.injectEndpoints({
   endpoints: ({ query, mutation }) => ({
-    getApplications: query<Results, ApplicationParams>({
-      query: getApplications,
+    getApplications: query<Results, { page: number; perPage: number; filters: Record<string, string> }>({
+      query: ({ page, perPage, filters }) => {
+        const params = new URLSearchParams({ page: String(page), per_page: String(perPage) });
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value) params.append(key, value);
+        });
+        return `${endpointUrl}?${params.toString()}`;
+      },
       providesTags: ["Applications"],
     }),
     getApplication: query<Result, { id: string }>({

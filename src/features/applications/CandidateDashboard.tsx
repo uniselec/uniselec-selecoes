@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AppBar, Toolbar, Typography, Button, Box, Paper, Grid, Avatar,
   Divider, Accordion, AccordionSummary, AccordionDetails,
@@ -6,9 +6,9 @@ import {
   DialogActions, TextField, CircularProgress, IconButton,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import LogoutIcon   from '@mui/icons-material/Logout';
-import SchoolIcon   from '@mui/icons-material/School';
-import EditIcon     from '@mui/icons-material/Edit';
+import LogoutIcon from '@mui/icons-material/Logout';
+import SchoolIcon from '@mui/icons-material/School';
+import EditIcon from '@mui/icons-material/Edit';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -22,24 +22,30 @@ import { RootState } from '../../app/store';
 
 const CandidateDashboard = () => {
   /* ---------------- auth / logout ---------------- */
-  const dispatch       = useAppDispatch();
-  const navigate       = useNavigate();
-  const token          = useAppSelector((s: RootState) => s.auth.token);
-  const userAuth       = useAppSelector(selectAuthUser);
-  const isAuthenticated= useAppSelector(selectIsAuthenticated);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const token = useAppSelector((s: RootState) => s.auth.token);
+  const userAuth = useAppSelector(selectAuthUser);
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [logout, logoutStatus] = useSendLogOutMutation();
 
   const doLogout = () => { logout({}); dispatch(logOut()); };
 
   /* ---------------- applications ----------------- */
+  const [options, setOptions] = useState({
+    page: 1,
+    perPage: 25,
+    search: "",
+    filters: {} as Record<string, string>,
+  });
   const { data: appsResp, isFetching, error } = useGetApplicationsQuery(
-    { page: 1, perPage: 100, search: '' },          // perPage generoso
+    options,          // perPage generoso
     { skip: !token }                                // só após token
   );
 
   /* ---------------- UI helpers ------------------- */
-  const [snackOpen, setSnackOpen]   = React.useState(false);
-  const [editDlg, setEditDlg]       = React.useState(false);
+  const [snackOpen, setSnackOpen] = React.useState(false);
+  const [editDlg, setEditDlg] = React.useState(false);
 
   if (!isAuthenticated) return <Login />;
 
@@ -80,27 +86,27 @@ const CandidateDashboard = () => {
         <Divider sx={{ mb: 2 }} />
 
         {isFetching && (
-          <Box sx={{ display:'flex', justifyContent:'center', py:4 }}>
-            <CircularProgress/>
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+            <CircularProgress />
           </Box>
         )}
         {error && (
-          <Alert severity="error" sx={{ mb:2 }}>
+          <Alert severity="error" sx={{ mb: 2 }}>
             Não foi possível carregar suas inscrições.
           </Alert>
         )}
 
         {(appsResp?.data ?? []).map((app: Application) => {
-          const fd   = app.form_data;
-          const pos  = fd.position;
+          const fd = app.form_data;
+          const pos = fd.position;
           console.log(appsResp);
           const edit = () => navigate(`/applications/create/${app.process_selection_id}`);
 
           return (
-            <Accordion key={app.id} sx={{ mb:1, borderRadius:2 }}>
+            <Accordion key={app.id} sx={{ mb: 1, borderRadius: 2 }}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Grid container spacing={2} alignItems="center">
-                  <Grid item><SchoolIcon fontSize="small"/></Grid>
+                  <Grid item><SchoolIcon fontSize="small" /></Grid>
                   <Grid item xs>
                     <Typography>{pos.name}</Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -109,7 +115,7 @@ const CandidateDashboard = () => {
                   </Grid>
                   <Grid item>
                     <IconButton size="small" onClick={edit}>
-                      <EditIcon fontSize="small"/>
+                      <EditIcon fontSize="small" />
                     </IconButton>
                   </Grid>
                 </Grid>
@@ -121,10 +127,10 @@ const CandidateDashboard = () => {
                   {new Date(app.created_at!).toLocaleDateString('pt-BR')}
                 </Typography>
                 <Typography variant="body2">
-                  <strong>Campus:</strong> {pos.academic_unit.description}<br/>
+                  <strong>Campus:</strong> {pos.academic_unit.description}<br />
                   <strong>Modalidades:</strong>{' '}
-                  {fd.admission_categories.map(c => c.name).join(', ')}<br/>
-                  <strong>Bônus:</strong> {fd.bonus ? fd.bonus.name : 'Nenhum'}<br/>
+                  {fd.admission_categories.map(c => c.name).join(', ')}<br />
+                  <strong>Bônus:</strong> {fd.bonus ? fd.bonus.name : 'Nenhum'}<br />
                   <strong>Inscrição ENEM:</strong> {fd.enem} / {fd.enem_year}
                 </Typography>
               </AccordionDetails>
@@ -144,9 +150,9 @@ const CandidateDashboard = () => {
         open={snackOpen}
         autoHideDuration={3000}
         onClose={() => setSnackOpen(false)}
-        anchorOrigin={{ vertical:'bottom', horizontal:'right' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
       >
-        <Alert severity="success" variant="filled" sx={{ width:'100%' }}>
+        <Alert severity="success" variant="filled" sx={{ width: '100%' }}>
           Dados atualizados!
         </Alert>
       </Snackbar>
@@ -155,12 +161,12 @@ const CandidateDashboard = () => {
 };
 
 /* ------------ diálogo de edição de perfil (placeholder) ------------- */
-interface EditDlgProps { open:boolean; onClose:()=>void; onSave:()=>void; }
+interface EditDlgProps { open: boolean; onClose: () => void; onSave: () => void; }
 const EditProfileDialog = ({ open, onClose, onSave }: EditDlgProps) => (
   <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
     <DialogTitle>Editar Perfil</DialogTitle>
     <DialogContent dividers>
-      <TextField label="Nome" fullWidth sx={{ mb:2 }} disabled />
+      <TextField label="Nome" fullWidth sx={{ mb: 2 }} disabled />
       <TextField label="E-mail" fullWidth disabled />
     </DialogContent>
     <DialogActions>

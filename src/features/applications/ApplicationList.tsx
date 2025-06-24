@@ -18,9 +18,9 @@ export const ApplicationList = () => {
 const isAuthenticated = useSelector(selectIsAuthenticated);
   const [options, setOptions] = useState({
     page: 1,
+    perPage: 25,
     search: "",
-    perPage: 10,
-    rowsPerPage: [10, 20, 30],
+    filters: {} as Record<string, string>,
   });
 
   const { data, isFetching, error } = useGetApplicationsQuery(options);
