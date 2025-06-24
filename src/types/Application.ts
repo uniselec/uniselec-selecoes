@@ -1,3 +1,7 @@
+import { AdmissionCategory } from "./AdmissionCategory";
+import { BonusOption } from "./BonusOption";
+import { Course } from "./Course";
+
 export interface Results {
   data: Application[];
   links: Links;
@@ -8,39 +12,31 @@ export interface Result {
   data: Application;
 }
 
+export interface ApplicationFormData {
+  edital: string;
+  position: Course;
+  name?: string;
+  social_name?: string;
+  email?: string;
+  cpf: string;
+  birthdate?: string;
+  enem_year?: number;
+  sex: string;
+  phone1: string;
+  address: string;
+  uf: string;
+  city: string;
+  enem: string;
+  admission_categories: AdmissionCategory[];
+  bonus: BonusOption;
+  termsAgreement: boolean;
+  updated_at?: string;
+}
+
 export interface Application {
-  id: string;
-  form_data: {
-    // Dados pessoais
-    name: string;
-    social_name?: string;
-    cpf: string;
-    enem: string;
-    enem_year?: number;
-    birthdate: string;
-    sex: string;
-    email: string;
-    phone1: string;
-    phone2?: string;
-    address: string;
-    uf: string;
-    city: string;
-
-    // Dados da candidatura
-    edital: string;
-    course: string;               // id do curso
-    campus: string;               // nome do campus
-    position: string;             // nome do curso (posição)
-    location_position: string;    // nome da unidade acadêmica
-    modalidade: string[];         // lista de categorias de admissão
-    bonus: string;                // critério de bonificação selecionado
-
-    // Confirmações
-    publicSchool: boolean;
-    termsAgreement: boolean;
-
-    updated_at?: string;
-  };
+  id?: string;
+  process_selection_id: string;
+  form_data: ApplicationFormData;
   verification_expected: string;
   verification_code: string;
   valid_verification_code: boolean;
@@ -70,4 +66,5 @@ export interface ApplicationParams {
   perPage?: number;
   search?: string;
   isActive?: boolean;
+  process_selection_id?: string;
 }

@@ -11,7 +11,7 @@ export interface Result {
 }
 
 export interface Course {
-  id?: number;
+  id: number;
   name: string;
   modality: string;
   vacancies?: number;

@@ -12,7 +12,7 @@ export interface Result {
 }
 
 export interface ProcessSelection {
-  id?:              number;
+  id?:              string;
   name:            string;
   description:            string;
   status:           string;

@@ -10,7 +10,7 @@ export interface Result {
 }
 
 export interface BonusOption {
-  id?: number;
+  id: number;
   name: string;
   description?: string;
   value?: number;

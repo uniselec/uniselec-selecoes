@@ -11,8 +11,10 @@ import { ProcessSelection } from "../../types/ProcessSelection";
 import { selectIsAuthenticated } from "../auth/authSlice";
 import { useAppSelector } from "../../app/hooks";
 import { Register } from "../auth/Register";
+import { ApplicationCard } from "./components/ApplicationCard";
 
 export const ApplicationCreate = () => {
+  const [showForm, setShowForm] = useState(false);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const { id } = useParams();
   const { data: processSelection, isFetching: isFetchingProcess } = useGetProcessSelectionQuery({ id: id! });
@@ -25,28 +27,32 @@ export const ApplicationCreate = () => {
   const [isdisabled, setIsdisabled] = useState(false);
   const [applicationState, setApplicationState] = useState<Application>({ form_data: {} } as Application);
   const navigate = useNavigate();
-  const [options, setOptions] = useState({
-    page: 1,
-    search: "",
-    perPage: 10,
-    rowsPerPage: [10, 20, 30],
-  });
-  const { data, isFetching, error } = useGetApplicationsQuery(options);
 
-  async function handleSubmit(applicationData: Application) {
-    // Acrescenta o process_selection_id vindo do objeto processSelection
-    const updatedData = {
-      ...applicationData,
-      process_selection_id: processSelectionState.id,
-    };
-    await createApplication(updatedData);
-  }
+  const { data: myAppsData } = useGetApplicationsQuery({    // 🔶
+    page: 1,
+    perPage: 1,
+    process_selection_id: id!,
+  });
+
+  const saveApplication = async (app: Application) => {
+    const payload: Application = { ...app, process_selection_id: processSelectionState.id! };
+
+    if (applicationState?.id) {
+      await updateApplication(payload);                     // já existe → PUT
+    } else {
+      await createApplication(payload);                     // nova → POST
+    }
+  };
 
   useEffect(() => {
-    if (data?.data && Array.isArray(data.data) && data.data.length !== 0) {
-      setApplicationState({ form_data: data.data[0].form_data } as Application);
+    if (myAppsData?.data?.length) {
+      setApplicationState(myAppsData.data[0]);
+      setShowForm(false);                                   // mostra card primeiro
+    } else {
+      setApplicationState({ form_data: {} } as Application);
+      setShowForm(true);                                    // nenhum registro, já exibe form
     }
-  }, [data]);
+  }, [myAppsData]);
 
   useEffect(() => {
     if (status.isSuccess) {
@@ -65,37 +71,29 @@ export const ApplicationCreate = () => {
     }
   }, [processSelection]);
 
-  if (processSelection === undefined || processSelection === null || isFetchingProcess) {
-    return <>LOADING</>;
-  }
+  if (!isAuthenticated) return <Register />;
+  if (processSelection === undefined || isFetchingProcess) return <>LOADING…</>;
 
-  if(!isAuthenticated) {
-    return (<Register />);
-  }
   return (
     <Box>
       <Paper sx={{ p: 5 }}>
-        <Box p={2}>
-          <Box mb={2}>
-            {(data?.data && Array.isArray(data.data) && data.data.length !== 0) ? (
-              <Typography variant="h4">Alterar Inscrição</Typography>
-            ) : (
-              <Typography variant="h4">Realizar Inscrição</Typography>
-            )}
-            {/* Exibe o objeto processSelection para debug */}
+        {(!showForm && applicationState.id) && (
+          <ApplicationCard
+            application={applicationState}
+            processSelection={processSelectionState}
+            onEdit={() => setShowForm(true)}
+          />
+        )}
 
-          </Box>
-        </Box>
-        <ApplicationForm
-          isLoading={false}
-          isdisabled={isdisabled}
-          application={applicationState}
-          processSelection={processSelectionState}
-          handleSubmit={(e, applicationData2) => {
-            e.preventDefault();
-            handleSubmit(applicationData2);
-          }}
-        />
+        {showForm && (
+          <ApplicationForm
+            isLoading={status.isLoading || statusUpdate.isLoading}
+            isdisabled={isdisabled}
+            application={applicationState}
+            processSelection={processSelectionState}
+            handleSubmit={(e, data) => { e.preventDefault(); saveApplication(data); }}
+          />
+        )}
       </Paper>
     </Box>
   );
