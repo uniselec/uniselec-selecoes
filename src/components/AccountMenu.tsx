@@ -135,12 +135,12 @@ export function AccountMenu({ isDark, toggleTheme }: Props) {
                     <Avatar /> My account
                 </MenuItem> */}
                 <Divider />
-                <MenuItem onClick={handleClickLanguage} id="language-menu-button">
+                {/* <MenuItem onClick={handleClickLanguage} id="language-menu-button">
                     <ListItemIcon>
                         <TranslateIcon fontSize="small" />
                     </ListItemIcon>
                     Idioma: {localeSelected?.label}
-                </MenuItem>
+                </MenuItem> */}
                 {/* <MenuItem onClick={handleClose}>
                     <ListItemIcon>
                         <Settings fontSize="small" />

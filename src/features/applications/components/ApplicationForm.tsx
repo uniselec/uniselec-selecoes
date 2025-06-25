@@ -1,76 +1,30 @@
+/* src/features/applications/components/ApplicationForm.tsx */
 import {
-  Box,
-  Grid,
-  TextField,
-  FormControl,
-  Typography,
-  Checkbox,
-  FormControlLabel,
-  FormGroup,
-  Autocomplete,
-  RadioGroup,
-  Radio,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  List,
-  ListItem,
-} from "@mui/material";
-import { Check } from "@mui/icons-material";
-import { useState, useEffect, FormEvent, SyntheticEvent } from "react";
-import { Application } from "../../../types/Application";
-import { useAppSelector } from "../../../app/hooks";
-import { selectAuthUser } from "../../auth/authSlice";
-import { Link } from "react-router-dom";
+  Box, Grid, TextField, FormControl, Typography, Checkbox,
+  FormControlLabel, Autocomplete, RadioGroup, Radio, Button,
+  Dialog, DialogActions, DialogContent, DialogContentText,
+  DialogTitle, List, ListItem,
+} from '@mui/material';
+import { useState, useEffect, FormEvent, SyntheticEvent } from 'react';
+import {
+  Application, ApplicationFormData
+} from '../../../types/Application';
+import { useAppSelector } from '../../../app/hooks';
+import { selectAuthUser } from '../../auth/authSlice';
+import { Link } from 'react-router-dom';
 import { format, parseISO, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { ProcessSelection } from "../../../types/ProcessSelection";
-
-type CourseOption = {
-  id: string;
-  name: string;
-  academic_unit: {
-    name: string;
-    state: string;
-  };
-};
-
-interface ApplicationFormState {
-  // campos pessoais
-  name: string;
-  social_name?: string;
-  cpf: string;
-  enem: string;
-  birthdate: string;
-  sex: string;
-  email: string;
-  phone1: string;
-  phone2?: string;
-  address: string;
-  uf: string;
-  city: string;
-
-  // campos de candidatura
-  edital: string;
-  position: string;
-  location_position: string;
-
-  // valores que vêm dos autocompletes / seleções
-  course?: CourseOption | null;
-  enem_year?: number | null;
-  modalidade: string[];
-  bonus: string | null;
-}
+import { ProcessSelection } from '../../../types/ProcessSelection';
+import { Course } from '../../../types/Course';
+import { AdmissionCategory } from '../../../types/AdmissionCategory';
+import { BonusOption } from '../../../types/BonusOption';
 
 type Props = {
   application: Application;
   isdisabled?: boolean;
   isLoading?: boolean;
   processSelection: ProcessSelection;
-  handleSubmit: (e: FormEvent<HTMLFormElement>, applicationData2: Application) => void;
+  handleSubmit: (e: FormEvent<HTMLFormElement>, application: Application) => void;
 };
 
 export function ApplicationForm({
@@ -80,406 +34,285 @@ export function ApplicationForm({
   processSelection,
   handleSubmit,
 }: Props) {
-  // Inicializa o estado com os dados da candidatura e vincula dados default (se necessário)
-  const [formState, setFormState] = useState(application.form_data || {} as ApplicationFormState);
-  const [cpfError, setCpfError] = useState<string | null>(null);
-  const [enemError, setEnemError] = useState<string | null>(null);
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [selectedCourse, setSelectedCourse] = useState<any>(null);
-  const [selectedEnemYear, setSelectedEnemYear] = useState<number | null>(null);
-  const [selectedModalidades, setSelectedModalidades] = useState<string[]>(() =>
-    processSelection.admission_categories?.some((c) => c.name === "AC")
-      ? ["AC"]                       // AC marcada por padrão
-      : []
+  /* -------------------------------- estado base ------------------------------- */
+  const [formState, setFormState] = useState<ApplicationFormData>(
+    application.form_data ?? ({} as ApplicationFormData),
   );
 
-  const [selectedBonus, setSelectedBonus] = useState<string>("none");
+  /* --------------------------- estados auxiliares UI --------------------------- */
+  const [selectedCourse, setSelectedCourse] = useState<Course | null>(
+    application.form_data?.position ?? null,
+  );
+  const [selectedYear, setSelectedYear] = useState<number | null>(
+    application.form_data?.enem_year ?? null,
+  );
+  const [selectedCats, setSelectedCats] = useState<AdmissionCategory[]>(
+    application.form_data?.admission_categories ?? [],
+  );
+  const [selectedBonus, setSelectedBonus] = useState<BonusOption | null>(
+    application.form_data?.bonus ?? null,
+  );
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
+  /* ------------------------------- usuário logado ----------------------------- */
   const userAuth = useAppSelector(selectAuthUser);
   useEffect(() => {
-    if (processSelection.admission_categories?.some((c) => c.name === "AC")) {
-      setSelectedModalidades((prev) =>
-        prev.includes("AC") ? prev : ["AC", ...prev]  // garante AC
-      );
-    }
-  }, [processSelection, selectedCourse]);
-  // Atualiza o estado com dados default do processo e usuário autenticado
-  useEffect(() => {
-    setFormState((prevState) => ({
-      ...prevState,
-      ...application?.form_data,
-      edital: processSelection.name, // O edital será fixo
-      position: selectedCourse ? selectedCourse.name : "", // será definido pelo Autocomplete
-      location_position: processSelection.courses
-        ?.find((course: any) => course.id === selectedCourse?.id)
-        ?.academic_unit?.name || "",
-    }));
-  }, [application, processSelection, selectedCourse]);
-
-  useEffect(() => {
-    if (userAuth) {
-      setFormState((prevState) => ({
-        ...prevState,
+    if (userAuth)
+      setFormState(prev => ({
+        ...prev,
         name: userAuth.name,
         email: userAuth.email,
         cpf: userAuth.cpf,
       }));
-    }
   }, [userAuth]);
 
-  // Manipulador para mudanças no Autocomplete (genérico)
-  const handleAutocompleteChange = (
-    event: SyntheticEvent<Element, Event>,
-    value: any,
-    name: string
-  ) => {
-    setFormState((prevState) => ({
-      ...prevState,
-      [name]: value ? value : "",
-    }));
-  };
-
-  // Para checkbox de modalidades (usando admission_categories do objeto processSelection)
-  const handleModalidadeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, checked } = e.target;
-    if (checked) {
-      setSelectedModalidades((prev) => [...prev, value]);
-    } else {
-      setSelectedModalidades((prev) => prev.filter((item) => item !== value));
-    }
-  };
-
-  // Manipulador para a seleção de bônus
-  const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedBonus(e.target.value);
-  };
-
-  const handleConfirmDialogOpen = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // Atualiza o estado final com os valores selecionados
+  /* ----------------------- sincronizações automáticas ------------------------ */
+  useEffect(() => {
     setFormState(prev => ({
       ...prev,
-      ...application?.form_data,
       edital: processSelection.name,
-      position: selectedCourse ? selectedCourse.name : "",
-      location_position: processSelection.courses
-        ?.find(c => c.id === selectedCourse?.id)
-        ?.academic_unit?.name || "",
+      position: selectedCourse ?? prev.position,
+      location_position: selectedCourse?.academic_unit?.name ?? '',
     }));
-    setOpenConfirmDialog(true);
-  };
+  }, [selectedCourse, processSelection]);
 
-  const handleConfirmDialogClose = () => {
-    setOpenConfirmDialog(false);
-  };
+  /* ----------------------------- helpers UI ----------------------------------- */
+  const isCatChecked = (cat: AdmissionCategory) =>
+    selectedCats.some(c => c.id === cat.id);
 
-  const handleConfirmSubmit = (e: SyntheticEvent) => {
-    e.preventDefault();
-    // monta o objeto final incluindo os campos extras
-    const payload = {
-      ...formState,
-      bonus: selectedBonus,
-      modalidade: selectedModalidades,
-      enem_year: selectedEnemYear,
-    };
-    handleSubmit(
-      e as unknown as FormEvent<HTMLFormElement>,
-      { form_data: payload } as Application
+  const toggleCat = (cat: AdmissionCategory, checked: boolean) =>
+    setSelectedCats(prev =>
+      checked ? [...prev, cat] : prev.filter(c => c.id !== cat.id),
     );
-  }
 
-  const validateEnemNumber = (enem: string) => {
-    // Caso queira implementar validações, descomente e ajuste conforme necessário
-    return null;
+  /* --------------------------- confirmação / envio ---------------------------- */
+  const openConfirm = (e: FormEvent) => {
+    e.preventDefault();
+    setConfirmOpen(true);
   };
 
-  const handleEnemChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let { value } = e.target;
-    if (value.length > 12) {
-      value = value.slice(0, 12);
-    }
-    const error = validateEnemNumber(value);
-    setEnemError(error);
-    setFormState((prevState) => ({ ...prevState, enem: value }));
+  const sendConfirm = (e: SyntheticEvent) => {
+    e.preventDefault();
+
+    const payload: Application = {
+      ...application,                        // mantém id se edição
+      form_data: {
+        ...formState,
+        position: selectedCourse as Course,
+        enem_year: selectedYear!,
+        admission_categories: selectedCats,
+        bonus: selectedBonus!,
+      },
+    };
+
+    handleSubmit(e as unknown as FormEvent<HTMLFormElement>, payload);
   };
 
+  /* --------------------------------- render ----------------------------------- */
   return (
     <Box p={2}>
-
-      {/* <pre>{JSON.stringify(processSelection, null, 2)}</pre> */}
-      <form onSubmit={handleConfirmDialogOpen}>
+      <form onSubmit={openConfirm}>
         <Grid container spacing={3}>
-          {/* Dados Pessoais */}
-          <Grid item xs={12}>
-            <Box borderBottom={1} mb={2}>
-              <Typography variant="h6">Dados Pessoais</Typography>
-            </Box>
-          </Grid>
+
+          {/* ------------------- DADOS PESSOAIS ------------------- */}
+          <Grid item xs={12}><Typography variant="h6" gutterBottom>Dados Pessoais</Typography></Grid>
+
+          {/* nome / nome social */}
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
-                required
-                name="name"
-                label="Nome Completo"
-                value={formState.name || ""}
-                disabled
-                onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+                required label="Nome Completo" name="name"
+                value={formState.name || ''} disabled
               />
             </FormControl>
           </Grid>
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
-                name="social_name"
-                label="Nome Social"
-                value={formState.social_name || ""}
-                onChange={(e) => setFormState({ ...formState, social_name: e.target.value })}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <TextField
-                required
-                name="email"
-                label="Email"
-                type="email"
-                value={formState.email || ""}
-                disabled
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <TextField
-                required
-                name="cpf"
-                label="CPF do Candidato"
-                value={formState.cpf || ""}
-                error={!!cpfError}
-                helperText={cpfError || ""}
-                disabled={isdisabled}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <TextField
-                required
-                name="birthdate"
-                label="Data de Nascimento"
-                type="date"
-                InputLabelProps={{ shrink: true }}
-                value={formState.birthdate || ""}
-                disabled={isdisabled}
-                onChange={(e) => setFormState({ ...formState, birthdate: e.target.value })}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <Autocomplete
-                options={["Masculino", "Feminino", "Outro"]}
-                onChange={(event, value) => handleAutocompleteChange(event, value, "sex")}
-                renderInput={(params) => (
-                  <TextField {...params} label="Sexo" required value={formState.sex || ""} disabled={isdisabled} />
-                )}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <TextField
-                required
-                name="phone1"
-                label="Telefone"
-                value={formState.phone1 || ""}
-                onChange={(e) => setFormState({ ...formState, phone1: e.target.value })}
-                disabled={isdisabled}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={12}>
-            <FormControl fullWidth>
-              <TextField
-                required
-                name="address"
-                label="Endereço"
-                value={formState.address || ""}
-                onChange={(e) => setFormState({ ...formState, address: e.target.value })}
-                disabled={isdisabled}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <Autocomplete
-                options={["AC", "AL", "AP", "AM", "BA", "CE", "DF", "ES", "GO", "MA", "MT", "MS", "MG", "PA", "PB", "PR", "PE", "PI", "RJ", "RN", "RS", "RO", "RR", "SC", "SP", "SE", "TO"]}
-                onChange={(event, value) => handleAutocompleteChange(event, value, "uf")}
-                renderInput={(params) => (
-                  <TextField {...params} label="UF" required value={formState.uf || ""} disabled={isdisabled} />
-                )}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <TextField
-                required
-                name="city"
-                label="Cidade"
-                value={formState.city || ""}
-                onChange={(e) => setFormState({ ...formState, city: e.target.value })}
-                disabled={isdisabled}
+                label="Nome Social" name="social_name"
+                value={formState.social_name || ''}
+                onChange={e => setFormState({ ...formState, social_name: e.target.value })}
               />
             </FormControl>
           </Grid>
 
-          {/* Dados da Candidatura */}
-          <Grid item xs={12}>
-            <Box borderBottom={1} mb={2}>
-              <Typography variant="h6">Dados da Candidatura</Typography>
-            </Box>
-          </Grid>
-          {/* Edital fixo */}
-          <Grid item xs={12}>
+          {/* e-mail / cpf */}
+          <Grid item xs={12} md={6}>
             <FormControl fullWidth>
-              <Typography variant="subtitle1">
-                {processSelection.name}
-              </Typography>
+              <TextField required label="Email" name="email" type="email"
+                value={formState.email || ''} disabled />
             </FormControl>
           </Grid>
-          {/* Curso com Autocomplete */}
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <TextField required label="CPF do Candidato" name="cpf"
+                value={formState.cpf || ''} disabled={isdisabled} />
+            </FormControl>
+          </Grid>
+
+          {/* nascimento / sexo */}
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <TextField
+                required type="date" label="Data de Nascimento" name="birthdate"
+                InputLabelProps={{ shrink: true }}
+                value={formState.birthdate || ''}
+                onChange={e => setFormState({ ...formState, birthdate: e.target.value })}
+                disabled={isdisabled}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <Autocomplete
+                options={['Masculino', 'Feminino', 'Outro']}
+                value={formState.sex ?? null}
+                onChange={(_, v) => setFormState({ ...formState, sex: v as string })}
+                renderInput={p => <TextField {...p} label="Sexo" required />}
+              />
+            </FormControl>
+          </Grid>
+
+          {/* telefone / endereço */}
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <TextField required label="Telefone" name="phone1"
+                value={formState.phone1 || ''}
+                onChange={e => setFormState({ ...formState, phone1: e.target.value })}
+                disabled={isdisabled} />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <FormControl fullWidth>
+              <TextField required label="Endereço" name="address"
+                value={formState.address || ''}
+                onChange={e => setFormState({ ...formState, address: e.target.value })}
+                disabled={isdisabled} />
+            </FormControl>
+          </Grid>
+
+          {/* uf / cidade */}
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <Autocomplete
+                options={['AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO']}
+                value={formState.uf ?? null}
+                onChange={(_, v) => setFormState({ ...formState, uf: v as string })}
+                renderInput={p => <TextField {...p} label="UF" required />}
+              />
+            </FormControl>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <FormControl fullWidth>
+              <TextField required label="Cidade" name="city"
+                value={formState.city || ''}
+                onChange={e => setFormState({ ...formState, city: e.target.value })}
+                disabled={isdisabled} />
+            </FormControl>
+          </Grid>
+
+          {/* ------------------- DADOS DA CANDIDATURA ------------------- */}
+          <Grid item xs={12}><Typography variant="h6" gutterBottom>Dados da Candidatura</Typography></Grid>
+
+          {/* edital (somente exibição) */}
+          <Grid item xs={12}><Typography>{processSelection.name}</Typography></Grid>
+
+          {/* curso pretendido */}
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <Autocomplete
                 options={processSelection.courses || []}
-                getOptionLabel={(option: any) =>
-                  `${option.name} - ${option.academic_unit.name} (${option.academic_unit.state})`
-                }
-                onChange={(event, value) => {
-                  setSelectedCourse(value);
-                  /* reinicia, mas mantendo AC */
-                  setSelectedModalidades(
-                    processSelection.admission_categories?.some((c) => c.name === "AC")
-                      ? ["AC"]
-                      : []
-                  );
+                getOptionLabel={(o: any) =>
+                  `${o.name} - ${o.academic_unit.name} (${o.academic_unit.state})`}
+                value={selectedCourse}
+                onChange={(_, v) => {
+                  setSelectedCourse(v);
+
+                  // --- recalcula categorias marcadas ao escolher curso -----------------
+                  const acCat = processSelection.admission_categories
+                    ?.find((c: AdmissionCategory) => c.name === 'AC') ?? null;
+
+                  const hasAC = !!v?.vacanciesByCategory?.['AC'] &&
+                    v.vacanciesByCategory['AC'] > 0;
+
+                  setSelectedCats(hasAC && acCat ? [acCat] : []);   // AC só se houver vaga
                 }}
-                renderInput={(params) => (
-                  <TextField {...params} label="Curso Pretendido" required value={selectedCourse ? `${selectedCourse.name}` : ""} />
-                )}
+                renderInput={p => <TextField {...p} label="Curso Pretendido" required />}
               />
             </FormControl>
           </Grid>
-          {/* Local de Oferta fixo, pode ser definido a partir do curso ou diretamente */}
+
+          {/* local oferta */}
           <Grid item xs={12} md={6}>
-            <Box mb={1}>
-              <Typography variant="subtitle2" color="textSecondary">
-                Local de Oferta
-              </Typography>
-            </Box>
+            <Typography variant="subtitle2" color="textSecondary">Local de Oferta</Typography>
             <Typography variant="body1">
-              {(selectedCourse?.academic_unit.description ?? "")}
+              {selectedCourse?.academic_unit?.description ?? ''}
             </Typography>
           </Grid>
 
-          {/* Número do ENEM e Ano do ENEM */}
+          {/* inscrição ENEM + ano */}
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
-              <TextField
-                required
-                name="enem"
-                label="Número de Inscrição do ENEM"
-                value={formState.enem || ""}
-                error={!!enemError}
-                helperText={enemError || ""}
-                disabled={isdisabled}
-                onChange={handleEnemChange}
-              />
+              <TextField required label="Número de Inscrição do ENEM" name="enem"
+                value={formState.enem || ''}
+                onChange={e => setFormState({ ...formState, enem: e.target.value })}
+                disabled={isdisabled} />
             </FormControl>
           </Grid>
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <Autocomplete
                 options={processSelection.allowed_enem_years || []}
-                getOptionLabel={(option: any) => option.toString()}
-                onChange={(event, value) => setSelectedEnemYear(value)}
-                renderInput={(params) => (
-                  <TextField {...params} label="Ano do ENEM" required value={selectedEnemYear ? selectedEnemYear.toString() : ""} />
-                )}
+                value={selectedYear}
+                onChange={(_, v) => setSelectedYear(v)}
+                renderInput={p => <TextField {...p} label="Ano do ENEM" required />}
               />
             </FormControl>
           </Grid>
-          {/* Modalidades (Checkboxes) a partir de admission_categories */}
+
+          {/* modalidades */}
           <Grid item xs={12}>
-            <Box borderBottom={1} mb={2}>
-              <Typography variant="h6">Modalidade</Typography>
-            </Box>
-            <Typography variant="body2" color="textSecondary" mb={2}>
-              Selecione a modalidade de inscrição:
-            </Typography>
+            <Typography variant="h6">Modalidade</Typography>
             <List>
               {(processSelection.admission_categories || [])
-                .filter(option => (selectedCourse?.vacanciesByCategory?.[option.name] ?? 0) > 0)
-                .map(option => {
-                  const vagas = selectedCourse!.vacanciesByCategory![option.name];
-                  return (
-                    <ListItem
-                      key={option.id}
-                      disableGutters
-                      sx={{
-                        mb: 1,                    // margem entre itens
-                        border: '1px solid #ddd', // borda sutil
-                        borderRadius: 1,
-                        p: 1                      // padding interno
-                      }}
-                    >
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            name="modalidade"
-                            value={option.name}
-                            checked={selectedModalidades.includes(option.name)}
-                            onChange={handleModalidadeChange}
-                          />
-                        }
-                        label={`${option.description} (${vagas} vagas)`}
-                      />
-                    </ListItem>
-                  );
-                })}
+                .filter(cat =>
+                  (selectedCourse?.vacanciesByCategory?.[cat.name] ?? 0) > 0)
+                .map(cat => (
+                  <ListItem key={cat.id}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={isCatChecked(cat)}
+                          onChange={e => toggleCat(cat, e.target.checked)}
+                        />
+                      }
+                      label={`${cat.description} (${selectedCourse?.vacanciesByCategory?.[cat.name]} vagas)`}
+                    />
+                  </ListItem>
+                ))}
             </List>
-
           </Grid>
-          {/* Critérios de Bonificação (Radio Group) */}
+
+          {/* bonificação */}
           <Grid item xs={12}>
-            <Box borderBottom={1} mb={2}>
-              <Typography variant="h6">Critérios de Bonificação</Typography>
-            </Box>
-            <Typography variant="body2" color="textSecondary" mb={2}>
-              Marque apenas uma opção, se fizer jus:
-            </Typography>
+            <Typography variant="h6">Bonificação</Typography>
             <RadioGroup
-              name="bonus"
-              value={selectedBonus}
-              onChange={handleRadioChange}
+              value={selectedBonus?.id ?? 0}
+              onChange={e => {
+                const id = Number(e.target.value);
+                const bonus = processSelection.bonus_options
+                  ?.find((b: BonusOption) => b.id === id) ?? null;
+                setSelectedBonus(bonus);
+              }}
             >
-              <FormControlLabel
-                value="none"
-                control={<Radio disabled={isdisabled} />}
-                label="Nenhuma das anteriores"
-              />
-              {(processSelection.bonus_options || []).map((option: any) => (
-                <FormControlLabel
-                  key={option.id}
-                  value={option.description}
-                  control={<Radio disabled={isdisabled} />}
-                  label={option.description}
-                />
+              <FormControlLabel value={0} control={<Radio />} label="Nenhuma" />
+              {(processSelection.bonus_options || []).map((opt: BonusOption) => (
+                <FormControlLabel key={opt.id} value={opt.id}
+                  control={<Radio />} label={opt.description} />
               ))}
             </RadioGroup>
           </Grid>
+
           {/* Termos de Responsabilidade */}
           <Grid item xs={12}>
             <Box borderBottom={1} mb={2}>
@@ -512,14 +345,9 @@ export function ApplicationForm({
         </Grid>
       </form>
 
-      {/* Modal de Confirmação */}
-      <Dialog
-        open={openConfirmDialog}
-        onClose={handleConfirmDialogClose}
-        aria-labelledby="confirm-dialog-title"
-        aria-describedby="confirm-dialog-description"
-      >
-        <DialogTitle id="confirm-dialog-title">Confirmar Inscrição</DialogTitle>
+      {/* diálogo de confirmação */}
+      <Dialog open={confirmOpen} onClose={() => setConfirmOpen(false)}>
+        <DialogTitle>Confirmar Inscrição</DialogTitle>
         <DialogContent>
           <DialogContentText id="confirm-dialog-description">
             Por favor, revise os detalhes da inscrição antes de confirmar:
@@ -544,30 +372,17 @@ export function ApplicationForm({
             <Typography variant="body1"><strong>Curso Pretendido:</strong> {selectedCourse ? selectedCourse.name : ""}</Typography>
             <Typography variant="body1"><strong>Local de Oferta:</strong> {selectedCourse ? selectedCourse.academic_unit.name : ""}</Typography>
             <Typography variant="body1"><strong>Número de Inscrição do ENEM:</strong> {formState.enem}</Typography>
-            <Typography variant="body1"><strong>Ano do ENEM:</strong> {selectedEnemYear}</Typography>
-            <Typography variant="body1"><strong>Modalidades:</strong></Typography>
-            <List>
-              {selectedModalidades.map((modalidade, index) => (
-                <ListItem key={index}>
-                  <Typography variant="body2">• {modalidade}</Typography>
-                </ListItem>
-              ))}
-            </List>
-            <Typography variant="body1"><strong>Critérios de Bonificação:</strong></Typography>
-            <List>
-              <ListItem>
-                <Typography variant="body2">• {selectedBonus === "none" ? "Nenhuma das anteriores" : selectedBonus}</Typography>
-              </ListItem>
-            </List>
+
           </Box>
+          <Typography variant="body2" mt={2}>
+            Curso: {selectedCourse?.name}<br />
+            Modalidades: {selectedCats.map(c => c.name).join(', ') || '—'}<br />
+            Bônus: {selectedBonus?.name ?? 'Nenhum'}
+          </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleConfirmDialogClose} color="primary">
-            Cancelar
-          </Button>
-          <Button type="button" onClick={handleConfirmSubmit} color="secondary" autoFocus>
-            Confirmar
-          </Button>
+          <Button onClick={() => setConfirmOpen(false)}>Cancelar</Button>
+          <Button onClick={sendConfirm} autoFocus>Confirmar</Button>
         </DialogActions>
       </Dialog>
     </Box>

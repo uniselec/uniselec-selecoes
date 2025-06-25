@@ -3,22 +3,12 @@ import { apiSlice } from "../api/apiSlice";
 
 const endpointUrl = "/applications";
 
-function parseQueryParams(params: ApplicationParams) {
-  const query = new URLSearchParams();
-
-  if (params.page) {
-    query.append("page", params.page.toString());
-  }
-
-  if (params.perPage) {
-    query.append("per_page", params.perPage.toString());
-  }
-
-  if (params.search) {
-    query.append("search", params.search);
-  }
-
-  return query.toString();
+function parseQueryParams(params: Record<string, unknown>) {
+  const qs = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') qs.append(key, String(value));
+  });
+  return qs.toString();
 }
 
 function getApplications({ page = 1, perPage = 10, search = "" }) {
@@ -32,11 +22,7 @@ function createApplicationMutation(application: Application) {
 }
 
 function updateApplicationMutation(application: Application) {
-  return {
-    url: `${endpointUrl}/${application.id}`,
-    method: "PUT",
-    body: application,
-  };
+  return { url: endpointUrl, method: "POST", body: application };
 }
 
 function getApplication({ id }: { id: string }) {
@@ -45,8 +31,14 @@ function getApplication({ id }: { id: string }) {
 
 export const applicationsApiSlice = apiSlice.injectEndpoints({
   endpoints: ({ query, mutation }) => ({
-    getApplications: query<Results, ApplicationParams>({
-      query: getApplications,
+    getApplications: query<Results, { page: number; perPage: number; filters: Record<string, string> }>({
+      query: ({ page, perPage, filters }) => {
+        const params = new URLSearchParams({ page: String(page), per_page: String(perPage) });
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value) params.append(key, value);
+        });
+        return `${endpointUrl}?${params.toString()}`;
+      },
       providesTags: ["Applications"],
     }),
     getApplication: query<Result, { id: string }>({
