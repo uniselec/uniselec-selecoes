@@ -9,11 +9,13 @@ import { PasswordReset } from "./features/auth/PasswordReset";
 import { AuthProfileEdit } from "./features/auth/AuthProfileEdit";
 import { useAppSelector } from "./app/hooks";
 import { selectAuthUser } from "./features/auth/authSlice";
-import { ProcessSelectionResume } from "./features/processSelections/ProcessSelectionResume";
 import { Register } from "./features/auth/Register";
 import { CandidateDashboard } from "./features/applications/CandidateDashboard";
 import { ProcessSelectionDetails } from "./features/processSelections/ProcessSelectionDetails";
 import { ApplicationCreate } from "./features/applications/ApplicationCreate";
+import { AboutSection } from "./components/AboutSelection";
+import { InstitutionalSection } from "./components/InstitutionalSection";
+import { HomePage } from "./components/HomePage";
 
 
 
@@ -32,10 +34,15 @@ function App() {
     >
       <Layout>
         <Routes>
-          <Route path="/" element={<ProcessSelectionResume />} />
+          <Route path="/" element={<HomePage />} />
           <Route path="/process-selections/details/:id" element={<ProcessSelectionDetails />} />
           <Route path="/candidate-dashboard" element={<CandidateDashboard />} />
           <Route path="/applications/create/:id" element={<ApplicationCreate />} />
+
+
+          <Route path="/institucional" element={<InstitutionalSection />} />
+          <Route path="/sobre" element={<AboutSection />} />
+          <Route path="/home" element={<HomePage />} />
 
 
 
