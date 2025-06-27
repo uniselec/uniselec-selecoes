@@ -377,7 +377,7 @@ export function ApplicationForm({
           <Typography variant="body2" mt={2}>
             Curso: {selectedCourse?.name}<br />
             Modalidades: {selectedCats.map(c => c.name).join(', ') || '—'}<br />
-            Bônus: {selectedBonus?.name ?? 'Nenhum'}
+            Bonificação: {selectedBonus?.name ?? 'Nenhum'}
           </Typography>
         </DialogContent>
         <DialogActions>

@@ -44,7 +44,7 @@ export const AboutSection: React.FC = () => (
         <ListItemText primary="Transparência nas etapas e critérios de avaliação" />
       </ListItem>
       <ListItem>
-        <ListItemText primary="Flexibilidade para criar editais com diferentes cursos, cotas e bônus" />
+        <ListItemText primary="Flexibilidade para criar editais com diferentes cursos, cotas e bonificação" />
       </ListItem>
       <ListItem>
         <ListItemText primary="Escalabilidade para instituições de qualquer porte graças a Docker" />

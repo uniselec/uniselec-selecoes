@@ -32,7 +32,7 @@ export const ApplicationCard = ({ application, processSelection, onEdit }: Props
           <strong>Curso:</strong> {fd.position.name}<br />
           <strong>Local:</strong> {fd.position.academic_unit.description}<br />
           <strong>Modalidades:</strong> {fd.admission_categories.map(c => c.name).join(', ')}<br />
-          <strong>Bônus:</strong> {fd.bonus ? fd.bonus.name : 'Nenhum'}<br />
+          <strong>Bonificação:</strong> {fd.bonus ? fd.bonus.name : 'Nenhum'}<br />
           <strong>Enem:</strong> {fd.enem} / {fd.enem_year}
         </Typography>
       </CardContent>
