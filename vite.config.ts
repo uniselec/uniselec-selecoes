@@ -13,4 +13,10 @@ export default defineConfig({
     setupFiles: "src/setupTests",
     mockReset: true,
   },
+  optimizeDeps: {
+    include: ["@emotion/react", "@emotion/styled"],
+  },
+  build: {
+    commonjsOptions: { include: [/node_modules/] },
+  },
 })
