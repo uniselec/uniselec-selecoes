@@ -29,7 +29,7 @@ type Props = {
 };
 
 // 1. Criamos o componente CPFMask que "embrulha" o IMaskInput
-const CPFMask = forwardRef<any, any>(function CPFMask(props, ref) {
+export const CPFMask = forwardRef<any, any>(function CPFMask(props, ref) {
     const { onChange, name, ...other } = props;
     return (
         <IMaskInput

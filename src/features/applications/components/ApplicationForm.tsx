@@ -18,6 +18,8 @@ import { ProcessSelection } from '../../../types/ProcessSelection';
 import { Course } from '../../../types/Course';
 import { AdmissionCategory } from '../../../types/AdmissionCategory';
 import { BonusOption } from '../../../types/BonusOption';
+import PhoneMask from '../../../components/masks/PhoneMask';
+import { CPFMask } from '../../auth/components/LoginForm';
 
 type Props = {
   application: Application;
@@ -107,7 +109,7 @@ export function ApplicationForm({
 
     handleSubmit(e as unknown as FormEvent<HTMLFormElement>, payload);
   };
-
+  
   /* --------------------------------- render ----------------------------------- */
   return (
     <Box p={2}>
@@ -145,8 +147,15 @@ export function ApplicationForm({
           </Grid>
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
-              <TextField required label="CPF do Candidato" name="cpf"
-                value={formState.cpf || ''} disabled={isdisabled} />
+              <TextField
+                required
+                label="CPF do Candidato"
+                name="cpf"
+                value={formState.cpf || ''}
+                disabled={isdisabled}
+                InputProps={{
+                  inputComponent: CPFMask as any,
+                }}/>
             </FormControl>
           </Grid>
 
@@ -176,10 +185,19 @@ export function ApplicationForm({
           {/* telefone / endereço */}
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
-              <TextField required label="Telefone" name="phone1"
+              <TextField
+                required
+                label="Telefone"
+                name="phone1"
                 value={formState.phone1 || ''}
-                onChange={e => setFormState({ ...formState, phone1: e.target.value })}
-                disabled={isdisabled} />
+                onChange={(event) => {
+                  const rawPhone = event.target.value.replace(/\D/g, '');
+                  setFormState(prev => ({ ...prev, phone1: rawPhone }));
+                }}
+                inputProps={{ maxLength: 15 }}
+                InputProps={{ inputComponent: PhoneMask as any }}
+                disabled={isdisabled}
+              />
             </FormControl>
           </Grid>
           <Grid item xs={12}>
@@ -263,6 +281,7 @@ export function ApplicationForm({
             <FormControl fullWidth>
               <Autocomplete
                 options={processSelection.allowed_enem_years || []}
+                getOptionLabel={(option) => option.toString()}
                 value={selectedYear}
                 onChange={(_, v) => setSelectedYear(v)}
                 renderInput={p => <TextField {...p} label="Ano do ENEM" required />}
