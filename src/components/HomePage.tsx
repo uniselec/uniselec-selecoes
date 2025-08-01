@@ -54,7 +54,7 @@ export const HomePage: React.FC = () => (
     <Box sx={{ textAlign: "center", mt: 4 }}>
       <Button
         component={RouterLink}
-        to="/comprovante"
+        to="/verificar-comprovante"
         variant="outlined"
         size="large"
         sx={{ borderRadius: 8, px: 4, py: 1.5 }}
