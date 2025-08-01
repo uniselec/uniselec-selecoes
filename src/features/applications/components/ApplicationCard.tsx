@@ -159,7 +159,7 @@ export const ApplicationCard = ({
                 {
                   application.verification_code &&
                   <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                      <QRCode value={`${window.location.origin}/comprovante/${application.verification_code}`} size={120} />
+                      <QRCode value={`${window.location.origin}/verificar-comprovante/${application.verification_code}`} size={120} />
                   </Box>
                 }
 
