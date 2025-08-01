@@ -236,9 +236,9 @@ export const ProcessSelectionDetails = () => {
               </Typography>
 
               <List dense>
-                {documentsData && documentsData.data.length > 0 ? (
-                  documentsData.data.map((doc) => (
-                    <ListItem key={doc.id}>
+                {documentsData && documentsData.data.length > 0 && (documentsData.data.filter(doc => !(doc.status === 'draft')).length >= 1) ? (
+                  documentsData.data.map((doc) => {
+                    return !(doc.status == 'draft') && <ListItem key={doc.id}>
                       <ListItemButton
                         component="a"
                         href={`${apiUrl}/storage/${doc.path}`}
@@ -255,7 +255,7 @@ export const ProcessSelectionDetails = () => {
                         />
                       </ListItemButton>
                     </ListItem>
-                  ))
+                  })
                 ) : (
                   <Typography>Nenhum documento cadastrado.</Typography>
                 )}

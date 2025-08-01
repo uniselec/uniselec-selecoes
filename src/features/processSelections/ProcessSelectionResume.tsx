@@ -3,6 +3,7 @@ import { Box, Typography, Grid, Card, CardContent, Tooltip } from "@mui/material
 import { useNavigate } from "react-router-dom";
 import { ProcessSelection } from "../../types/ProcessSelection";
 import { useGetProcessSelectionsQuery } from "./processSelectionSlice";
+import { useGetDocumentsByProcessSelectionQuery } from "../documents/documentSlice";
 
 export const ProcessSelectionResume = () => {
   const { data, isFetching, error } = useGetProcessSelectionsQuery({});
@@ -74,6 +75,7 @@ const ProcessSelectionList = ({
 
 /* ---------- Card ---------- */
 const ProcessSelectionCard = ({ selection }: { selection: ProcessSelection }) => {
+  const { data: documentsData } = useGetDocumentsByProcessSelectionQuery({ processSelectionId: selection.id!, });
   const navigate = useNavigate();
   const maxNameLength = 30;
   const maxDescriptionLength = 60;
@@ -146,7 +148,10 @@ const ProcessSelectionCard = ({ selection }: { selection: ProcessSelection }) =>
           📚 {selection.courses?.length || 0} Cursos
         </Typography>
         <Typography variant="subtitle2" fontWeight="bold" color="text.primary">
-          📄 {selection.documents?.length || 0} Documentos
+          📄 {(() => {
+            const numberDocs = documentsData?.data.filter(doc => doc.status !== 'draft').length || 0;
+            return `${numberDocs} ${numberDocs === 1 ? 'Documento' : 'Documentos'}`;
+          })() }
         </Typography>
       </CardContent>
     </Card>

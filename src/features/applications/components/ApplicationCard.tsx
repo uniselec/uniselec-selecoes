@@ -11,6 +11,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import EditIcon from '@mui/icons-material/Edit';
 import Logo from "../../../assets/img/logo-unilab-preto.png";
+import QRCode from "react-qr-code";
 
 
 type Props = {
@@ -154,6 +155,13 @@ export const ApplicationCard = ({
                   <strong>Critérios de Bonificação:</strong>{' '}
                   {fd.bonus?.name || 'Nenhum'}
                 </Typography>
+
+                {
+                  application.verification_code &&
+                  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                      <QRCode value={`${window.location.origin}/comprovante/${application.verification_code}`} size={120} />
+                  </Box>
+                }
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
                   <Typography variant="body1">

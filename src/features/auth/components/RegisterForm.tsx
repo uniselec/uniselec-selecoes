@@ -1,8 +1,10 @@
 import { Box, Button, Grid, Typography, TextField, Avatar, Divider } from "@mui/material";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link } from "react-router-dom";
-import { useState, ChangeEvent } from 'react';
+import { useState, ChangeEvent, forwardRef } from 'react';
 import { User } from "../../../types/User";
+import { IMaskInput } from 'react-imask';
+import { CPFMask } from "./LoginForm";
 
 type Props = {
   credentials: User;
@@ -141,30 +143,34 @@ export const RegisterForm = ({
                 id="cpf"
                 label="CPF"
                 name="cpf"
-                autoComplete="cpf"
-                onChange={(e) => {
-                  const numericValue = e.target.value.replace(/[^0-9]/g, ''); // Remove caracteres não numéricos
-                  if (numericValue.length <= 11) {
-                    handleInputChange(e);
-                    setCpf(numericValue);
-                    if (!validateCPF(numericValue)) {
-                      setErrorCPF({ valid: false, text: "CPF inválido" });
-                    } else {
-                      setErrorCPF({ valid: true, text: "" });
-                    }
-                  }
+                placeholder="000.000.000-00"
+                value={cpf}
+                onChange={(event) => {
+                  const cpfWithMask = event.target.value;
+                  const rawCpf = cpfWithMask.replace(/\D/g, '');
+                  setCpf(cpfWithMask);
+                  handleInputChange({
+                    ...event,
+                    target: {
+                      ...event.target,
+                      value: rawCpf,
+                    },
+                  });
                 }}
-                onBlur={() => {
-                  if (!validateCPF(cpf)) {
+                onBlur={(event) => {
+                  const cpf = event.target.value;
+                  const rawCpf = cpf.replace(/\D/g, '');
+                  if (!validateCPF(rawCpf)) {
                     setErrorCPF({ valid: false, text: "CPF inválido" });
                   } else {
                     setErrorCPF({ valid: true, text: "" });
-                  }
+                  };
                 }}
-                value={cpf}
+                InputProps={{
+                  inputComponent: CPFMask as any,
+                }}
                 error={!errorCPF.valid}
                 helperText={errorCPF.text}
-                inputProps={{ maxLength: 11 }}
               />
             </Grid>
             <Grid item xs={12}>

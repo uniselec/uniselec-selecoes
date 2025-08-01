@@ -16,6 +16,7 @@ import { ApplicationCreate } from "./features/applications/ApplicationCreate";
 import { AboutSection } from "./components/AboutSelection";
 import { InstitutionalSection } from "./components/InstitutionalSection";
 import { HomePage } from "./components/HomePage";
+import { EnrollmentVerification } from "./features/enrollmentsVerification/components/EnrollmentVerification";
 
 
 
@@ -43,7 +44,7 @@ function App() {
           <Route path="/institucional" element={<InstitutionalSection />} />
           <Route path="/sobre" element={<AboutSection />} />
           <Route path="/home" element={<HomePage />} />
-
+          <Route path="/comprovante/:code?" element={<EnrollmentVerification />} />
 
 
           <Route path="/profile" element={<ProtectedRoute><AuthProfile /></ProtectedRoute>} />
