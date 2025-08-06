@@ -1,4 +1,4 @@
-export interface Results {
+export interface SelectionDocumentResults {
   data: Document[];
   links: Links;
   meta: Meta;

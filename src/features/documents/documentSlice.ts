@@ -1,5 +1,6 @@
 // documentSlice.ts
 import { Result, Results, DocumentParams, Document } from "../../types/Document";
+import { SelectionDocumentResults } from "../../types/SelectionDocument";
 import { apiSlice } from "../api/apiSlice";
 
 const endpointUrl = "/documents";
@@ -68,7 +69,7 @@ export const documentsApiSlice = apiSlice.injectEndpoints({
       query: getDocuments,
       providesTags: ["Documents"],
     }),
-    getDocumentsByProcessSelection: query<Results, { processSelectionId: string }>({
+    getDocumentsByProcessSelection: query<SelectionDocumentResults, { processSelectionId: string }>({
       query: ({ processSelectionId }) => `/documents?process_selection=${processSelectionId}`,
       providesTags: ["Documents"],
     }),

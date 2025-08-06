@@ -10,16 +10,16 @@ const PhoneMask = forwardRef<any, any>(function PhoneMask(props, ref) {
       mask={[
         {
           mask: '(00) 0000-0000', // fixo: 10 dígitos
-          regex: '^\\d{0,10}$',
         },
         {
           mask: '(00) 00000-0000', // celular: 11 dígitos
-          regex: '^\\d{0,11}$',
         },
       ]}
       dispatch={(appended, dynamicMasked) => {
         const number = (dynamicMasked.value + appended).replace(/\D/g, '');
-        return dynamicMasked.compiledMasks.find(m => new RegExp(m.regex).test(number));
+        return number.length > 10
+          ? dynamicMasked.compiledMasks[1] // celular
+          : dynamicMasked.compiledMasks[0]; // fixo
       }}
       definitions={{
         '0': /[0-9]/,

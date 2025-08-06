@@ -15,11 +15,13 @@ export const EnrollmentReceipt: React.FC = () => {
   const { code } = useParams<{ code?: string }>();
 
   React.useEffect(() => {
-    fetchEnrollment(code);
-  }, []);
+    if (code) {
+      fetchEnrollment(code);
+    }
+  }, [code]);
 
   React.useEffect(() => {
-    if (isSuccess) {
+    if (isSuccess && data) {
       setEnrollmentDetails(data?.data);
     }
 

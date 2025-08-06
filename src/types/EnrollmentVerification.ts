@@ -1,3 +1,7 @@
+export interface Result {
+  data: EnrollmentVerification;
+}
+
 export interface EnrollmentVerification {
   name: string;
   social_name: string | null;

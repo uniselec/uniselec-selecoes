@@ -1,10 +1,10 @@
 import { apiSlice } from "../api/apiSlice";
-import { EnrollmentVerification } from "../../types/EnrollmentVerification";
+import { Result } from "../../types/EnrollmentVerification";
 
 
 export const enrollmentApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    verifyEnrollment: builder.query<EnrollmentVerification, { code: string }>({
+    verifyEnrollment: builder.query<Result, string>({
       query: (code) => `/enrollment_verification/${code}`,
     }),
   }),
