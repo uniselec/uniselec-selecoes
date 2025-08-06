@@ -17,6 +17,7 @@ import { AboutSection } from "./components/AboutSelection";
 import { InstitutionalSection } from "./components/InstitutionalSection";
 import { HomePage } from "./components/HomePage";
 import { EnrollmentVerification } from "./features/enrollmentsVerification/components/EnrollmentVerification";
+import { EnrollmentReceipt } from "./features/enrollmentsVerification/components/EnrollmentReceipt";
 
 
 
@@ -44,7 +45,8 @@ function App() {
           <Route path="/institucional" element={<InstitutionalSection />} />
           <Route path="/sobre" element={<AboutSection />} />
           <Route path="/home" element={<HomePage />} />
-          <Route path="/comprovante/:code?" element={<EnrollmentVerification />} />
+          <Route path="/verificar-comprovante/:code?" element={<EnrollmentVerification />} />
+          <Route path="/comprovante/:code" element={<EnrollmentReceipt />} />
 
 
           <Route path="/profile" element={<ProtectedRoute><AuthProfile /></ProtectedRoute>} />
