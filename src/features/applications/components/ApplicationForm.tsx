@@ -3,7 +3,7 @@ import {
   Box, Grid, TextField, FormControl, Typography, Checkbox,
   FormControlLabel, Autocomplete, RadioGroup, Radio, Button,
   Dialog, DialogActions, DialogContent, DialogContentText,
-  DialogTitle, List, ListItem,
+  DialogTitle, List, ListItem, InputAdornment
 } from '@mui/material';
 import { useState, useEffect, FormEvent, SyntheticEvent } from 'react';
 import {
@@ -20,6 +20,8 @@ import { AdmissionCategory } from '../../../types/AdmissionCategory';
 import { BonusOption } from '../../../types/BonusOption';
 import PhoneMask from '../../../components/masks/PhoneMask';
 import { CPFMask } from '../../auth/components/LoginForm';
+import Tooltip from '@mui/material/Tooltip';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 type Props = {
   application: Application;
@@ -131,9 +133,18 @@ export function ApplicationForm({
           <Grid item xs={12} md={6}>
             <FormControl fullWidth>
               <TextField
-                label="Nome Social" name="social_name"
+                label="Nome Social, conforme Decreto nº 8.727" name="social_name"
                 value={formState.social_name || ''}
                 onChange={e => setFormState({ ...formState, social_name: e.target.value })}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <Tooltip title="DECRETO Nº 8.727, DE 28 DE ABRIL DE 2016. Dispõe sobre o uso do nome social e o reconhecimento da identidade de gênero de pessoas travestis e transexuais no âmbito da administração pública federal direta, autárquica e fundacional.">
+                        <ErrorOutlineIcon />
+                      </Tooltip>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </FormControl>
           </Grid>
