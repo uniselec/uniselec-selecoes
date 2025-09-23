@@ -84,11 +84,7 @@ export const ApplicationCard = ({
                 </Typography>
                 <br />
                 <Typography variant="subtitle1" align="center">
-                  EDITAL PROGRAD Nº 12/2024, DE 31 DE JULHO DE 2024
-                </Typography>
-                <Typography variant="subtitle1" align="center">
-                  PROCESSO SELETIVO UNILAB – (MODELO SISU) - INGRESSO NO PERÍODO
-                  LETIVO 2024.1
+                  {fd.edital || 'Não informado'}
                 </Typography>
                 <br />
 
@@ -131,14 +127,10 @@ export const ApplicationCard = ({
 
                   <Grid item xs={12} md={6}>
                     <Typography variant="body1">
-                      <strong>Edital:</strong> Edital nº 04/2024 - PROCESSO
-                      SELETIVO UNILAB – PERÍODO LETIVO 2024.1 Curso Medicina
+                      <strong>Curso Pretendido:</strong>{fd.position.name || 'Não informado'}
                     </Typography>
                     <Typography variant="body1">
-                      <strong>Curso Pretendido:</strong> Medicina
-                    </Typography>
-                    <Typography variant="body1">
-                      <strong>Local de Oferta:</strong> Baturité
+                      <strong>Local de Oferta:</strong> {fd.position.academic_unit.name +" - "+ fd.position.academic_unit.state || 'Não informado'}
                     </Typography>
                     <Typography variant="body1">
                       <strong>Número de Inscrição do ENEM:</strong> {fd.enem}
