@@ -91,3 +91,8 @@ O que eu consigo fazer em pouco tempo:
 
 
 Em produção o .env, na variável VITE_API_URL deve conter o link de produção da API.
+
+
+
+# gera SALT e HASH via Node
+node -e "const c=require('crypto'); const salt=c.randomBytes(16); c.pbkdf2('SUA_SENHA_FORTE', salt, 120000, 32, 'sha256', (e,k)=>{if(e)throw e; console.log('SALT_BASE64='+salt.toString('base64')); console.log('HASH_BASE64='+k.toString('base64'));})"
