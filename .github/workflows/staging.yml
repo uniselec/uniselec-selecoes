@@ -17,9 +17,15 @@ jobs:
         with:
           node-version: 20.x
 
-      - name: Create .env file
+      - name: Create .env.staging
         run: |
-          echo "VITE_API_URL=${{ secrets.VITE_API_URL_STAGING }}" > .env
+          cat > .env.staging << 'EOF'
+          VITE_API_URL=${{ secrets.VITE_API_URL_STAGING }}
+          VITE_STAGING_ENABLED=true
+          VITE_STAGING_SALT=${{ secrets.VITE_STAGING_SALT }}
+          VITE_STAGING_HASH=${{ secrets.VITE_STAGING_HASH }}
+          EOF
+
       - name: yarn install
         run: |
           yarn
