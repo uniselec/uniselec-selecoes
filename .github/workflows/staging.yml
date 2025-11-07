@@ -17,9 +17,9 @@ jobs:
         with:
           node-version: 20.x
 
-      - name: Create .env.staging
+      - name: Create .env
         run: |
-          cat > .env.staging << 'EOF'
+          cat > .env << 'EOF'
           VITE_API_URL=${{ secrets.VITE_API_URL_STAGING }}
           VITE_STAGING_ENABLED=true
           VITE_STAGING_SALT=${{ secrets.VITE_STAGING_SALT }}
