@@ -19,6 +19,8 @@ import { useGetApplicationsQuery } from './applicationSlice';
 import { Application } from '../../types/Application';
 import { Login } from '../auth/Login';
 import { RootState } from '../../app/store';
+import Tooltip from '@mui/material/Tooltip';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const CandidateDashboard = () => {
   /* ---------------- auth / logout ---------------- */
@@ -49,6 +51,11 @@ const CandidateDashboard = () => {
 
   if (!isAuthenticated) return <Login />;
 
+  const isWithinAppealPeriod = (start: string, end: string) => {
+    const now = new Date();
+    return now >= new Date(start) && now <= new Date(end);
+  };
+
   /* ------------- render ------------- */
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -56,9 +63,19 @@ const CandidateDashboard = () => {
       <AppBar position="static">
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="h6">Portal do Candidato</Typography>
-          <Button color="inherit" startIcon={<LogoutIcon />} onClick={doLogout}>
-            Sair
-          </Button>
+          <Box>
+            <Button
+              sx={{ mr: 3 }}
+              color="inherit"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => window.history.back()}
+            >
+              Voltar
+            </Button>
+            <Button color="inherit" startIcon={<LogoutIcon />} onClick={doLogout}>
+              Sair
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
 
@@ -99,8 +116,14 @@ const CandidateDashboard = () => {
         {(appsResp?.data ?? []).map((app: Application) => {
           const fd = app.form_data;
           const pos = fd.position;
-          console.log(appsResp);
+          const processSelection = app.process_selection;
+          const canAppeal = isWithinAppealPeriod(
+            processSelection.appeal_start_date,
+            processSelection.appeal_end_date
+          );
+
           const edit = () => navigate(`/applications/create/${app.process_selection_id}`);
+          const appeal = () => navigate(`/appeals/${app.id}`);
 
           return (
             <Accordion key={app.id} sx={{ mb: 1, borderRadius: 2 }}>
@@ -114,6 +137,30 @@ const CandidateDashboard = () => {
                     </Typography>
                   </Grid>
                   <Grid item>
+                    {canAppeal && (
+                      <Tooltip
+                        title={
+                          canAppeal
+                            ? ""
+                            : `O recurso só pode ser enviado entre 
+                              ${new Date(processSelection.appeal_start_date).toLocaleString("pt-BR")}
+                              e
+                              ${new Date(processSelection.appeal_end_date).toLocaleString("pt-BR")}`
+                        }
+                        disableHoverListener={canAppeal}
+                      >
+                        <span>
+                          <Button
+                            variant="outlined"
+                            onClick={appeal}
+                            disabled={!canAppeal}
+                            sx={{ mr: 2 }}
+                          >
+                            Entrar com Recurso
+                          </Button>
+                        </span>
+                      </Tooltip>
+                    )}
                     <IconButton size="small" onClick={edit}>
                       <EditIcon fontSize="small" />
                     </IconButton>
