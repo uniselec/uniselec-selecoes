@@ -29,7 +29,7 @@ import { useCreateAppealMutation, useUpdateAppealMutation, useGetAppealQuery } f
 import { useCreateAppealDocumentMutation, useDeleteAppealDocumentMutation } from '../appealDocumentSlice';
 
 type Props = {
-  applicationId: string|int;
+  applicationId: string|number;
   isCreate: boolean;
   setIsCreate: React.Dispatch<React.SetStateAction<boolean>>;
   appeal: Appeal;
@@ -78,7 +78,12 @@ export function AppealForm({
     event.preventDefault();
     if (!file) return;
     const formData = new FormData();
-    formData.append("appeal_id", appeal.id);
+    if (!appeal.id) {
+      enqueueSnackbar("Salve o Justificativa antes de enviar o PDF.", { variant: "warning" });
+      return;
+    }
+    formData.append("appeal_id", String(appeal.id));
+
     formData.append("file", file);
     try {
       await createAppealDocument(formData).unwrap();
@@ -216,7 +221,7 @@ export function AppealForm({
                           )}
 
                           {/* Botão Excluir */}
-                          {(appeal.documents?.length > 0 && !isAppealReviewed()) && (
+                          {((appeal.documents?.length ?? 0) > 0 && !isAppealReviewed()) && (
                             <IconButton
                               disabled={isAppealReviewed()}
                               color="error"
@@ -244,14 +249,14 @@ export function AppealForm({
                   Enviar PDF
                 </Button>
               )}
-              {appeal.documents?.length > 0 && !isAppealReviewed() && (
+              {(appeal.documents?.length ?? 0) > 0 && !isAppealReviewed() && (
                 <Button
                   sx={{ ml: 1 }}
                   startIcon={<DownloadIcon />}
                   variant="outlined"
                   size="small"
                   disabled={isAppealReviewed()}
-                  onClick={() => handleDownload(appeal.documents[0].path)}
+                  onClick={() => handleDownload(appeal.documents?.[0]?.path!)}
                 >
                   Download
                 </Button>

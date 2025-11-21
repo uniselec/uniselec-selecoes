@@ -1,6 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
 import Logo from "../../../assets/img/logo-unilab-preto.png";
-import { useLazyVerifyEnrollmentQuery } from "../enrollmentVerificationSlice";
 import { format, parseISO, isValid } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -35,9 +34,13 @@ const Appeal: React.FC = () => {
   const doLogout = () => { logout({}); dispatch(logOut()); };
   const userAuth = useAppSelector(selectAuthUser);
 
-  const [view, setView] = useState<"form" | "review">("form");
   const { id: applicationId } = useParams<{ id: string }>();
+  if (!applicationId) {
+    return <Typography>Parâmetro da aplicação ausente.</Typography>;
+  }
   const { data: application, isLoading, isFetching } = useGetApplicationQuery({ id: applicationId });
+  
+  const [view, setView] = useState<"form" | "review">("form");
   const [isCreate, setIsCreate] = useState(true);
   const [appeal, setAppeal] = useState<AppealType>({
     application_id: " ",
@@ -172,7 +175,6 @@ const Appeal: React.FC = () => {
       ) : (
         <AppealReview
           appeal={appeal}
-          onBack={() => setView("form")}
         />
       )}
     </Box>

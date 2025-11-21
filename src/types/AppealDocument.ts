@@ -1,10 +1,10 @@
 export interface AppealDocument {
-  id?: number;
-  appeal_id?: number;
+  id?: string;
+  appeal_id?: number | string;
   path: string;
   original_name: string;
+  url: string;
   created_at?: null | string;
-  updated_at?: null | string;
 }
 
 export interface Result {

@@ -1,8 +1,12 @@
+import { AppealDocument } from "./AppealDocument";
+
 export interface Appeal {
-  application_id: number;
+  id?: string;
+  application_id: number | string;
   justification: string;
   decision?: null | string;
   status?: string;
+  documents?: null | AppealDocument[];
   created_at?: null | string;
   updated_at?: null | string;
 }
