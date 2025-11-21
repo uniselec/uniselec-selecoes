@@ -216,7 +216,7 @@ export function AppealForm({
                           )}
 
                           {/* Botão Excluir */}
-                          {(file || appeal.documents?.length > 0) && !isAppealReviewed() && (
+                          {(appeal.documents?.length > 0 && !isAppealReviewed()) && (
                             <IconButton
                               disabled={isAppealReviewed()}
                               color="error"
