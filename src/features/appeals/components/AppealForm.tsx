@@ -35,6 +35,7 @@ type Props = {
   appeal: Appeal;
   setAppeal: React.Dispatch<React.SetStateAction<Appeal>>;
   isAppealReviewed: () => boolean;
+  isAppealPeriodOver: () => boolean;
 };
 
 export function AppealForm({
@@ -44,6 +45,7 @@ export function AppealForm({
   appeal,
   setAppeal,
   isAppealReviewed,
+  isAppealPeriodOver,
 }: Props) {
 
   const [createAppeal, statusAppealCreationRequest] = useCreateAppealMutation();
@@ -150,14 +152,14 @@ export function AppealForm({
               onChange={handleChange}
             />
           </FormControl>
-          {!isAppealReviewed() && (
+          {(!isAppealReviewed() && !isAppealPeriodOver()) && (
             <Button
               sx={{ mt: 1 }}
               variant="contained"
               color="primary"
               type="submit"
               size="small"
-              disabled={isAppealReviewed()}
+              disabled={isAppealReviewed() || isAppealPeriodOver()}
             >
               Salvar
             </Button>
@@ -179,7 +181,7 @@ export function AppealForm({
                   type="file"
                   accept="application/pdf"
                   style={{ display: "none" }}
-                  disabled={isCreate || isAppealReviewed()}
+                  disabled={isCreate || isAppealReviewed() || isAppealPeriodOver()}
                   onChange={(event) => setFile(event.target.files?.[0] || null)}
                 />
 
@@ -189,7 +191,7 @@ export function AppealForm({
                     variant="outlined"
                     margin="normal"
                     fullWidth
-                    disabled={isCreate || isAppealReviewed()}
+                    disabled={isCreate || isAppealReviewed() || isAppealPeriodOver()}
                     value={
                       file?.name ||
                       appeal.documents?.[0]?.original_name ||
@@ -207,7 +209,7 @@ export function AppealForm({
                         <InputAdornment position="end">
 
                           {/* Botão Selecionar */}
-                          {!isAppealReviewed() && (
+                          {(!isAppealReviewed() && !isAppealPeriodOver()) && (
                             <Button
                               component="label"
                               htmlFor="upload-pdf"
@@ -221,7 +223,7 @@ export function AppealForm({
                           )}
 
                           {/* Botão Excluir */}
-                          {((appeal.documents?.length ?? 0) > 0 && !isAppealReviewed()) && (
+                          {((appeal.documents?.length ?? 0) > 0 && !isAppealReviewed() && !isAppealPeriodOver()) && (
                             <IconButton
                               disabled={isAppealReviewed()}
                               color="error"
@@ -237,7 +239,7 @@ export function AppealForm({
                   />
                 </FormControl>
               </Box>
-              {!isAppealReviewed() && (
+              {(!isAppealReviewed() && !isAppealPeriodOver()) && (
                 <Button
                   variant="contained"
                   color="primary"
@@ -249,7 +251,7 @@ export function AppealForm({
                   Enviar PDF
                 </Button>
               )}
-              {(appeal.documents?.length ?? 0) > 0 && !isAppealReviewed() && (
+              {(appeal.documents?.length ?? 0) > 0 && !isAppealReviewed() && !isAppealPeriodOver() && (
                 <Button
                   sx={{ ml: 1 }}
                   startIcon={<DownloadIcon />}

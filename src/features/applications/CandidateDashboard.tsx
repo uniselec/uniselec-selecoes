@@ -51,9 +51,29 @@ const CandidateDashboard = () => {
 
   if (!isAuthenticated) return <Login />;
 
-  const isWithinAppealPeriod = (start: string, end: string) => {
+  const isWithinAppealPeriod = (appealStartDate: string | null, appealEndDate: string | null) => {
+
+    if (!appealStartDate || !appealEndDate) return false;
+
+    const start = new Date(appealStartDate);
+    const end = new Date(appealEndDate);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) return false;
+
     const now = new Date();
-    return now >= new Date(start) && now <= new Date(end);
+
+    return now >= start;
+  };
+
+  const isAppealPeriodOver = (appealStartDate: string | null, appealEndDate: string | null) => {
+    
+    if (!appealStartDate || !appealEndDate) return false;
+
+    const end = new Date(appealEndDate);
+    if (isNaN(end.getTime())) return false;
+
+    const now = new Date();
+    return now > end;
   };
 
   /* ------------- render ------------- */
@@ -114,13 +134,14 @@ const CandidateDashboard = () => {
         )}
 
         {(appsResp?.data ?? []).map((app: Application) => {
+          
           const fd = app.form_data;
           const pos = fd.position;
+
           const processSelection = app.process_selection;
-          const canAppeal = isWithinAppealPeriod(
-            processSelection.appeal_start_date,
-            processSelection.appeal_end_date
-          );
+          const appealStartDate = processSelection.appeal_start_date;
+          const appealEndDate = processSelection.appeal_end_date;
+          const canAppeal = isWithinAppealPeriod(appealStartDate, appealEndDate);
 
           const edit = () => navigate(`/applications/create/${app.process_selection_id}`);
           const appeal = () => navigate(`/appeals/${app.id}`);
@@ -137,7 +158,7 @@ const CandidateDashboard = () => {
                     </Typography>
                   </Grid>
                   <Grid item>
-                    {canAppeal && (
+                    {(canAppeal || (isAppealPeriodOver(appealStartDate, appealEndDate) && app.appeal)) && (
                       <Tooltip
                         title={
                           canAppeal
@@ -156,7 +177,7 @@ const CandidateDashboard = () => {
                             disabled={!canAppeal}
                             sx={{ mr: 2 }}
                           >
-                            Entrar com Recurso
+                            {!app.appeal ? "Entrar com Recurso" : "Ver Recurso"}
                           </Button>
                         </span>
                       </Tooltip>

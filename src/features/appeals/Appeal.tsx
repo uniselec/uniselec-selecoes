@@ -23,6 +23,7 @@ import { Appeal as AppealType } from "../../types/Appeal";
 import { useGetApplicationQuery } from "../applications/applicationSlice";
 import { AppealReview } from "./components/AppealReview";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useGetProcessSelectionQuery } from "../processSelections/processSelectionSlice";
 
 const Appeal: React.FC = () => {
 
@@ -39,7 +40,14 @@ const Appeal: React.FC = () => {
     return <Typography>Parâmetro da aplicação ausente.</Typography>;
   }
   const { data: application, isLoading, isFetching } = useGetApplicationQuery({ id: applicationId });
-  
+
+  const processSelectionId = application?.data?.process_selection_id;
+
+  const { data: processSelection } = useGetProcessSelectionQuery(
+    { id: processSelectionId as string },
+    { skip: !processSelectionId }
+  );
+    
   const [view, setView] = useState<"form" | "review">("form");
   const [isCreate, setIsCreate] = useState(true);
   const [appeal, setAppeal] = useState<AppealType>({
@@ -60,6 +68,23 @@ const Appeal: React.FC = () => {
     }
     return false;
   }
+
+  const isAppealPeriodOver = () => {
+
+    if (!processSelection) return false;
+
+    const appealStartDate = processSelection.data['appeal_start_date'];
+    const appealEndDate = processSelection.data['appeal_end_date'];
+
+    if (!appealStartDate || !appealEndDate) return false;
+    
+    const end = new Date(appealEndDate);
+    if (isNaN(end.getTime())) return false;
+    
+    const now = new Date();
+
+    return now > end;
+  };
 
   if (isFetching) return <Typography>Carregando…</Typography>;
 
@@ -171,6 +196,7 @@ const Appeal: React.FC = () => {
           appeal={appeal}
           setAppeal={setAppeal}
           isAppealReviewed={isAppealReviewed}
+          isAppealPeriodOver={isAppealPeriodOver}
         />
       ) : (
         <AppealReview
