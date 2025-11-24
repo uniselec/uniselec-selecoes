@@ -3,7 +3,6 @@ export interface AppealDocument {
   appeal_id?: number | string;
   path: string;
   original_name: string;
-  url: string;
   created_at?: null | string;
 }
 

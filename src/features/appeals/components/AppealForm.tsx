@@ -103,8 +103,8 @@ export function AppealForm({
     setAppeal({ ...appeal, [name]: value, application_id: applicationId });
   };
 
-  const handleDownload = (docPath: string) => {
-    const url = `${apiUrl}/storage/${docPath}`;
+  const handleDownload = (appealId: string | number, documentId: string | number) => {
+    const url = `${apiUrl}/api/appeals/${appealId}/appeal_documents/${documentId}/download`;
     window.open(url, "_blank");
   };
 
@@ -258,7 +258,10 @@ export function AppealForm({
                   variant="outlined"
                   size="small"
                   disabled={isAppealReviewed()}
-                  onClick={() => handleDownload(appeal.documents?.[0]?.path!)}
+                  onClick={() => {
+                    if (!appeal?.id || !appeal.documents?.[0]?.id) return;
+                    handleDownload(appeal.id, appeal.documents[0].id);
+                  }}
                 >
                   Download
                 </Button>
