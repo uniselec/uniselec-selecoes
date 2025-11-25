@@ -10,7 +10,9 @@ export const apiSlice = createApi({
     "Applications",
     "Users",
     "Documents",
-    "ProcessSelections"
+    "ProcessSelections",
+    "Appeals",
+    "AppealDocuments",
   ],
   baseQuery: async (args, api, extraOptions) => {
     const state = api.getState() as RootState;

@@ -1,6 +1,8 @@
 import { AdmissionCategory } from "./AdmissionCategory";
+import { Appeal } from "./Appeal";
 import { BonusOption } from "./BonusOption";
 import { Course } from "./Course";
+import { ProcessSelection } from "./ProcessSelection";
 
 export interface Results {
   data: Application[];
@@ -36,10 +38,12 @@ export interface ApplicationFormData {
 export interface Application {
   id?: string;
   process_selection_id: string;
+  process_selection: ProcessSelection; 
   form_data: ApplicationFormData;
   verification_expected: string;
   verification_code: string;
   valid_verification_code: boolean;
+  appeal: Appeal;
   created_at: string | null;
   updated_at: string | null;
 }
