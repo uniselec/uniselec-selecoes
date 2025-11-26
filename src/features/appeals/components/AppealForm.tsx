@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import axios from "axios";
+import { RootState } from '../../app/store';
+import { useAppSelector } from '../../../app/hooks';
 import {
   Box,
   Button,
@@ -17,13 +20,10 @@ import { Link } from "react-router-dom";
 import { Appeal } from "../../../types/Appeal";
 import Tooltip from '@mui/material/Tooltip';
 import DownloadIcon from '@mui/icons-material/Download';
-const apiUrl = import.meta.env.VITE_API_URL;
-
 import DeleteIcon from "@mui/icons-material/Delete";
 import UploadIcon from "@mui/icons-material/Upload";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import { IconButton, InputAdornment } from "@mui/material";
-
 import { useSnackbar } from "notistack";
 import { useCreateAppealMutation, useUpdateAppealMutation, useGetAppealQuery } from '../appealsSlice';
 import { useCreateAppealDocumentMutation, useDeleteAppealDocumentMutation } from '../appealDocumentSlice';
@@ -48,6 +48,7 @@ export function AppealForm({
   isAppealPeriodOver,
 }: Props) {
 
+  const token = useAppSelector((s: RootState) => s.auth.token);
   const [createAppeal, statusAppealCreationRequest] = useCreateAppealMutation();
   const [updateAppeal, statusAppealUpdateRequest] = useUpdateAppealMutation();
   const [createAppealDocument, statusAppealDocumentCreationRequest] = useCreateAppealDocumentMutation();
@@ -70,15 +71,26 @@ export function AppealForm({
       setAppeal(response.data);
       enqueueSnackbar("Recurso salvo com sucesso", { variant: "success" });
     } catch (error: any) {
-      console.log(error);
       const errorMessage = error?.data?.message || "Erro ao salvar o Recurso";
       enqueueSnackbar(errorMessage, { variant: "error" });
+      console.error("Error saving the appeal: ", error);
     }
   }
 
   async function handleSubmitFile(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (!file) return;
+    event.preventDefault(); 
+    
+    if (!file) {
+      enqueueSnackbar("Selecione um arquivo antes de enviar.", { variant: "warning" });
+      return;
+    }
+    
+    const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+    if (file.size > MAX_FILE_SIZE) {
+      enqueueSnackbar("O arquivo deve ter no máximo 2MB.", { variant: "error" });
+      return;
+    }
+
     const formData = new FormData();
     if (!appeal.id) {
       enqueueSnackbar("Salve o Justificativa antes de enviar o PDF.", { variant: "warning" });
@@ -94,18 +106,13 @@ export function AppealForm({
     } catch (error: any) {
       const errorMessage = error?.data?.message || "Erro ao enviar o arquivo";
       enqueueSnackbar(errorMessage, { variant: "error" });
-      console.error(error);
+      console.error("Error sending file: ", error);
     }
   }
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target;
     setAppeal({ ...appeal, [name]: value, application_id: applicationId });
-  };
-
-  const handleDownload = (appealId: string | number, documentId: string | number) => {
-    const url = `${apiUrl}/api/appeals/${appealId}/appeal_documents/${documentId}/download`;
-    window.open(url, "_blank");
   };
 
   const handleDeleteFile = async () => {
@@ -120,9 +127,46 @@ export function AppealForm({
       }
       enqueueSnackbar("Arquivo deletado com sucesso", { variant: "success" });
     } catch (error: any) {
-      console.error(error);
       const errorMessage = error?.data?.message || "Erro ao deletar o arquivo";
       enqueueSnackbar(errorMessage, { variant: "error" });
+      console.error("Error deleting file: ", error);
+    }
+  };
+
+  const handleDownload = async (appealId: string | number, documentId: string | number) => {
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const baseUrl = `${apiUrl}/api/client`;
+    const path = `/appeals/${appealId}/appeal_documents/${documentId}/download`;
+    const url = baseUrl + path;
+    
+    try {
+  
+      const response = await axios.get(url, {
+        responseType: "blob",  
+        headers: {
+          Accept: "application/pdf",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const pdfBlob = new Blob([response.data], { type: "application/pdf" });
+      const tempUrl = window.URL.createObjectURL(pdfBlob);
+      const tempLink = document.createElement("a");
+      tempLink.href = tempUrl;
+      tempLink.setAttribute(
+        "download",
+        appeal.documents?.[0]?.original_name || "recurso.pdf"
+      ); 
+
+      document.body.appendChild(tempLink);
+      tempLink.click();
+
+      document.body.removeChild(tempLink);
+      window.URL.revokeObjectURL(tempUrl);
+    } catch (error: any) {
+      enqueueSnackbar("Erro ao baixar o arquivo PDF", { variant: "error" });
+      console.error("Error downloading PDF: ", error);
     }
   };
 
@@ -187,7 +231,7 @@ export function AppealForm({
 
                 <FormControl fullWidth>
                   <TextField
-                    label="Arquivo PDF"
+                    label="Arquivo PDF (2MB)"
                     variant="outlined"
                     margin="normal"
                     fullWidth
@@ -251,13 +295,12 @@ export function AppealForm({
                   Enviar PDF
                 </Button>
               )}
-              {(appeal.documents?.length ?? 0) > 0 && !isAppealReviewed() && !isAppealPeriodOver() && (
+              {(appeal.documents?.length ?? 0) > 0 && (
                 <Button
-                  sx={{ ml: 1 }}
+                  sx={{ ml: isAppealReviewed() || isAppealPeriodOver() ? 0 : 1 }}
                   startIcon={<DownloadIcon />}
                   variant="outlined"
                   size="small"
-                  disabled={isAppealReviewed()}
                   onClick={() => {
                     if (!appeal?.id || !appeal.documents?.[0]?.id) return;
                     handleDownload(appeal.id, appeal.documents[0].id);
