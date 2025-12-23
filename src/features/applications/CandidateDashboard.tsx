@@ -51,29 +51,27 @@ const CandidateDashboard = () => {
 
   if (!isAuthenticated) return <Login />;
 
-  const isWithinAppealPeriod = (appealStartDate: string | null, appealEndDate: string | null) => {
+  const parseValidDate = (dateStr: string | null): Date | null => {
+    if (!dateStr) return null;
 
-    if (!appealStartDate || !appealEndDate) return false;
-
-    const start = new Date(appealStartDate);
-    const end = new Date(appealEndDate);
-
-    if (isNaN(start.getTime()) || isNaN(end.getTime())) return false;
-
-    const now = new Date();
-
-    return now >= start;
+    const date = new Date(dateStr);
+    return Number.isNaN(date.getTime()) ? null : date;
   };
 
-  const isAppealPeriodOver = (appealStartDate: string | null, appealEndDate: string | null) => {
-    
-    if (!appealStartDate || !appealEndDate) return false;
-
-    const end = new Date(appealEndDate);
-    if (isNaN(end.getTime())) return false;
+  const isAfterAppealStartDate = (appealStartDate: string | null): boolean => {
+    const start = parseValidDate(appealStartDate);
+    if (!start) return false;
 
     const now = new Date();
-    return now > end;
+    return now >= start; 
+  };
+
+  const isAfterAppealEndDate = (appealEndDate: string | null): boolean => {
+    const end = parseValidDate(appealEndDate);
+    if (!end) return false;
+
+    const now = new Date();
+    return now > end; 
   };
 
   /* ------------- render ------------- */
@@ -141,7 +139,10 @@ const CandidateDashboard = () => {
           const processSelection = app.process_selection;
           const appealStartDate = processSelection.appeal_start_date;
           const appealEndDate = processSelection.appeal_end_date;
-          const canAppeal = isWithinAppealPeriod(appealStartDate, appealEndDate);
+          const afterAppealStart = isAfterAppealStartDate(appealStartDate);
+          const afterAppealEnd = isAfterAppealEndDate(appealEndDate);
+
+
 
           const edit = () => navigate(`/applications/create/${app.process_selection_id}`);
           const appeal = () => navigate(`/appeals/${app.id}`);
@@ -158,23 +159,23 @@ const CandidateDashboard = () => {
                     </Typography>
                   </Grid>
                   <Grid item>
-                    {(canAppeal || (isAppealPeriodOver(appealStartDate, appealEndDate) && app.appeal)) && (
+                    {((afterAppealStart && !afterAppealEnd) || (afterAppealEnd && app.appeal)) && (
                       <Tooltip
                         title={
-                          canAppeal
+                          afterAppealStart
                             ? ""
                             : `O recurso só pode ser enviado entre 
                               ${new Date(processSelection.appeal_start_date).toLocaleString("pt-BR")}
                               e
                               ${new Date(processSelection.appeal_end_date).toLocaleString("pt-BR")}`
                         }
-                        disableHoverListener={canAppeal}
+                        disableHoverListener={afterAppealStart}
                       >
                         <span>
                           <Button
                             variant="outlined"
                             onClick={appeal}
-                            disabled={!canAppeal}
+                            disabled={!afterAppealStart}
                             sx={{ mr: 2 }}
                           >
                             {!app.appeal ? "Entrar com Recurso" : "Ver Recurso"}
