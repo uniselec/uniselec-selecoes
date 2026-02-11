@@ -42,22 +42,22 @@ jobs:
           name: build
           path: dist
 
-  deploy:
-    name: Deploy
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Download dist
-        uses: actions/download-artifact@v4
-        with:
-          name: build
-          path: dist
+  # deploy:
+  #   name: Deploy
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - name: Download dist
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: build
+  #         path: dist
 
-      - name: Deploy to FTP
-        uses: SamKirkland/FTP-Deploy-Action@4.3.0
-        with:
-          server: ${{ secrets.FTP_SERVER_STAGING }}
-          username: ${{ secrets.FTP_USERNAME_STAGING }}
-          password: ${{ secrets.FTP_PASSWORD_STAGING }}
-          local-dir: dist/
+  #     - name: Deploy to FTP
+  #       uses: SamKirkland/FTP-Deploy-Action@4.3.0
+  #       with:
+  #         server: ${{ secrets.FTP_SERVER_STAGING }}
+  #         username: ${{ secrets.FTP_USERNAME_STAGING }}
+  #         password: ${{ secrets.FTP_PASSWORD_STAGING }}
+  #         local-dir: dist/
