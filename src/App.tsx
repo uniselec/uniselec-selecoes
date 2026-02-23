@@ -19,6 +19,7 @@ import { HomePage } from "./components/HomePage";
 import { EnrollmentVerification } from "./features/enrollmentsVerification/components/EnrollmentVerification";
 import { EnrollmentReceipt } from "./features/enrollmentsVerification/components/EnrollmentReceipt";
 import { MaintenancePage } from "./components/MaintenancePage";
+import { Appeal } from "./features/appeals/Appeal";
 
 
 
@@ -41,6 +42,7 @@ function App() {
           <Route path="/process-selections/details/:id" element={<ProcessSelectionDetails />} />
           <Route path="/candidate-dashboard" element={<CandidateDashboard />} />
           <Route path="/applications/create/:id" element={<ApplicationCreate />} />
+          <Route path="/appeals/:id" element={<Appeal />} />
 
 
           <Route path="/institucional" element={<InstitutionalSection />} />

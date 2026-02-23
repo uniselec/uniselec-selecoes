@@ -21,6 +21,8 @@ import { Login } from '../auth/Login';
 import { RootState } from '../../app/store';
 import { useGetProcessSelectionsQuery } from '../processSelections/processSelectionSlice';
 import { ProcessSelectionResume } from '../processSelections/ProcessSelectionResume';
+import Tooltip from '@mui/material/Tooltip';
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const CandidateDashboard = () => {
   /* ---------------- auth / logout ---------------- */
@@ -53,6 +55,31 @@ const CandidateDashboard = () => {
 
   if (!isAuthenticated) return <Login />;
 
+  const isWithinAppealPeriod = (appealStartDate: string | null, appealEndDate: string | null) => {
+
+    if (!appealStartDate || !appealEndDate) return false;
+
+    const start = new Date(appealStartDate);
+    const end = new Date(appealEndDate);
+
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) return false;
+
+    const now = new Date();
+
+    return now >= start;
+  };
+
+  const isAppealPeriodOver = (appealStartDate: string | null, appealEndDate: string | null) => {
+
+    if (!appealStartDate || !appealEndDate) return false;
+
+    const end = new Date(appealEndDate);
+    if (isNaN(end.getTime())) return false;
+
+    const now = new Date();
+    return now > end;
+  };
+
   /* ------------- render ------------- */
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -60,9 +87,19 @@ const CandidateDashboard = () => {
       <AppBar position="static">
         <Toolbar sx={{ justifyContent: 'space-between' }}>
           <Typography variant="h6">Portal do Candidato</Typography>
-          <Button color="inherit" startIcon={<LogoutIcon />} onClick={doLogout}>
-            Sair
-          </Button>
+          <Box>
+            <Button
+              sx={{ mr: 3 }}
+              color="inherit"
+              startIcon={<ArrowBackIcon />}
+              onClick={() => window.history.back()}
+            >
+              Voltar
+            </Button>
+            <Button color="inherit" startIcon={<LogoutIcon />} onClick={doLogout}>
+              Sair
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
 
@@ -119,7 +156,13 @@ const CandidateDashboard = () => {
             const fd = app.form_data;
             const pos = fd.position;
             console.log(appsResp);
+            const processSelection = app.process_selection;
+            const appealStartDate = processSelection.appeal_start_date;
+            const appealEndDate = processSelection.appeal_end_date;
+            const canAppeal = isWithinAppealPeriod(appealStartDate, appealEndDate);
+
             const edit = () => navigate(`/applications/create/${app.process_selection_id}`);
+            const appeal = () => navigate(`/appeals/${app.id}`);
 
             return (
 
@@ -134,6 +177,30 @@ const CandidateDashboard = () => {
                       </Typography>
                     </Grid>
                     <Grid item>
+                      {(canAppeal || (isAppealPeriodOver(appealStartDate, appealEndDate) && app.appeal)) && (
+                        <Tooltip
+                          title={
+                            canAppeal
+                              ? ""
+                              : `O recurso só pode ser enviado entre 
+                              ${new Date(processSelection.appeal_start_date).toLocaleString("pt-BR")}
+                              e
+                              ${new Date(processSelection.appeal_end_date).toLocaleString("pt-BR")}`
+                          }
+                          disableHoverListener={canAppeal}
+                        >
+                          <span>
+                            <Button
+                              variant="outlined"
+                              onClick={appeal}
+                              disabled={!canAppeal}
+                              sx={{ mr: 2 }}
+                            >
+                              {!app.appeal ? "Entrar com Recurso" : "Ver Recurso"}
+                            </Button>
+                          </span>
+                        </Tooltip>
+                      )}
                       <IconButton size="small" onClick={edit}>
                         <EditIcon fontSize="small" />
                       </IconButton>
