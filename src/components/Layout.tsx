@@ -11,6 +11,7 @@ import { selectIsAuthenticated } from "../features/auth/authSlice";
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import { Link } from "react-router-dom";
+import { ApiHealthAlert } from "./ApiHealthAlert";
 
 const drawerWidth = 240;
 
@@ -55,6 +56,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           anchorOrigin={{ vertical: "top", horizontal: "right" }}
         >
           <Container sx={{ color: 'text.primary', mt: 15, mb: 5, flexGrow: 1 }}>
+            <ApiHealthAlert />
             {children}
           </Container>
         </SnackbarProvider>
