@@ -29,6 +29,7 @@ export interface ProcessSelection {
   bonus_options?: BonusOption[];
   allowed_enem_years?: number[];
   admission_categories?: AdmissionCategory[];
+  allows_multiple_admission_categories: boolean;
   created_at?: null | string;
   updated_at?: null | string;
 }

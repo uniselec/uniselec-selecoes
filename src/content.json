@@ -61,6 +61,9 @@
             "under_review": " Em análise",
             "rejected": " Indeferido",
             "approved": " Deferido"
+        },
+        "applicationForm": {
+            "The form data.admission categories field must contain 2 items.": "Selecione exatamente uma modalidade além da Ampla Concorrência"
         }
     },
     "pt-PT": {

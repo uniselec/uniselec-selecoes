@@ -156,7 +156,11 @@ export function ApplicationForm({
     handleSubmit(e as unknown as FormEvent<HTMLFormElement>, payload);
   };
 
+
   /* --------------------------------- render ----------------------------------- */
+  const MAX_SELECTABLE_ADMISSION_CATEGORIES = 2;
+  const admissionCategoryLimtReached = selectedCats.length >= MAX_SELECTABLE_ADMISSION_CATEGORIES && !processSelection.allows_multiple_admission_categories;
+
   return (
     <Box p={2}>
       <form onSubmit={openConfirm}>
@@ -415,21 +419,22 @@ export function ApplicationForm({
               {(processSelection.admission_categories || [])
                 .filter(cat =>
                   (selectedCourse?.vacanciesByCategory?.[cat.name] ?? 0) > 0)
-                .map(cat => (
-                  <ListItem key={cat.id}>
+                .map(cat => {
+                  const isdisabledCategory = admissionCategoryLimtReached && !isCatChecked(cat);
+                  return <ListItem key={cat.id}>
                     <FormControlLabel
-                      disabled={cat.name === 'AC'}
+                      disabled={cat.name === 'AC' || isdisabledCategory}
                       control={
                         <Checkbox
                           checked={isCatChecked(cat)}
                           onChange={e => toggleCat(cat, e.target.checked)}
-                          disabled={cat.name === 'AC'}
+                          disabled={cat.name === 'AC' || isdisabledCategory}
                         />
                       }
                       label={`${cat.description} (${selectedCourse?.vacanciesByCategory?.[cat.name]} vagas)`}
                     />
                   </ListItem>
-                ))}
+                })}
             </List>
           </Grid>
 

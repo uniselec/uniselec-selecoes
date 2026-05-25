@@ -17,8 +17,10 @@ import { useAppSelector } from "../../app/hooks";
 import { Register } from "../auth/Register";
 import { ApplicationCard } from "./components/ApplicationCard";
 import type { FetchBaseQueryError } from "@reduxjs/toolkit/query";
+import useTranslate from "../polyglot/useTranslate";
 
 export const ApplicationCreate = () => {
+  const translate = useTranslate('applicationForm');
   const [showForm, setShowForm] = useState(false);
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const { id } = useParams();
@@ -78,7 +80,7 @@ export const ApplicationCreate = () => {
 
       // se a API mandou uma mensagem específica (ex.: inscrições fechadas)
       if (data?.message) {
-        enqueueSnackbar(data.message, { variant: "error" });
+        enqueueSnackbar(translate(data.message), { variant: "error" });
       } else {
         enqueueSnackbar(defaultMsg, { variant: "error" });
       }
