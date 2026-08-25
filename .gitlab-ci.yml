@@ -103,7 +103,7 @@ variables:
   ARGOCD_TLS_MODE: "insecure" # insecure | server-crt
   ARGOCD_SERVER_CRT_B64: ""   # base64 do cert TLS do ArgoCD (quando server-crt)
   # Notificação
-  MAIL_PRD: "jefponte@unilab.edu.br"
+  MAIL_PRD: "jefponte@unilab.edu.br,thiago@unilab.edu.br,miltcn@unilab.edu.br"
   # Endpoint API
   VITE_API_URL_DEV: https://uniselec-api-development.unilab.edu.br
   VITE_API_URL_STG: https://uniselec-api-staging.unilab.edu.br
@@ -1057,12 +1057,12 @@ notification:staging:
 
       if [[ -n "${CI_COMMIT_TAG:-}" ]]; then
         DEPLOY_LINK="🚀 Link para aprovação do deploy: $JOB_URL"
-        EMAIL_SUBJECT="Pipeline CI/CD - Production - Aprovação para Produção"
+        EMAIL_SUBJECT="Pipeline CI/CD - ${APP_NAME} - Production - Aprovação para Produção"
         BRANCH_OR_TAG="Tag: <a href='$CI_PROJECT_URL/-/tags'>$CI_COMMIT_TAG</a>"
         EMAIL_MESSAGE="Olá, Deploy de Staging concluído. Job de CD aguardando aprovação manual para Produção."
       else
         DEPLOY_LINK="🔗 Criar TAG para produção: ${NEW_TAG_URL}"
-        EMAIL_SUBJECT="Pipeline CI/CD - Staging - Criar TAG para Produção"
+        EMAIL_SUBJECT="Pipeline CI/CD - ${APP_NAME} - Staging - Criar TAG para Produção"
         BRANCH_OR_TAG="Branch: <a href='$REPO_URL'>$CI_COMMIT_REF_NAME</a>"
         EMAIL_MESSAGE="Olá, Deploy de Staging concluído. Para deploy em Produção, criar TAG vX.Y.Z"
       fi
