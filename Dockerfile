@@ -34,7 +34,7 @@
 
 
 # Stage de build
-FROM node:20-bullseye AS build
+FROM node:22-bullseye AS build
 WORKDIR /app
 
 # Copia manifests e instala dependências
