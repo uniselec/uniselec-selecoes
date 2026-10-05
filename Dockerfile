@@ -1,40 +1,41 @@
-# Dockerfile for Microservices Application
+# Dockerfile for Mapa de Risco da UNILAB
 #
 # Maintainer: Erivando Sena <erivandosena@gmail.com>
 #
 # Description: Este Dockerfile cria uma imagem para Microsserviço,
-# um aplicativo da Web.
+# um aplicativo da Web escrito em React.
 #
 # Build instructions:
-#   docker build -f ./Dockerfile \
-#     -t registry.example.com/organization/appmanagementapp:latest \
-#     --build-arg VERSION=1.0.0 \
-#     --build-arg COMMIT_SHA=$(git rev-parse --short HEAD) \
-#     --no-cache ./source/
-#   docker push registry.example.com/organization/appmanagementapp:latest
+#   docker build -f ./Dockerfile \
+#     -t harbor.unilab.edu.br/unilab/uniselec-adminunilab:latest \
+#     --build-arg VERSION=1.0.0 \
+#     --build-arg COMMIT_SHA=$(git rev-parse --short HEAD) \
+#     --no-cache ./source/
+#   docker push harbor.unilab.edu.br/unilab/uniselec-adminunilab:latest
 #
 # Usage:
-#   docker run -it --rm -d -p 8088:80 --name riskapp \
-#     registry.example.com/organization/appmanagementapp:latest
-#   docker logs -f --tail --until=2s riskapp
-#   docker exec -it riskapp bash
-#   docker inspect --format='{{json .Config.Labels}}' \
-#     registry.example.com/organization/appmanagementapp:latest | jq .
+#   docker run -it --rm -d -p 8088:80 --name uniselec-admin \
+#     harbor.unilab.edu.br/unilab/uniselec-adminunilab:latest
+#   docker logs -f --tail --until=2s uniselec-admin
+#   docker exec -it uniselec-admin bash
+#   docker inspect --format='{{json .Config.Labels}}' \
+#     harbor.unilab.edu.br/unilab/uniselec-adminunilab:latest | jq .
 #
-# Dependencies: node:20-bullseye / nginx:1.24
 #
 # Environment variables:
-#   COMMIT_SHA: o hash SHA-1 de um determinado commit do Git.
-#   VERSION: usado na tag de imagem ou como parte dos metadados da mesma.
+#   COMMIT_SHA: o hash SHA-1 de um determinado commit do Git.
+#   VERSION: usado na tag de imagem ou como parte dos metadados da mesma.
 #
 # Notes:
 # - Este Dockerfile assume que o código do aplicativo está localizado
-#   no diretório ./source
+#   no diretório ./source
+# - O aplicativo pode ser acessado em um navegador da Web em
+#   https://uniselec-admin.unilab.edu.br/
+#
 # Version: 1.0
 
-
 # Stage de build
-FROM node:22-bullseye AS build
+FROM node:22-bookworm AS build
 WORKDIR /app
 
 # Copia manifests e instala dependências
@@ -46,22 +47,19 @@ COPY . .
 RUN yarn build
 
 # Stage de produção
-FROM nginx:1.24-bullseye
+FROM nginx:bookworm
 
 ARG COMMIT_SHA
 ARG VERSION
 
-# Atualiza pacotes e instala ferramentas de debug
-RUN apt-get update && apt-get upgrade -y \
+RUN apt-get update \
  && apt-get install -y --no-install-recommends \
     software-properties-common \
-    openssh-server \
     unzip \
     jq \
     nano \
     wget \
     curl \
-    sudo \
     rsync \
     telnet \
     iputils-ping \
@@ -80,36 +78,25 @@ RUN curl -sL -o vaultenv \
  && mv vaultenv /usr/local/bin/ \
  && chmod +x /usr/local/bin/vaultenv
 
-# Cria usuário para debug
-RUN adduser --disabled-password --shell /bin/bash --gecos "User DevOps" --force-badname admin \
- && echo "admin ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
-# Configura SSH
-RUN sed -i "s/#Port 22/Port 22/" /etc/ssh/sshd_config \
- && sed -i "s/#PermitRootLogin prohibit-password/PermitRootLogin no/" /etc/ssh/sshd_config \
- && sed -i "s/#PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config \
- && echo 'AllowUsers admin' >> /etc/ssh/sshd_config \
- && mkdir -p /home/admin/.ssh \
- && touch /home/admin/.ssh/authorized_keys \
- && chmod 700 /home/admin/.ssh \
- && chmod 600 /home/admin/.ssh/authorized_keys \
- && chown -R admin:admin /home/admin
 
 # Copia build do React e configura nginx
 WORKDIR /usr/share/nginx/html
 COPY --from=build /app/dist/ ./
 COPY config/nginx.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80 22
+EXPOSE 80
 
 LABEL \
   org.opencontainers.image.vendor="UNILAB" \
   org.opencontainers.image.title="Official Node image" \
+  org.opencontainers.image.description="Mapa de Gestão de Risco da UNILAB" \
   org.opencontainers.image.version="${VERSION}" \
-  org.opencontainers.image.source="http://dti-gitlab.unilab.edu.br/" \
+  org.opencontainers.image.url="https://uniselec-admin.unilab.edu.br/" \
+  org.opencontainers.image.source="http://dti-gitlab.unilab.edu.br/dti/uniselec-admin.git" \
   org.opencontainers.image.licenses="N/D" \
   org.opencontainers.image.author="Jeff Ponte" \
   org.opencontainers.image.company="Universidade da Integracao Internacional da Lusofonia Afro-Brasileira (UNILAB)" \
   org.opencontainers.image.maintainer="DTI/Unilab"
 
-CMD ["/bin/bash", "-c", "service ssh restart && nginx -g 'daemon off;'"]
+CMD ["nginx", "-g", "daemon off;"]
